@@ -1,1 +1,116 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Theme files define `.light`, `.dark`, `.light-hc`, `.light-mc`, `.dark-hc`, `.dark-mc`
+// CSS classes that expose `--md-sys-color-*` design tokens. Apply one of these
+// classes to <body> (see src/index.html) to activate that palette.
+@import './styles/theme/light.css';
+@import './styles/theme/light-hc.css';
+@import './styles/theme/light-mc.css';
+@import './styles/theme/dark.css';
+@import './styles/theme/dark-hc.css';
+@import './styles/theme/dark-mc.css';
+
+// Generate Angular Material's structural system tokens (typography, density,
+// shape, state-layer, motion). The color palette passed here is a placeholder —
+// the actual colors come from the bridge below that maps our `--md-sys-color-*`
+// tokens onto Material's `--mat-sys-*` tokens.
+html {
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: Lato,
+      density: 0,
+    )
+  );
+}
+
+// Bridge: rewrite Angular Material's color system tokens to read from our
+// M3 design tokens. Both `.light` and `.dark` variants (plus high/medium
+// contrast siblings) inherit the same mapping — only the underlying
+// `--md-sys-color-*` values change per theme class.
+.light,
+.light-hc,
+.light-mc,
+.dark,
+.dark-hc,
+.dark-mc {
+  --mat-sys-primary: var(--md-sys-color-primary);
+  --mat-sys-on-primary: var(--md-sys-color-on-primary);
+  --mat-sys-primary-container: var(--md-sys-color-primary-container);
+  --mat-sys-on-primary-container: var(--md-sys-color-on-primary-container);
+
+  --mat-sys-secondary: var(--md-sys-color-secondary);
+  --mat-sys-on-secondary: var(--md-sys-color-on-secondary);
+  --mat-sys-secondary-container: var(--md-sys-color-secondary-container);
+  --mat-sys-on-secondary-container: var(--md-sys-color-on-secondary-container);
+
+  --mat-sys-tertiary: var(--md-sys-color-tertiary);
+  --mat-sys-on-tertiary: var(--md-sys-color-on-tertiary);
+  --mat-sys-tertiary-container: var(--md-sys-color-tertiary-container);
+  --mat-sys-on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+
+  --mat-sys-error: var(--md-sys-color-error);
+  --mat-sys-on-error: var(--md-sys-color-on-error);
+  --mat-sys-error-container: var(--md-sys-color-error-container);
+  --mat-sys-on-error-container: var(--md-sys-color-on-error-container);
+
+  --mat-sys-background: var(--md-sys-color-background);
+  --mat-sys-on-background: var(--md-sys-color-on-background);
+
+  --mat-sys-surface: var(--md-sys-color-surface);
+  --mat-sys-on-surface: var(--md-sys-color-on-surface);
+  --mat-sys-surface-variant: var(--md-sys-color-surface-variant);
+  --mat-sys-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mat-sys-surface-dim: var(--md-sys-color-surface-dim);
+  --mat-sys-surface-bright: var(--md-sys-color-surface-bright);
+  --mat-sys-surface-container-lowest: var(--md-sys-color-surface-container-lowest);
+  --mat-sys-surface-container-low: var(--md-sys-color-surface-container-low);
+  --mat-sys-surface-container: var(--md-sys-color-surface-container);
+  --mat-sys-surface-container-high: var(--md-sys-color-surface-container-high);
+  --mat-sys-surface-container-highest: var(--md-sys-color-surface-container-highest);
+  --mat-sys-surface-tint: var(--md-sys-color-surface-tint);
+
+  --mat-sys-inverse-surface: var(--md-sys-color-inverse-surface);
+  --mat-sys-inverse-on-surface: var(--md-sys-color-inverse-on-surface);
+  --mat-sys-inverse-primary: var(--md-sys-color-inverse-primary);
+
+  --mat-sys-outline: var(--md-sys-color-outline);
+  --mat-sys-outline-variant: var(--md-sys-color-outline-variant);
+  --mat-sys-shadow: var(--md-sys-color-shadow);
+  --mat-sys-scrim: var(--md-sys-color-scrim);
+}
+
+// Tell the browser to use the right color-scheme for native UI (scrollbars,
+// form controls). Add or remove `.dark` from <body> to switch — see
+// app.html for a simple toggle demo.
+.dark,
+.dark-hc,
+.dark-mc {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Lato, 'Helvetica Neue', sans-serif;
+  background: var(--mat-sys-background);
+  color: var(--mat-sys-on-background);
+}
+
+// Variable-axis defaults for Material Symbols. Override on any icon via
+// `style="font-variation-settings: 'FILL' 1;"` or by adding a modifier class.
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.material-symbols-outlined.is-filled {
+  font-variation-settings: 'FILL' 1;
+}
