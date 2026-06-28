@@ -40,6 +40,18 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [formField]="userForm.status">
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (statusError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
       <input matInput type="password" autocomplete="new-password" [formField]="userForm.password" />
       @if (passwordError(); as msg) {

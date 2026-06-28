@@ -7,7 +7,6 @@ import {
   UserList,
   UserPatch,
   UserListSchema,
-  UserSchema,
   UserPost,
   UserGet,
   UserGetSchema,
@@ -39,7 +38,7 @@ export class UsersService {
 
   async get(id: string): Promise<UserGet> {
     const body = await firstValueFrom(this.http.get<UserGet>(`${this.baseUrl}/${id}`));
-    return UserSchema.parse(body);
+    return UserGetSchema.parse(body);
   }
 
   async create(payload: UserPost): Promise<UserGet> {

@@ -1,0 +1,137 @@
+<section class="user-details">
+  <a class="user-details__back" routerLink="/main/user-management">
+    <mat-icon>arrow_back</mat-icon>
+    <span>Back to users</span>
+  </a>
+
+  @if (store.loading() && !store.user()) {
+    <div class="user-details__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p>Loading user...</p>
+    </div>
+  } @else if (store.user(); as user) {
+    <!-- Header card -->
+    <div class="card user-details__header">
+      <app-avatar class="user-details__avatar" [name]="user.fullname" [seed]="user.email" />
+      <div class="user-details__identity">
+        <h1 class="user-details__name">{{ user.fullname }}</h1>
+        <p class="user-details__email">{{ user.email }}</p>
+        <div class="user-details__badges">
+          <span class="badge badge--role">{{ roleLabel() }}</span>
+          <span
+            class="badge"
+            [class.badge--active]="isActive()"
+            [class.badge--inactive]="!isActive()"
+          >
+            {{ statusLabel() }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal information -->
+    <form class="card" (submit)="saveProfile($event)">
+      <header class="card__head">
+        <h2 class="card__title">Personal information</h2>
+        <p class="card__subtitle">Update the user's profile details</p>
+      </header>
+
+      <div class="user-details__fields">
+        <mat-form-field appearance="outline">
+          <mat-label>Full name</mat-label>
+          <input matInput type="text" autocomplete="name" [formField]="profileForm.fullname" />
+          @if (fullnameError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" autocomplete="email" [formField]="profileForm.email" />
+          @if (emailError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <mat-select [formField]="profileForm.role">
+            @for (option of roleOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="card__actions">
+        <button mat-flat-button type="submit" [disabled]="store.saving()">Save changes</button>
+      </div>
+    </form>
+
+    <!-- Security -->
+    <form class="card" (submit)="updatePassword($event)">
+      <header class="card__head">
+        <h2 class="card__title">Security</h2>
+        <p class="card__subtitle">Change the password and manage account protection</p>
+      </header>
+
+      <div class="user-details__fields">
+        <mat-form-field appearance="outline">
+          <mat-label>New password</mat-label>
+          <input
+            matInput
+            type="password"
+            autocomplete="new-password"
+            [formField]="passwordForm.newPassword"
+          />
+          @if (newPasswordError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            type="password"
+            autocomplete="new-password"
+            [formField]="passwordForm.confirmPassword"
+          />
+          @if (confirmPasswordError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="card__actions">
+        <button matButton="tonal" type="submit" [disabled]="store.saving()">Update password</button>
+      </div>
+    </form>
+
+    <!-- Danger zone -->
+    <div class="card user-details__danger">
+      <div>
+        <p class="user-details__danger-title">
+          {{ isActive() ? 'Deactivate account' : 'Activate account' }}
+        </p>
+        <p class="card__subtitle">
+          {{
+            isActive()
+              ? 'The user will lose access until reactivated'
+              : 'Restore access for this user'
+          }}
+        </p>
+      </div>
+      <button
+        mat-stroked-button
+        type="button"
+        class="user-details__danger-btn"
+        [class.user-details__danger-btn--active]="isActive()"
+        (click)="toggleActivation()"
+        [disabled]="store.saving()"
+      >
+        {{ isActive() ? 'Deactivate' : 'Activate' }}
+      </button>
+    </div>
+  }
+</section>

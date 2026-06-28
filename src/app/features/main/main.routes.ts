@@ -16,6 +16,11 @@ export const mainRoutes: Routes = [
         path: 'user-management',
         loadComponent: () => import('../users/users.component').then((m) => m.UsersComponent),
       },
+      {
+        path: 'user-management/:id',
+        loadComponent: () =>
+          import('../user-details/user-details.component').then((m) => m.UserDetailsComponent),
+      },
     ],
   },
 ];

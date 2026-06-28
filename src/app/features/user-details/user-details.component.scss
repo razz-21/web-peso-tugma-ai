@@ -1,0 +1,153 @@
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1.5rem;
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: fit-content;
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    mat-icon {
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  &__status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 4rem 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Header card
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  &__avatar {
+    transform: scale(1.4);
+    transform-origin: left center;
+    margin-right: 0.75rem;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__email {
+    margin: 0.125rem 0 0.5rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  // One field per row for the personal information / security sections.
+  &__fields {
+    display: flex;
+    flex-direction: column;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  &__danger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--mat-sys-error);
+    background: var(--mat-sys-error-container);
+
+    &-title {
+      margin: 0;
+      font-weight: 700;
+      color: var(--mat-sys-on-error-container);
+    }
+
+    &-btn--active {
+      color: var(--mat-sys-error);
+    }
+  }
+}
+
+.card {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__head {
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0.25rem 0 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+
+  &--role {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &--active {
+    background: #cdeede;
+    color: #1f5c45;
+  }
+
+  &--inactive {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

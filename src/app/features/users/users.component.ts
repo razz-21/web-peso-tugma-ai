@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ROLE_LABELS, USER_ROLES, User, UserGet, UserRole } from '../../core/models/user.model';
 import { UsersStore } from '../../stores/users/users.store';
 import { usersEvents } from '../../stores/users/users.events';
@@ -37,6 +38,7 @@ export class UsersComponent implements OnInit {
   private readonly dispatch = injectDispatch(usersEvents);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   protected readonly pageSizeOptions = [10, 25, 50] as const;
   protected readonly roleOptions: ReadonlyArray<{ value: 'all' | UserRole; label: string }> = [
@@ -70,8 +72,7 @@ export class UsersComponent implements OnInit {
   }
 
   protected onView(user: User): void {
-    // Placeholder for a future user detail view/route (e.g. /main/user-management/:id).
-    void user;
+    this.router.navigate(['/main/user-management', user.id]);
   }
 
   protected onDelete(user: User): void {

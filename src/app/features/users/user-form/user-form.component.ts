@@ -16,10 +16,13 @@ import {
 } from '@angular/forms/signals';
 import {
   ROLE_LABELS,
+  STATUS_LABELS,
   USER_ROLES,
+  USER_STATUSES,
   UserPost,
   UserGet,
   UserRole,
+  UserStatus,
 } from '../../../core/models/user.model';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -31,6 +34,7 @@ type UserFormValue = {
   fullname: string;
   email: string;
   role: '' | UserRole;
+  status: UserStatus;
   password: string;
   confirmPassword: string;
 };
@@ -39,6 +43,7 @@ const INITIAL_VALUE: UserFormValue = {
   fullname: '',
   email: '',
   role: 'admin',
+  status: 'active',
   password: '',
   confirmPassword: '',
 };
@@ -67,6 +72,9 @@ export class UserFormComponent {
   protected readonly roleOptions: ReadonlyArray<{ value: UserRole; label: string }> =
     USER_ROLES.map((role) => ({ value: role, label: ROLE_LABELS[role] }));
 
+  protected readonly statusOptions: ReadonlyArray<{ value: UserStatus; label: string }> =
+    USER_STATUSES.map((status) => ({ value: status, label: STATUS_LABELS[status] }));
+
   protected readonly serverError = signal<string | null>(null);
 
   private readonly data = signal<UserFormValue>(INITIAL_VALUE);
@@ -81,6 +89,8 @@ export class UserFormComponent {
     email(p.email, { message: 'Enter a valid email address' });
 
     required(p.role, { message: 'Role is required' });
+
+    required(p.status, { message: 'Status is required' });
 
     required(p.password, { message: 'Password is required' });
     minLength(p.password, 6, { message: 'Password must be at least 6 characters' });
@@ -99,6 +109,7 @@ export class UserFormComponent {
   protected readonly fullnameError = computed(() => this.fieldError(this.userForm.fullname()));
   protected readonly emailError = computed(() => this.fieldError(this.userForm.email()));
   protected readonly roleError = computed(() => this.fieldError(this.userForm.role()));
+  protected readonly statusError = computed(() => this.fieldError(this.userForm.status()));
   protected readonly passwordError = computed(() => this.fieldError(this.userForm.password()));
   protected readonly confirmPasswordError = computed(() =>
     this.fieldError(this.userForm.confirmPassword()),
@@ -121,6 +132,7 @@ export class UserFormComponent {
         fullname: value.fullname.trim(),
         email: value.email.trim(),
         role: value.role as UserRole,
+        status: value.status,
         password: value.password,
         avatar: null,
         created_at: new Date().toISOString(),

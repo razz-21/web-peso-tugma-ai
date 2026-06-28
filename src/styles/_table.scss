@@ -38,6 +38,20 @@
     gap: 0.25rem;
   }
 
+  // Clickable rows (e.g. navigate to a detail page on click).
+  &__row--clickable {
+    cursor: pointer;
+
+    &:hover td.mat-mdc-cell {
+      background: var(--mat-sys-surface-container-low);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+      outline-offset: -2px;
+    }
+  }
+
   // Centered loading / empty placeholder shown below the header row.
   &__status {
     display: flex;

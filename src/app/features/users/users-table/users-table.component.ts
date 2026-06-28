@@ -4,13 +4,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { User, UserGet, UserRole } from '../../../core/models/user.model';
+import { STATUS_LABELS, User, UserGet, UserRole } from '../../../core/models/user.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { UsersStore } from '../../../stores/users/users.store';
 
 interface UserRow {
   user: UserGet;
   roleLabel: string;
+  statusLabel: string;
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -46,6 +47,7 @@ export class UsersTableComponent {
     'name',
     'email',
     'role',
+    'status',
     'created_at',
     'updated_at',
     'actions',
@@ -55,6 +57,7 @@ export class UsersTableComponent {
     this.users().map((user) => ({
       user,
       roleLabel: ROLE_LABELS[user.role],
+      statusLabel: STATUS_LABELS[user.status],
     })),
   );
 
