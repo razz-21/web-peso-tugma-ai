@@ -1,0 +1,39 @@
+<aside class="sidebar">
+  <header class="sidebar__brand">
+    <span class="sidebar__brand-badge">
+      <img
+        ngSrc="/assets/logo-tugma-ai.svg"
+        width="32"
+        height="32"
+        priority
+        alt="PESO TUGMAI logo"
+      />
+    </span>
+    <span class="sidebar__brand-text">
+      <span class="sidebar__brand-name">PESO TUGMAI</span>
+    </span>
+  </header>
+
+  <mat-nav-list class="sidebar__nav">
+    @for (item of navItems; track item.link) {
+      <a
+        mat-list-item
+        [routerLink]="item.link"
+        routerLinkActive
+        #rla="routerLinkActive"
+        [activated]="rla.isActive"
+      >
+        <mat-icon matListItemIcon aria-hidden="true">{{ item.icon }}</mat-icon>
+        <span matListItemTitle>{{ item.label }}</span>
+      </a>
+    }
+  </mat-nav-list>
+
+  <footer class="sidebar__profile">
+    <span class="sidebar__avatar" aria-hidden="true">MS</span>
+    <span class="sidebar__profile-text">
+      <span class="sidebar__profile-name">Maria Santos</span>
+      <span class="sidebar__profile-role">PESO officer</span>
+    </span>
+  </footer>
+</aside>

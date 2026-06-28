@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  min-height: 100dvh;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main__sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+
+  @media (max-width: 900px) {
+    position: static;
+    height: auto;
+  }
+}
+
+.main__content {
+  min-width: 0;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--mat-sys-surface-container-lowest);
+}
