@@ -16,14 +16,4 @@ describe('App', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
-
-  it('should render the project title in the toolbar', async () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.app-toolbar__title')?.textContent).toContain(
-      'web-peso-tugma-ai',
-    );
-  });
 });

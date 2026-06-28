@@ -1,0 +1,223 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  min-height: 100dvh;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Welcome board (left)
+// ---------------------------------------------------------------------------
+.auth__welcome {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  @media (max-width: 900px) {
+    gap: 2rem;
+  }
+}
+
+.auth__brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.auth__brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 16%, transparent);
+
+  img {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.auth__intro {
+  position: relative;
+  z-index: 1;
+  max-width: 20rem;
+}
+
+.auth__title {
+  margin: 0 0 1rem;
+  font-size: clamp(2.75rem, 5vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.auth__tagline {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--mat-sys-on-primary) 88%, transparent);
+}
+
+// ---------------------------------------------------------------------------
+// Decorative "matching" illustration
+// ---------------------------------------------------------------------------
+.auth__art {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 20rem;
+}
+
+.auth__circle {
+  position: absolute;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 9%, transparent);
+}
+
+.auth__circle--lg {
+  width: 15rem;
+  height: 15rem;
+  top: -1rem;
+  right: -2rem;
+}
+
+.auth__circle--sm {
+  width: 9rem;
+  height: 9rem;
+  bottom: -3rem;
+  left: -3rem;
+}
+
+.auth__node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 15.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 1.125rem;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--mat-sys-shadow) 22%, transparent);
+}
+
+.auth__node--person {
+  top: 0;
+  left: 0;
+}
+
+.auth__node--company {
+  bottom: 0;
+  right: 0;
+}
+
+.auth__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+
+  mat-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+  }
+}
+
+.auth__avatar--person {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.auth__avatar--company {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.auth__lines {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.auth__line {
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-variant);
+}
+
+.auth__line--short {
+  width: 60%;
+}
+
+.auth__connector {
+  position: absolute;
+  top: 4.5rem;
+  left: 3.25rem;
+  width: 7.5rem;
+  border-top: 2px dashed color-mix(in srgb, var(--mat-sys-on-primary) 45%, transparent);
+  transform: rotate(36deg);
+  transform-origin: left center;
+}
+
+.auth__match {
+  position: absolute;
+  top: 5.4rem;
+  left: 4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--mat-sys-shadow) 24%, transparent);
+
+  mat-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+  }
+}
+
+.auth__copyright {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--mat-sys-on-primary) 80%, transparent);
+}
+
+// ---------------------------------------------------------------------------
+// Content (right) — hosts the routed form
+// ---------------------------------------------------------------------------
+.auth__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--mat-sys-surface-container-lowest);
+}

@@ -1,0 +1,57 @@
+<section class="login">
+  <h1 class="login__title">Welcome back</h1>
+  <p class="login__subtitle">Sign in to your PESO TUGMAI account</p>
+
+  <form class="login__form" (submit)="onSubmit($event)">
+    <div class="login__fields">
+      <mat-form-field appearance="outline" class="login__field">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          type="email"
+          autocomplete="email"
+          placeholder="Enter your email"
+          [formField]="loginForm.email"
+        />
+        @if (emailError(); as message) {
+          <mat-error>{{ message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="login__field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          autocomplete="current-password"
+          [type]="hidePassword() ? 'password' : 'text'"
+          [formField]="loginForm.password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePassword()"
+          [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+          [attr.aria-pressed]="!hidePassword()"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (passwordError(); as message) {
+          <mat-error>{{ message }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="login__options">
+      <mat-checkbox [formField]="loginForm.rememberMe">Remember me</mat-checkbox>
+      <a class="login__link" routerLink="/auth/forgot-password">Forgot password?</a>
+    </div>
+
+    <button mat-flat-button color="primary" type="submit" class="login__submit">Sign in</button>
+  </form>
+
+  <p class="login__register">
+    Don't have an account?
+    <a class="login__link" routerLink="/auth/register">Register</a>
+  </p>
+</section>

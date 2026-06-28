@@ -1,0 +1,55 @@
+<div class="auth">
+  <aside class="auth__welcome">
+    <header class="auth__brand">
+      <span class="auth__brand-badge">
+        <img
+          ngSrc="/assets/logo-tugma-ai.svg"
+          width="40"
+          height="40"
+          priority
+          alt="PESO TUGMAI logo"
+        />
+      </span>
+    </header>
+
+    <div class="auth__intro">
+      <h1 class="auth__title">PESO TUGMAI</h1>
+      <p class="auth__tagline">Finding the right match between people and opportunities.</p>
+    </div>
+
+    <div class="auth__art" aria-hidden="true">
+      <span class="auth__circle auth__circle--lg"></span>
+      <span class="auth__circle auth__circle--sm"></span>
+
+      <div class="auth__node auth__node--person">
+        <span class="auth__avatar auth__avatar--person">
+          <mat-icon aria-hidden="true">person</mat-icon>
+        </span>
+        <span class="auth__lines">
+          <span class="auth__line"></span>
+        </span>
+      </div>
+
+      <span class="auth__connector"></span>
+      <span class="auth__match">
+        <mat-icon aria-hidden="true">check</mat-icon>
+      </span>
+
+      <div class="auth__node auth__node--company">
+        <span class="auth__avatar auth__avatar--company">
+          <mat-icon aria-hidden="true">apartment</mat-icon>
+        </span>
+        <span class="auth__lines">
+          <span class="auth__line"></span>
+          <span class="auth__line auth__line--short"></span>
+        </span>
+      </div>
+    </div>
+
+    <footer class="auth__copyright">&copy; 2026 PESO TUGMAI</footer>
+  </aside>
+
+  <main class="auth__content">
+    <router-outlet />
+  </main>
+</div>
