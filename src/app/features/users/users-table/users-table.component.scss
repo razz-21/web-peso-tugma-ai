@@ -1,0 +1,18 @@
+// Generic table chrome lives in the global `.app-table` styles (src/styles/_table.scss).
+// Only user-row content styling is component-specific.
+.users-table {
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__delete {
+    color: var(--mat-sys-error);
+  }
+}

@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use './styles/table';
 
 // Theme files define `.light`, `.dark`, `.light-hc`, `.light-mc`, `.dark-hc`, `.dark-mc`
 // CSS classes that expose `--md-sys-color-*` design tokens. Apply one of these

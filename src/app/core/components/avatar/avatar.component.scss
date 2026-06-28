@@ -1,0 +1,36 @@
+:host {
+  display: inline-flex;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &--violet {
+    background: #e0dcff;
+    color: #3b3170;
+  }
+  &--green {
+    background: #cdeede;
+    color: #1f5c45;
+  }
+  &--pink {
+    background: #ffd9e2;
+    color: #7a2540;
+  }
+  &--blue {
+    background: #d2e4ff;
+    color: #1f4979;
+  }
+  &--amber {
+    background: #ffe6bd;
+    color: #6b4a14;
+  }
+}

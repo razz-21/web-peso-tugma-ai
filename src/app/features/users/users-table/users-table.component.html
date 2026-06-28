@@ -1,0 +1,79 @@
+<div class="app-table">
+  <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+      <td mat-cell *matCellDef="let row">
+        <div class="users-table__user">
+          <app-avatar [name]="row.user.fullname" [seed]="row.user.email" />
+          <span class="users-table__name">{{ row.user.fullname }}</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef scope="col">Email</th>
+      <td mat-cell *matCellDef="let row">{{ row.user.email }}</td>
+    </ng-container>
+
+    <!-- Role -->
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
+      <td mat-cell *matCellDef="let row">{{ row.roleLabel }}</td>
+    </ng-container>
+
+    <!-- Created at -->
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef scope="col">Created at</th>
+      <td mat-cell *matCellDef="let row">{{ row.user.created_at | date: 'MMM d, y h:mm a' }}</td>
+    </ng-container>
+
+    <!-- Updated at -->
+    <ng-container matColumnDef="updated_at">
+      <th mat-header-cell *matHeaderCellDef scope="col">Updated at</th>
+      <td mat-cell *matCellDef="let row">{{ row.user.updated_at | date: 'MMM d, y h:mm a' }}</td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+      <td mat-cell *matCellDef="let row">
+        <div class="app-table__actions">
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'View ' + row.user.fullname"
+            (click)="view.emit(row.user)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="users-table__delete"
+            [attr.aria-label]="'Delete ' + row.user.fullname"
+            (click)="delete.emit(row.user)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (loading()) {
+    <div class="app-table__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p class="app-table__status-text">Loading users...</p>
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="app-table__status">
+      <mat-icon class="app-table__status-icon" aria-hidden="true">group_off</mat-icon>
+      <p class="app-table__status-text">No users</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,53 @@
+<section class="users">
+  <header class="users__header">
+    <div class="users__heading">
+      <h1 class="users__title">User management</h1>
+      <p class="users__subtitle">Manage applicants, employers, and staff accounts</p>
+    </div>
+    <button mat-flat-button type="button" class="users__add" (click)="onAddUser()">
+      <mat-icon>add</mat-icon>
+      Add user
+    </button>
+  </header>
+
+  <div class="users__filters">
+    <mat-form-field appearance="outline" class="users__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        placeholder="Search by name or email"
+        aria-label="Search users by name or email"
+        [value]="store.filter.q()"
+        (input)="onSearch($event)"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="users__role" subscriptSizing="dynamic">
+      <mat-label>Role</mat-label>
+      <mat-select [value]="store.filter.role()" (selectionChange)="onRoleFilter($event.value)">
+        @for (option of roleOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (store.error(); as error) {
+    <p class="users__error" role="alert">{{ error }}</p>
+  }
+
+  <div class="users__card">
+    <app-users-table (view)="onView($event)" (delete)="onDelete($event)" />
+
+    <mat-paginator
+      class="users__paginator"
+      [length]="store.total()"
+      [pageSize]="store.filter.pageSize()"
+      [pageIndex]="store.filter.pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      aria-label="Select page of users"
+      (page)="onPage($event)"
+    />
+  </div>
+</section>

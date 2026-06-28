@@ -12,6 +12,10 @@ export const mainRoutes: Routes = [
         loadComponent: () =>
           import('../dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
+      {
+        path: 'user-management',
+        loadComponent: () => import('../users/users.component').then((m) => m.UsersComponent),
+      },
     ],
   },
 ];

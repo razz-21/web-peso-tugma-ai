@@ -31,12 +31,14 @@ export const UserListSchema = z.object({
   total: z.number().int().nonnegative(),
   limit: z.number().int(),
   offset: z.number().int(),
-  items: z.array(UserSchema),
+  items: z.array(UserGetSchema),
 });
 
 export interface ListUsersParams {
   limit?: number;
   offset?: number;
+  q?: string;
+  role?: UserRole;
 }
 
 export type UserRole = z.infer<typeof UserRoleSchema>;
@@ -45,3 +47,9 @@ export type UserPost = z.infer<typeof UserPostSchema>;
 export type UserList = z.infer<typeof UserListSchema>;
 export type UserPatch = z.infer<typeof UserPatchSchema>;
 export type UserGet = z.infer<typeof UserGetSchema>;
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Admin',
+  officer: 'Officer',
+};

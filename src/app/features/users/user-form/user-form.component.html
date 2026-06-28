@@ -1,0 +1,77 @@
+<header class="user-form__header">
+  <h2 mat-dialog-title>Add user</h2>
+  <p class="user-form__subtitle">
+    Enter the details of the new user. All fields with an asterisk (*) are required.
+  </p>
+</header>
+
+<form (submit)="submit($event)">
+  <mat-dialog-content class="user-form">
+    @if (serverError(); as error) {
+      <p class="user-form__server-error" role="alert">{{ error }}</p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Full name</mat-label>
+      <input matInput type="text" autocomplete="name" [formField]="userForm.fullname" />
+      @if (fullnameError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" autocomplete="email" [formField]="userForm.email" />
+      @if (emailError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Role</mat-label>
+      <mat-select [formField]="userForm.role">
+        @for (option of roleOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (roleError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" autocomplete="new-password" [formField]="userForm.password" />
+      @if (passwordError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Confirm password</mat-label>
+      <input
+        matInput
+        type="password"
+        autocomplete="new-password"
+        [formField]="userForm.confirmPassword"
+      />
+      @if (confirmPasswordError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button matButton="tonal" type="button" (click)="cancel()" [disabled]="createUserLoading()">
+      Cancel
+    </button>
+    <button mat-flat-button type="submit" [disabled]="!canSubmit()">
+      @if (createUserLoading()) {
+        <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+        <span>Saving...</span>
+      } @else {
+        <span>Add user</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</form>

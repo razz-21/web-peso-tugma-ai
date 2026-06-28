@@ -4,13 +4,13 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   ListUsersParams,
-  User,
   UserList,
   UserPatch,
   UserListSchema,
   UserSchema,
   UserPost,
   UserGet,
+  UserGetSchema,
 } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +26,12 @@ export class UsersService {
     if (params.offset != null) {
       httpParams = httpParams.set('offset', params.offset);
     }
+    if (params.q) {
+      httpParams = httpParams.set('q', params.q);
+    }
+    if (params.role) {
+      httpParams = httpParams.set('role', params.role);
+    }
 
     const body = await firstValueFrom(this.http.get<UserGet>(this.baseUrl, { params: httpParams }));
     return UserListSchema.parse(body);
@@ -37,13 +43,13 @@ export class UsersService {
   }
 
   async create(payload: UserPost): Promise<UserGet> {
-    const body = await firstValueFrom(this.http.post<UserPost>(this.baseUrl, payload));
-    return UserSchema.parse(body);
+    const body = await firstValueFrom(this.http.post<UserGet>(this.baseUrl, payload));
+    return UserGetSchema.parse(body);
   }
 
   async update(id: string, payload: UserPatch): Promise<UserGet> {
     const body = await firstValueFrom(this.http.patch<unknown>(`${this.baseUrl}/${id}`, payload));
-    return UserSchema.parse(body);
+    return UserGetSchema.parse(body);
   }
 
   async delete(id: string): Promise<boolean> {
