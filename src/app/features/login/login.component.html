@@ -3,6 +3,10 @@
   <p class="login__subtitle">Sign in to your PESO TUGMAI account</p>
 
   <form class="login__form" (submit)="onSubmit($event)">
+    @if (errorMessage(); as message) {
+      <p class="login__error" role="alert">{{ message }}</p>
+    }
+
     <div class="login__fields">
       <mat-form-field appearance="outline" class="login__field">
         <mat-label>Email</mat-label>
@@ -47,7 +51,19 @@
       <a class="login__link" routerLink="/auth/forgot-password">Forgot password?</a>
     </div>
 
-    <button mat-flat-button color="primary" type="submit" class="login__submit">Sign in</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      class="login__submit"
+      [disabled]="submitting()"
+    >
+      @if (submitting()) {
+        <mat-progress-spinner diameter="24" mode="indeterminate" aria-label="Signing in" />
+      } @else {
+        Sign in
+      }
+    </button>
   </form>
 
   <p class="login__register">
