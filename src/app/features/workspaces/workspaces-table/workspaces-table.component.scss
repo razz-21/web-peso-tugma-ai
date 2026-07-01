@@ -1,0 +1,38 @@
+// Generic table chrome lives in the global `.app-table` styles (src/styles/_table.scss).
+// Only workspace-row content styling is component-specific.
+.workspaces-table {
+  &__workspace {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__delete {
+    color: var(--mat-sys-error);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+
+    &--active {
+      background: #cdeede;
+      color: #1f5c45;
+    }
+
+    &--inactive {
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}

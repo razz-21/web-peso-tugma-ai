@@ -15,7 +15,6 @@ type NavItem = {
   imports: [NgOptimizedImage, RouterLink, RouterLinkActive, MatListModule, MatIconModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   protected readonly navItems: readonly NavItem[] = [
@@ -24,5 +23,6 @@ export class SidebarComponent {
     { label: 'Applicants', icon: 'group', link: '/main/applicants' },
     { label: 'Job Listings', icon: 'work', link: '/main/job-listings' },
     { label: 'User Management', icon: 'groups', link: '/main/user-management' },
+    { label: 'Workspaces', icon: 'computer_arrow_up', link: '/main/workspaces' },
   ];
 }

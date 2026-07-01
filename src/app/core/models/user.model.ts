@@ -16,6 +16,7 @@ export const UserSchema = z.object({
   status: UserStatusSchema,
   password: z.string().min(6).max(128),
   avatar: z.string().nullable(),
+  workspace_id: z.uuid().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });

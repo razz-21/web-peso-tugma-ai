@@ -21,6 +21,11 @@ export const mainRoutes: Routes = [
         loadComponent: () =>
           import('../user-details/user-details.component').then((m) => m.UserDetailsComponent),
       },
+      {
+        path: 'workspaces',
+        loadComponent: () =>
+          import('../workspaces/workspaces.component').then((m) => m.WorkspacesComponent),
+      },
     ],
   },
 ];

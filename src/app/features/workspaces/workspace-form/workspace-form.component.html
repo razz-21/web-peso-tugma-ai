@@ -1,0 +1,66 @@
+<header class="workspace-form__header">
+  <h2 mat-dialog-title>Add workspace</h2>
+  <p class="workspace-form__subtitle">
+    Enter the details of the new workspace. All fields with an asterisk (*) are required.
+  </p>
+</header>
+
+<form (submit)="submit($event)">
+  <mat-dialog-content class="workspace-form">
+    @if (serverError(); as error) {
+      <p class="workspace-form__server-error" role="alert">{{ error }}</p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="workspaceForm.name" />
+      @if (nameError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        autocomplete="off"
+        [formField]="workspaceForm.description"
+      ></textarea>
+      @if (descriptionError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [formField]="workspaceForm.status">
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (statusError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      matButton="tonal"
+      type="button"
+      (click)="cancel()"
+      [disabled]="createWorkspaceLoading()"
+    >
+      Cancel
+    </button>
+    <button mat-flat-button type="submit" [disabled]="!canSubmit()">
+      @if (createWorkspaceLoading()) {
+        <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+        <span>Saving...</span>
+      } @else {
+        <span>Add workspace</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</form>

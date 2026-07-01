@@ -1,0 +1,44 @@
+<section class="workspaces">
+  <header class="workspaces__header">
+    <div class="workspaces__heading">
+      <h1 class="workspaces__title">Workspaces</h1>
+      <p class="workspaces__subtitle">Manage the workspaces available across the platform</p>
+    </div>
+    <button mat-flat-button type="button" class="workspaces__add" (click)="onAddWorkspace()">
+      <mat-icon>add</mat-icon>
+      Add workspace
+    </button>
+  </header>
+
+  <div class="workspaces__filters">
+    <mat-form-field appearance="outline" class="workspaces__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        placeholder="Search by name or description"
+        aria-label="Search workspaces by name or description"
+        [value]="store.filter.q()"
+        (input)="onSearch($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (store.error(); as error) {
+    <p class="workspaces__error" role="alert">{{ error }}</p>
+  }
+
+  <div class="workspaces__card">
+    <app-workspaces-table (delete)="onDelete($event)" />
+
+    <mat-paginator
+      class="workspaces__paginator"
+      [length]="store.total()"
+      [pageSize]="store.filter.pageSize()"
+      [pageIndex]="store.filter.pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      aria-label="Select page of workspaces"
+      (page)="onPage($event)"
+    />
+  </div>
+</section>
