@@ -1,7 +1,8 @@
 <header class="workspace-form__header">
-  <h2 mat-dialog-title>Add workspace</h2>
+  <h2 mat-dialog-title>{{ isEdit ? 'Edit workspace' : 'Add workspace' }}</h2>
   <p class="workspace-form__subtitle">
-    Enter the details of the new workspace. All fields with an asterisk (*) are required.
+    {{ isEdit ? 'Update the workspace details.' : 'Enter the details of the new workspace.' }}
+    All fields with an asterisk (*) are required.
   </p>
 </header>
 
@@ -15,6 +16,21 @@
       <mat-label>Name</mat-label>
       <input matInput type="text" autocomplete="off" [formField]="workspaceForm.name" />
       @if (nameError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Key</mat-label>
+      <input
+        matInput
+        type="text"
+        autocomplete="off"
+        aria-describedby="workspace-key-hint"
+        [formField]="workspaceForm.key"
+      />
+      <mat-hint id="workspace-key-hint">Auto-generated from the name</mat-hint>
+      @if (keyError(); as msg) {
         <mat-error>{{ msg }}</mat-error>
       }
     </mat-form-field>
@@ -46,20 +62,13 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button
-      matButton="tonal"
-      type="button"
-      (click)="cancel()"
-      [disabled]="createWorkspaceLoading()"
-    >
-      Cancel
-    </button>
+    <button matButton="tonal" type="button" (click)="cancel()" [disabled]="saving()">Cancel</button>
     <button mat-flat-button type="submit" [disabled]="!canSubmit()">
-      @if (createWorkspaceLoading()) {
+      @if (saving()) {
         <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
         <span>Saving...</span>
       } @else {
-        <span>Add workspace</span>
+        <span>{{ isEdit ? 'Save changes' : 'Add workspace' }}</span>
       }
     </button>
   </mat-dialog-actions>

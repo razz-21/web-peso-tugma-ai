@@ -4,9 +4,25 @@ export const WorkspaceStatusSchema = z.enum(['active', 'inactive']);
 
 export const WORKSPACE_STATUSES = WorkspaceStatusSchema.options;
 
+/** Slug format for a workspace key, e.g. "Workspace 1" -> "workspace_1". */
+export const WORKSPACE_KEY_PATTERN = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
+
+/** Derives a workspace key from its name (lowercase, underscore-separated). */
+export const toWorkspaceKey = (name: string): string =>
+  name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
 export const WorkspaceSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1).max(100),
+  key: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(WORKSPACE_KEY_PATTERN, 'Key must be lowercase letters, numbers, and underscores'),
   description: z.string().nullable(),
   avatar: z.string().nullable(),
   status: WorkspaceStatusSchema,

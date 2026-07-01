@@ -29,7 +29,7 @@
   }
 
   <div class="workspaces__card">
-    <app-workspaces-table (delete)="onDelete($event)" />
+    <app-workspaces-table (edit)="onEdit($event)" (delete)="onDelete($event)" />
 
     <mat-paginator
       class="workspaces__paginator"

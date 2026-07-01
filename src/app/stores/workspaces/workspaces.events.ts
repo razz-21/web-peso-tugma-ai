@@ -1,6 +1,11 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
-import { WorkspaceGet, WorkspaceList, WorkspacePost } from '../../core/models/workspace.model';
+import {
+  WorkspaceGet,
+  WorkspaceList,
+  WorkspacePatch,
+  WorkspacePost,
+} from '../../core/models/workspace.model';
 import { WorkspacesFilter } from './workspaces.store';
 
 export const workspacesEvents = eventGroup({
@@ -21,5 +26,9 @@ export const workspacesEvents = eventGroup({
     createWorkspace: type<WorkspacePost>(),
     createWorkspaceSuccess: type<WorkspaceGet>(),
     createWorkspaceFailed: type<string>(),
+
+    updateWorkspace: type<{ id: string; workspace: WorkspacePatch }>(),
+    updateWorkspaceSuccess: type<WorkspaceGet>(),
+    updateWorkspaceFailed: type<string>(),
   },
 });

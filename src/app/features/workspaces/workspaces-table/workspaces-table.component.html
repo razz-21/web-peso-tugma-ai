@@ -59,6 +59,14 @@
           <button
             mat-icon-button
             type="button"
+            [attr.aria-label]="'Edit ' + row.workspace.name"
+            (click)="edit.emit(row.workspace)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
             class="workspaces-table__delete"
             [attr.aria-label]="'Delete ' + row.workspace.name"
             (click)="delete.emit(row.workspace)"

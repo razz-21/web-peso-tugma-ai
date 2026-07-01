@@ -89,4 +89,14 @@ export class WorkspacesComponent implements OnInit {
       restoreFocus: true,
     });
   }
+
+  protected onEdit(workspace: WorkspaceGet): void {
+    this.dialog.open<WorkspaceFormComponent, WorkspaceGet, WorkspaceGet>(WorkspaceFormComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      data: workspace,
+    });
+  }
 }

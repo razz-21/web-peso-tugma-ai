@@ -14,6 +14,7 @@ type WorkspacesState = {
   filter: WorkspacesFilter;
   loading: boolean;
   createWorkspaceLoading: boolean;
+  updateWorkspaceLoading: boolean;
   deleteWorkspaceLoading: boolean;
   error: string | null;
 };
@@ -30,6 +31,7 @@ const initialState: WorkspacesState = {
   filter: { q: '', pageIndex: 0, pageSize: 10 },
   loading: false,
   createWorkspaceLoading: false,
+  updateWorkspaceLoading: false,
   deleteWorkspaceLoading: false,
   error: null,
 };
@@ -115,6 +117,21 @@ export const WorkspacesStore = signalStore(
       createWorkspaceLoading: false,
       error: payload,
     })),
+    on(workspacesEvents.updateWorkspace, () => ({
+      updateWorkspaceLoading: true,
+      error: null,
+    })),
+    on(workspacesEvents.updateWorkspaceSuccess, ({ payload }, state) => ({
+      workspaces: state.workspaces.map((workspace) =>
+        workspace.id === payload.id ? payload : workspace,
+      ),
+      updateWorkspaceLoading: false,
+      error: null,
+    })),
+    on(workspacesEvents.updateWorkspaceFailed, ({ payload }) => ({
+      updateWorkspaceLoading: false,
+      error: payload,
+    })),
     on(workspacesEvents.deleteWorkspace, () => ({ deleteWorkspaceLoading: true, error: null })),
     on(workspacesEvents.deleteWorkspaceSuccess, () => ({
       deleteWorkspaceLoading: false,
@@ -190,6 +207,29 @@ export const WorkspacesStore = signalStore(
         }),
       ),
       createWorkspaceFailed$: events.on(workspacesEvents.createWorkspaceFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      updateWorkspace$: events.on(workspacesEvents.updateWorkspace).pipe(
+        switchMap(({ payload }) =>
+          from(workspacesService.update(payload.id, payload.workspace)).pipe(
+            mapResponse({
+              next: (workspace) => workspacesEvents.updateWorkspaceSuccess(workspace),
+              error: (error: unknown) =>
+                workspacesEvents.updateWorkspaceFailed(
+                  errorMessage(error, 'Failed to update workspace.'),
+                ),
+            }),
+          ),
+        ),
+      ),
+      updateWorkspaceSuccess$: events.on(workspacesEvents.updateWorkspaceSuccess).pipe(
+        tap(() => {
+          snackBar.open('Workspace updated successfully', 'Close', { duration: 3000 });
+        }),
+      ),
+      updateWorkspaceFailed$: events.on(workspacesEvents.updateWorkspaceFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
         }),

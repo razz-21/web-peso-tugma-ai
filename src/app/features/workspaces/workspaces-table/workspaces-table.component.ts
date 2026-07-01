@@ -30,6 +30,7 @@ interface WorkspaceRow {
 export class WorkspacesTableComponent {
   private readonly workspacesStore = inject(WorkspacesStore);
 
+  readonly edit = output<WorkspaceGet>();
   readonly delete = output<WorkspaceGet>();
 
   protected readonly workspaces = computed(() => this.workspacesStore.workspaces());
