@@ -48,7 +48,7 @@
 
     <div class="login__options">
       <mat-checkbox [formField]="loginForm.rememberMe">Remember me</mat-checkbox>
-      <a class="login__link" routerLink="/auth/forgot-password">Forgot password?</a>
+      <a class="login__link" [routerLink]="routes.forgotPassword">Forgot password?</a>
     </div>
 
     <button
@@ -68,6 +68,6 @@
 
   <p class="login__register">
     Don't have an account?
-    <a class="login__link" routerLink="/auth/register">Register</a>
+    <a class="login__link" [routerLink]="routes.register">Register</a>
   </p>
 </section>

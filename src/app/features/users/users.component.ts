@@ -9,6 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ROLE_LABELS, USER_ROLES, User, UserGet, UserRole } from '../../core/models/user.model';
+import { APP_ROUTES } from '../../core/constants/routes.constant';
 import { UsersStore } from '../../stores/users/users.store';
 import { usersEvents } from '../../stores/users/users.events';
 import { injectDispatch } from '@ngrx/signals/events';
@@ -72,7 +73,7 @@ export class UsersComponent implements OnInit {
   }
 
   protected onView(user: User): void {
-    this.router.navigate(['/main/user-management', user.id]);
+    this.router.navigate([APP_ROUTES.userManagement, user.id]);
   }
 
   protected onDelete(user: User): void {

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { APP_ROUTES } from '../constants/routes.constant';
 import { AuthService } from '../services/auth.service';
 
 // Endpoints that obtain/clear the session — never retry these on a 401, or a
@@ -46,7 +47,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         switchMap(() => next(req.clone({ withCredentials: true }))),
         catchError((refreshError: unknown) => {
           void auth.logout();
-          void router.navigateByUrl('/auth/login');
+          void router.navigateByUrl(APP_ROUTES.login);
           return throwError(() => refreshError);
         }),
       );

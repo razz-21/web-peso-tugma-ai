@@ -1,15 +1,22 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
+import { meGuard } from './core/guards/me.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'auth', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
-    path: 'auth',
+    path: '',
+    canActivate: [guestGuard],
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
   {
     path: 'main',
-    canActivate: [authGuard],
+    canActivate: [meGuard],
     loadChildren: () => import('./features/main/main.routes').then((m) => m.mainRoutes),
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
   },
 ];

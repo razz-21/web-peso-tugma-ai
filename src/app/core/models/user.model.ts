@@ -27,6 +27,17 @@ export const UserPostSchema = UserSchema;
 
 export const UserPatchSchema = UserSchema.omit({ id: true, created_at: true }).partial();
 
+/**
+ * Self-service profile update payload for `PATCH /me`. Mirrors the backend
+ * `MePatch` schema — intentionally excludes `role` and `status`.
+ */
+export const MePatchSchema = UserSchema.pick({
+  fullname: true,
+  email: true,
+  password: true,
+  avatar: true,
+}).partial();
+
 export const UserListSchema = z.object({
   total: z.number().int().nonnegative(),
   limit: z.number().int(),
@@ -47,6 +58,7 @@ export type User = z.infer<typeof UserSchema>;
 export type UserPost = z.infer<typeof UserPostSchema>;
 export type UserList = z.infer<typeof UserListSchema>;
 export type UserPatch = z.infer<typeof UserPatchSchema>;
+export type MePatch = z.infer<typeof MePatchSchema>;
 export type UserGet = z.infer<typeof UserGetSchema>;
 
 export const ROLE_LABELS: Record<UserRole, string> = {

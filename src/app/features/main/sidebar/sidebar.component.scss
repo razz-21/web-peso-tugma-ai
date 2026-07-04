@@ -77,11 +77,36 @@
 }
 
 .sidebar__profile {
+  padding-top: 1rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.sidebar__profile-trigger {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 0.5rem 0;
-  border-top: 1px solid var(--mat-sys-outline-variant);
+  width: 100%;
+  margin: 0;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--mat-sys-surface-container-high);
+  }
+}
+
+.sidebar__profile-chevron {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .sidebar__avatar {

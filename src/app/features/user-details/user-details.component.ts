@@ -42,6 +42,7 @@ import {
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
 import { UserDetailsStore } from '../../stores/user-details/user-details.store';
 import { userDetailsEvents } from '../../stores/user-details/user-details.events';
+import { APP_ROUTES } from '../../core/constants/routes.constant';
 
 type ProfileForm = {
   fullname: string;
@@ -73,6 +74,7 @@ type PasswordForm = {
   providers: [UserDetailsStore],
 })
 export class UserDetailsComponent implements OnInit {
+  protected readonly routes = APP_ROUTES;
   protected readonly store = inject(UserDetailsStore);
   private readonly dispatch = injectDispatch(userDetailsEvents);
   private readonly route = inject(ActivatedRoute);

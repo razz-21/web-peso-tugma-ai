@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { APP_ROUTES } from '../../core/constants/routes.constant';
 
 type ForgotPasswordData = {
   email: string;
@@ -25,6 +26,7 @@ type ForgotPasswordData = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
+  protected readonly routes = APP_ROUTES;
   protected readonly submitted = signal(false);
   protected readonly submittedEmail = signal('');
 

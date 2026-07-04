@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/services/auth.service';
+import { APP_ROUTES } from '../../core/constants/routes.constant';
 
 type LoginData = {
   email: string;
@@ -36,6 +37,7 @@ export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  protected readonly routes = APP_ROUTES;
   protected readonly hidePassword = signal(true);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
@@ -80,7 +82,7 @@ export class LoginComponent {
 
     try {
       await this.auth.login({ email, password, rememberMe });
-      await this.router.navigateByUrl('/main');
+      await this.router.navigateByUrl(APP_ROUTES.main);
     } catch (error) {
       this.errorMessage.set(this.toErrorMessage(error));
     } finally {
@@ -92,6 +94,11 @@ export class LoginComponent {
     if (error instanceof HttpErrorResponse) {
       if (error.status === 401) {
         return 'Incorrect email or password.';
+      }
+      if (error.status === 403) {
+        // Account disabled — surface the backend reason (e.g. "User is inactive").
+        const detail = error.error?.detail;
+        return typeof detail === 'string' ? detail : 'Your account is inactive.';
       }
       if (error.status === 0) {
         return 'Unable to reach the server. Please try again.';

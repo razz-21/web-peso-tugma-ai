@@ -26,6 +26,10 @@ export const mainRoutes: Routes = [
         loadComponent: () =>
           import('../workspaces/workspaces.component').then((m) => m.WorkspacesComponent),
       },
+      {
+        path: 'profile',
+        loadComponent: () => import('../profile/profile.component').then((m) => m.ProfileComponent),
+      },
     ],
   },
 ];

@@ -30,10 +30,29 @@
   </mat-nav-list>
 
   <footer class="sidebar__profile">
-    <span class="sidebar__avatar" aria-hidden="true">MS</span>
-    <span class="sidebar__profile-text">
-      <span class="sidebar__profile-name">Maria Santos</span>
-      <span class="sidebar__profile-role">PESO officer</span>
-    </span>
+    <button
+      type="button"
+      class="sidebar__profile-trigger"
+      [matMenuTriggerFor]="userMenu"
+      aria-label="Open account menu"
+    >
+      <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
+      <span class="sidebar__profile-text">
+        <span class="sidebar__profile-name">{{ user()?.fullname }}</span>
+        <span class="sidebar__profile-role">{{ roleLabel() }}</span>
+      </span>
+      <mat-icon class="sidebar__profile-chevron" aria-hidden="true">chevron_right</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <a mat-menu-item [routerLink]="routes.profile">
+        <mat-icon aria-hidden="true">person</mat-icon>
+        <span>Profile</span>
+      </a>
+      <button mat-menu-item type="button" (click)="logout()">
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
   </footer>
 </aside>
