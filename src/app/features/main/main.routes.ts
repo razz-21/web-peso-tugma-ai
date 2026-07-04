@@ -13,6 +13,18 @@ export const mainRoutes: Routes = [
           import('../dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'companies',
+        loadComponent: () =>
+          import('../companies/companies.component').then((m) => m.CompaniesComponent),
+      },
+      {
+        path: 'companies/:id',
+        loadComponent: () =>
+          import('../company-details/company-details.component').then(
+            (m) => m.CompanyDetailsComponent,
+          ),
+      },
+      {
         path: 'user-management',
         loadComponent: () => import('../users/users.component').then((m) => m.UsersComponent),
       },

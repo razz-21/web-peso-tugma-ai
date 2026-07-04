@@ -1,0 +1,88 @@
+<header class="company-form__header">
+  <h2 mat-dialog-title>{{ isEdit ? 'Edit company' : 'Add company' }}</h2>
+  <p class="company-form__subtitle">
+    {{ isEdit ? 'Update the company details.' : 'Enter the details of the new company.' }}
+    All fields with an asterisk (*) are required.
+  </p>
+</header>
+
+<form (submit)="submit($event)">
+  <mat-dialog-content class="company-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="companyForm.company_name" />
+      @if (nameError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type of company</mat-label>
+      <mat-select [formField]="companyForm.company_type">
+        @for (option of typeOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (typeError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email address</mat-label>
+      <input matInput type="email" autocomplete="off" [formField]="companyForm.email" />
+      @if (emailError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Contact number</mat-label>
+      <input matInput type="tel" autocomplete="off" [formField]="companyForm.contact_number" />
+      @if (contactError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Avatar URL</mat-label>
+      <input matInput type="url" autocomplete="off" [formField]="companyForm.avatar" />
+      @if (avatarError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <textarea matInput rows="2" autocomplete="off" [formField]="companyForm.address"></textarea>
+      @if (addressError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        autocomplete="off"
+        [formField]="companyForm.description"
+      ></textarea>
+      @if (descriptionError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button matButton="tonal" type="button" (click)="cancel()" [disabled]="saving()">Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="!canSubmit()">
+      @if (saving()) {
+        <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+        <span>Saving...</span>
+      } @else {
+        <span>{{ isEdit ? 'Save changes' : 'Add company' }}</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  width: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.company-form__header {
+  h2.mat-mdc-dialog-title {
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+  }
+}
+
+.company-form__subtitle {
+  margin: 0 0 0.5rem;
+  padding: 0 24px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.company-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: min(420px, 80vw);
+  padding-top: 0.5rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+mat-progress-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}

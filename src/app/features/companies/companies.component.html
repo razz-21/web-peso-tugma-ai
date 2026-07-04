@@ -1,0 +1,48 @@
+<section class="companies">
+  <header class="companies__header">
+    <div class="companies__heading">
+      <h1 class="companies__title">Companies</h1>
+      <p class="companies__subtitle">Manage the companies registered across the platform</p>
+    </div>
+    <button mat-flat-button type="button" class="companies__add" (click)="onAddCompany()">
+      <mat-icon>add</mat-icon>
+      Add company
+    </button>
+  </header>
+
+  <div class="companies__filters">
+    <mat-form-field appearance="outline" class="companies__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        placeholder="Search by name"
+        aria-label="Search companies by name"
+        [value]="store.filter.q()"
+        (input)="onSearch($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (store.error(); as error) {
+    <p class="companies__error" role="alert">{{ error }}</p>
+  }
+
+  <div class="companies__card">
+    <app-companies-table
+      (view)="onView($event)"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+    />
+
+    <mat-paginator
+      class="companies__paginator"
+      [length]="store.total()"
+      [pageSize]="store.filter.pageSize()"
+      [pageIndex]="store.filter.pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      aria-label="Select page of companies"
+      (page)="onPage($event)"
+    />
+  </div>
+</section>

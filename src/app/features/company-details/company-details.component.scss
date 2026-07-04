@@ -1,0 +1,247 @@
+.company-details {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    padding: 1rem 1.5rem;
+    color: var(--mat-sys-on-surface-variant);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  &__status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 4rem 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(380px, 380px) 1fr;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  &__profile {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--mat-sys-surface-container-lowest);
+    border-right: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__logo {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1.25rem;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__type {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &__edit {
+    flex: 1;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.75rem;
+    background: var(--mat-sys-surface);
+  }
+
+  &__stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__stat-label {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__section-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__about {
+    margin: 0;
+    color: var(--mat-sys-on-surface);
+    line-height: 1.5;
+  }
+
+  &__list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__divider {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__list-row {
+    display: flex;
+    gap: 0.5rem;
+
+    dt {
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+      min-width: 7.5rem;
+    }
+
+    dd {
+      margin: 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__roles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__roles-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__roles-title {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__create-job {
+    border-radius: 0.75rem;
+  }
+
+  &__role {
+    display: block;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__apps {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.5rem;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    font-weight: 600;
+    font-size: 0.8125rem;
+  }
+
+  &__job-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__job-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--mat-sys-outline);
+  }
+
+  &__job-status--open &__job-dot {
+    background: #1f9d55;
+  }
+
+  &__job-status--screening &__job-dot {
+    background: #d9a441;
+  }
+
+  @media (max-width: 720px) {
+    &__layout {
+      grid-template-columns: 1fr;
+    }
+
+    &__profile {
+      border-right: none;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+  }
+}

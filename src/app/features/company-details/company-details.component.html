@@ -1,0 +1,166 @@
+<section class="company-details">
+  <a class="company-details__back" [routerLink]="routes.companies">
+    <mat-icon>arrow_back</mat-icon>
+    <span>Back to companies</span>
+  </a>
+
+  @if (store.loading() && !store.company()) {
+    <div class="company-details__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p>Loading company...</p>
+    </div>
+  } @else if (store.company(); as company) {
+    <div class="company-details__layout">
+      <!-- Left: company profile -->
+      <aside class="company-details__profile">
+        <div class="company-details__head">
+          @if (company.avatar) {
+            <img
+              class="company-details__logo"
+              [src]="company.avatar"
+              [alt]="company.company_name + ' logo'"
+              width="80"
+              height="80"
+            />
+          } @else {
+            <app-avatar
+              class="company-details__logo"
+              [name]="company.company_name"
+              [seed]="company.id"
+              [size]="80"
+              shape="square"
+            />
+          }
+
+          <div class="company-details__heading">
+            <h1 class="company-details__name">{{ company.company_name }}</h1>
+            <span class="company-details__type">{{ typeLabel() }}</span>
+          </div>
+        </div>
+
+        <div class="company-details__actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="company-details__edit"
+            (click)="onEdit(company)"
+          >
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'Delete ' + company.company_name"
+            (click)="onDelete(company)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <div class="company-details__stats">
+          <div class="company-details__stat">
+            <span class="company-details__stat-value">{{ openRoles() }}</span>
+            <span class="company-details__stat-label">Open roles</span>
+          </div>
+          <div class="company-details__stat">
+            <span class="company-details__stat-value">{{ totalApplied() }}</span>
+            <span class="company-details__stat-label">Applicants</span>
+          </div>
+        </div>
+
+        <hr class="company-details__divider" />
+
+        <div class="company-details__section">
+          <h2 class="company-details__section-title">About</h2>
+          <p class="company-details__about">
+            {{ company.description || 'No description provided.' }}
+          </p>
+        </div>
+
+        <hr class="company-details__divider" />
+
+        <div class="company-details__section">
+          <h2 class="company-details__section-title">Details</h2>
+          <dl class="company-details__list">
+            <div class="company-details__list-row">
+              <dt>Headquarters</dt>
+              <dd>{{ company.address || '—' }}</dd>
+            </div>
+            <div class="company-details__list-row">
+              <dt>Phone</dt>
+              <dd>{{ company.contact_number || '—' }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <hr class="company-details__divider" />
+
+        <div class="company-details__section">
+          <h2 class="company-details__section-title">Contact</h2>
+          <p class="company-details__about">No contact</p>
+        </div>
+      </aside>
+
+      <!-- Right: open roles -->
+      <div class="company-details__roles">
+        <header class="company-details__roles-head">
+          <h2 class="company-details__roles-title">Job list</h2>
+          <button mat-flat-button type="button" class="company-details__create-job">
+            <mat-icon>add</mat-icon>
+            Create new job
+          </button>
+        </header>
+
+        <div class="app-table">
+          <table mat-table [dataSource]="jobs" class="app-table__table">
+            <!-- Title -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef scope="col">Title</th>
+              <td mat-cell *matCellDef="let job">
+                <span class="company-details__role">{{ job.title }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Description -->
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef scope="col">Description</th>
+              <td mat-cell *matCellDef="let job">{{ job.description }}</td>
+            </ng-container>
+
+            <!-- Location -->
+            <ng-container matColumnDef="location">
+              <th mat-header-cell *matHeaderCellDef scope="col">Location</th>
+              <td mat-cell *matCellDef="let job">{{ job.location }}</td>
+            </ng-container>
+
+            <!-- Available vacancies -->
+            <ng-container matColumnDef="vacancies">
+              <th mat-header-cell *matHeaderCellDef scope="col">Available Vacancies</th>
+              <td mat-cell *matCellDef="let job">
+                <span class="company-details__apps">{{ job.vacancies }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+              <td mat-cell *matCellDef="let job">
+                <span
+                  class="company-details__job-status"
+                  [class]="'company-details__job-status--' + job.status"
+                >
+                  <span class="company-details__job-dot" aria-hidden="true"></span>
+                  {{ job.statusLabel }}
+                </span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</section>

@@ -25,4 +25,7 @@ export const APP_ROUTES = {
 /** Route to a single user's detail page. */
 export const userDetailsRoute = (id: string): string => `${APP_ROUTES.userManagement}/${id}`;
 
+/** Route to a single company's detail page. */
+export const companyDetailsRoute = (id: string): string => `${APP_ROUTES.companies}/${id}`;
+
 export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES];
