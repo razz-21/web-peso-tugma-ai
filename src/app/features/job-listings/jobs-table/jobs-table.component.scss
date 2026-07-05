@@ -1,0 +1,32 @@
+// Generic table chrome lives in the global `.app-table` styles (src/styles/_table.scss).
+// Only job-row content styling is component-specific.
+.jobs-table {
+  &__title-text {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.5;
+
+    &--active {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--closed {
+      background: var(--mat-sys-surface-container-highest);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__delete {
+    color: var(--mat-sys-error);
+  }
+}

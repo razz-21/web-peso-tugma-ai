@@ -1,0 +1,44 @@
+<section class="jobs">
+  <header class="jobs__header">
+    <div class="jobs__heading">
+      <h1 class="jobs__title">Job Listings</h1>
+      <p class="jobs__subtitle">Manage the job postings across the platform</p>
+    </div>
+    <button mat-flat-button type="button" class="jobs__add" (click)="onAddJob()">
+      <mat-icon>add</mat-icon>
+      Add job
+    </button>
+  </header>
+
+  <div class="jobs__filters">
+    <mat-form-field appearance="outline" class="jobs__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        placeholder="Search by title, description, or skills"
+        aria-label="Search jobs"
+        [value]="store.filter.q()"
+        (input)="onSearch($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (store.error(); as error) {
+    <p class="jobs__error" role="alert">{{ error }}</p>
+  }
+
+  <div class="jobs__card">
+    <app-jobs-table (view)="onView($event)" (edit)="onEdit($event)" (delete)="onDelete($event)" />
+
+    <mat-paginator
+      class="jobs__paginator"
+      [length]="store.total()"
+      [pageSize]="store.filter.pageSize()"
+      [pageIndex]="store.filter.pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      aria-label="Select page of jobs"
+      (page)="onPage($event)"
+    />
+  </div>
+</section>

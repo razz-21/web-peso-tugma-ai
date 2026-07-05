@@ -1,0 +1,195 @@
+<form class="job-form" (submit)="submit($event)">
+  <header class="job-form__topbar">
+    <button
+      mat-icon-button
+      type="button"
+      class="job-form__close"
+      aria-label="Close"
+      (click)="cancel()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <h2 mat-dialog-title class="job-form__title">{{ isEdit ? 'Edit job' : 'Create job' }}</h2>
+    <span class="job-form__spacer"></span>
+    <button mat-flat-button type="submit" class="job-form__submit" [disabled]="!canSubmit()">
+      @if (saving()) {
+        <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+        <span>Saving...</span>
+      } @else {
+        <span>{{ isEdit ? 'Save changes' : 'Create' }}</span>
+      }
+    </button>
+  </header>
+
+  <mat-dialog-content class="job-form__content">
+    <div class="job-form__inner">
+      <!-- Company -->
+      <h3 class="job-form__section">Company</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+        <mat-select
+          [formField]="jobForm.company_id"
+          panelClass="job-form__company-panel"
+          (openedChange)="onCompanyOpened($event)"
+        >
+          <div class="job-form__company-search" (keydown)="$event.stopPropagation()">
+            <mat-icon aria-hidden="true">search</mat-icon>
+            <input
+              type="text"
+              autocomplete="off"
+              placeholder="Search companies"
+              aria-label="Search companies"
+              [value]="companySearch()"
+              (input)="onCompanySearch($event)"
+            />
+          </div>
+          @if (selectedCompany(); as selected) {
+            <mat-select-trigger>
+              <span class="job-form__company">
+                @if (selected.avatar) {
+                  <img
+                    class="job-form__company-avatar"
+                    [src]="selected.avatar"
+                    [alt]="selected.company_name + ' logo'"
+                    width="28"
+                    height="28"
+                    loading="lazy"
+                  />
+                } @else {
+                  <app-avatar [name]="selected.company_name" [seed]="selected.id" [size]="28" />
+                }
+                <span class="job-form__company-text">
+                  <span class="job-form__company-name">{{ selected.company_name }}</span>
+                  <span class="job-form__company-type">
+                    {{ companyTypeLabels[selected.company_type] }}
+                  </span>
+                </span>
+              </span>
+            </mat-select-trigger>
+          }
+          @for (company of filteredCompanies(); track company.id) {
+            <mat-option [value]="company.id">
+              <span class="job-form__company">
+                @if (company.avatar) {
+                  <img
+                    class="job-form__company-avatar"
+                    [src]="company.avatar"
+                    [alt]="company.company_name + ' logo'"
+                    width="28"
+                    height="28"
+                    loading="lazy"
+                  />
+                } @else {
+                  <app-avatar [name]="company.company_name" [seed]="company.id" [size]="28" />
+                }
+                <span class="job-form__company-text">
+                  <span class="job-form__company-name">{{ company.company_name }}</span>
+                  <span class="job-form__company-type">
+                    {{ companyTypeLabels[company.company_type] }}
+                  </span>
+                </span>
+              </span>
+            </mat-option>
+          } @empty {
+            <p class="job-form__company-empty">No companies found</p>
+          }
+        </mat-select>
+        @if (companyError(); as msg) {
+          <mat-error>{{ msg }}</mat-error>
+        } @else {
+          <mat-hint>Choose which company this job is posted under</mat-hint>
+        }
+      </mat-form-field>
+
+      <!-- Job details -->
+      <h3 class="job-form__section">Job details</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Job title</mat-label>
+        <input matInput type="text" autocomplete="off" [formField]="jobForm.title" />
+        @if (titleError(); as msg) {
+          <mat-error>{{ msg }}</mat-error>
+        } @else {
+          <mat-hint>Required</mat-hint>
+        }
+        <mat-hint align="end">{{ titleLength() }}/{{ titleMax }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput rows="3" autocomplete="off" [formField]="jobForm.description"></textarea>
+        @if (descriptionError(); as msg) {
+          <mat-error>{{ msg }}</mat-error>
+        } @else {
+          <mat-hint>What the role involves</mat-hint>
+        }
+        <mat-hint align="end">{{ descriptionLength() }}/{{ descriptionMax }}</mat-hint>
+      </mat-form-field>
+
+      <div class="job-form__row">
+        <mat-form-field appearance="outline">
+          <mat-label>No. of vacancies</mat-label>
+          <input matInput type="number" autocomplete="off" [formField]="jobForm.no_of_vacancies" />
+          @if (vacanciesError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Salary per month</mat-label>
+          <span matTextPrefix>₱&nbsp;</span>
+          <input matInput type="number" autocomplete="off" [formField]="jobForm.salary_per_month" />
+          @if (salaryError(); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          } @else {
+            <mat-hint>Gross monthly salary in PHP</mat-hint>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Requirements -->
+      <h3 class="job-form__section">Requirements</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Minimum education attainment</mat-label>
+        <mat-select [formField]="jobForm.minimum_education_attainment">
+          <mat-option [value]="''">Not specified</mat-option>
+          @for (option of educationOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Experience required</mat-label>
+        <textarea
+          matInput
+          rows="2"
+          autocomplete="off"
+          [formField]="jobForm.experience_required"
+        ></textarea>
+        <mat-hint>e.g. 2 years in a related field</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Skills required</mat-label>
+        <mat-chip-grid #skillsGrid aria-label="Skills required">
+          @for (skill of skills(); track skill) {
+            <mat-chip-row (removed)="removeSkill(skill)">
+              {{ skill }}
+              <button matChipRemove type="button" [attr.aria-label]="'Remove ' + skill">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+          <input
+            placeholder="Type a skill, press Enter"
+            [matChipInputFor]="skillsGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="true"
+            (matChipInputTokenEnd)="addSkill($event)"
+          />
+        </mat-chip-grid>
+        <mat-hint>Press Enter or comma to add each skill</mat-hint>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+</form>

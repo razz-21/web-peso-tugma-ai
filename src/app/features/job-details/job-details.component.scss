@@ -1,0 +1,315 @@
+.job-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__topbar-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 4rem 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Shared card chrome.
+  &__card {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 1rem;
+    background: var(--mat-sys-surface-container-lowest);
+    padding: 1.5rem;
+  }
+
+  // --- Header card ---
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    border: 0;
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  &__header-avatar {
+    flex-shrink: 0;
+  }
+
+  &__header-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__header-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__company-name {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+
+    mat-icon {
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    &--active {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--closed {
+      background: var(--mat-sys-surface-container-highest);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+
+    button {
+      border-radius: 999px;
+    }
+  }
+
+  &__delete {
+    color: var(--mat-sys-error);
+  }
+
+  // --- Stat cards ---
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__stat-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+
+    mat-icon {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &__stat-value {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  // --- Two-column layout ---
+  &__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__main,
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  &__section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &__body {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: pre-line;
+  }
+
+  &__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__skill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.75rem;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  // --- Sidebar ---
+  &__side-title {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__company {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  &__company-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__company-type {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__view-company {
+    width: 100%;
+    border-radius: 999px;
+  }
+
+  &__overview {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__overview-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    dt {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      color: var(--mat-sys-on-surface-variant);
+
+      mat-icon {
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+      text-align: right;
+    }
+  }
+
+  // --- Actively hiring promo ---
+  &__hiring {
+    background: var(--mat-sys-primary-container);
+    border-color: transparent;
+  }
+
+  &__hiring-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &__hiring .job-details__body {
+    color: var(--mat-sys-on-primary-container);
+  }
+}

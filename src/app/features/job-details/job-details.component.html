@@ -1,0 +1,228 @@
+<section class="job-details">
+  <header class="job-details__topbar">
+    <button mat-icon-button type="button" aria-label="Back to job listings" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="job-details__topbar-title">Job details</h1>
+  </header>
+
+  @if (store.loading() && !job()) {
+    <div class="job-details__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p>Loading job...</p>
+    </div>
+  } @else if (job(); as job) {
+    <!-- Header card -->
+    <div class="job-details__card job-details__header">
+      <app-avatar
+        class="job-details__header-avatar"
+        [name]="job.company?.company_name ?? job.title"
+        [seed]="job.company?.id ?? job.id"
+        [size]="64"
+        shape="square"
+      />
+      <div class="job-details__header-body">
+        <div class="job-details__header-title">
+          <h2 class="job-details__title">{{ job.title }}</h2>
+          <span
+            class="job-details__badge"
+            [class.job-details__badge--active]="job.status === 'active'"
+            [class.job-details__badge--closed]="job.status === 'closed'"
+          >
+            <mat-icon aria-hidden="true">{{ job.status === 'active' ? 'bolt' : 'lock' }}</mat-icon>
+            {{ statusLabels[job.status] }}
+          </span>
+        </div>
+
+        @if (job.company; as company) {
+          <p class="job-details__subtitle">
+            <span class="job-details__company-name">{{ company.company_name }}</span>
+            <span class="job-details__dot" aria-hidden="true">·</span>
+            <span>{{ companyTypeLabels[company.company_type] }}</span>
+          </p>
+        }
+
+        <div class="job-details__actions">
+          <button mat-flat-button type="button" (click)="onEdit(job)">
+            <mat-icon>edit</mat-icon>
+            Edit job
+          </button>
+          <button
+            matButton="tonal"
+            type="button"
+            class="job-details__delete"
+            (click)="onDelete(job)"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+          <button
+            matButton="tonal"
+            type="button"
+            class="job-details__toggle"
+            [disabled]="store.updating()"
+            (click)="onToggleStatus(job)"
+          >
+            <mat-icon>{{ job.status === 'active' ? 'lock' : 'bolt' }}</mat-icon>
+            {{ job.status === 'active' ? 'Close job' : 'Activate job' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="job-details__stats">
+      @if (job.salary_per_month != null) {
+        <div class="job-details__card job-details__stat">
+          <span class="job-details__stat-label">
+            <mat-icon aria-hidden="true">payments</mat-icon>
+            Salary / month
+          </span>
+          <span class="job-details__stat-value">₱{{ job.salary_per_month | number }}</span>
+        </div>
+      }
+
+      <div class="job-details__card job-details__stat">
+        <span class="job-details__stat-label">
+          <mat-icon aria-hidden="true">groups</mat-icon>
+          Vacancies
+        </span>
+        <span class="job-details__stat-value">{{ job.no_of_vacancies }} open</span>
+      </div>
+
+      @if (job.minimum_education_attainment) {
+        <div class="job-details__card job-details__stat">
+          <span class="job-details__stat-label">
+            <mat-icon aria-hidden="true">school</mat-icon>
+            Education
+          </span>
+          <span class="job-details__stat-value">{{ job.minimum_education_attainment }}</span>
+        </div>
+      }
+
+      <div class="job-details__card job-details__stat">
+        <span class="job-details__stat-label">
+          <mat-icon aria-hidden="true">toggle_on</mat-icon>
+          Status
+        </span>
+        <span class="job-details__stat-value">{{ statusLabels[job.status] }}</span>
+      </div>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="job-details__layout">
+      <div class="job-details__main">
+        @if (job.description) {
+          <div class="job-details__card job-details__section">
+            <h3 class="job-details__section-title">About the role</h3>
+            <p class="job-details__body">{{ job.description }}</p>
+          </div>
+        }
+
+        @if (job.minimum_education_attainment) {
+          <div class="job-details__card job-details__section">
+            <h3 class="job-details__section-title">
+              <mat-icon aria-hidden="true">school</mat-icon>
+              Minimum education
+            </h3>
+            <p class="job-details__body">{{ job.minimum_education_attainment }}</p>
+          </div>
+        }
+
+        @if (job.experience_required) {
+          <div class="job-details__card job-details__section">
+            <h3 class="job-details__section-title">
+              <mat-icon aria-hidden="true">work_history</mat-icon>
+              Experience required
+            </h3>
+            <p class="job-details__body">{{ job.experience_required }}</p>
+          </div>
+        }
+
+        @if (job.skills_required.length) {
+          <div class="job-details__card job-details__section">
+            <h3 class="job-details__section-title">
+              <mat-icon aria-hidden="true">handyman</mat-icon>
+              Skills required
+            </h3>
+            <ul class="job-details__skills" aria-label="Skills required">
+              @for (skill of job.skills_required; track skill) {
+                <li class="job-details__skill">{{ skill }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+
+      <aside class="job-details__sidebar">
+        @if (job.company; as company) {
+          <div class="job-details__card job-details__side">
+            <h3 class="job-details__side-title">Company</h3>
+            <div class="job-details__company">
+              <app-avatar
+                [name]="company.company_name"
+                [seed]="company.id"
+                [size]="44"
+                shape="square"
+              />
+              <div class="job-details__company-text">
+                <span class="job-details__company-name">{{ company.company_name }}</span>
+                <span class="job-details__company-type">{{
+                  companyTypeLabels[company.company_type]
+                }}</span>
+              </div>
+            </div>
+            <button
+              matButton="tonal"
+              type="button"
+              class="job-details__view-company"
+              (click)="onViewCompany(company.id)"
+            >
+              <mat-icon>apartment</mat-icon>
+              View company
+            </button>
+          </div>
+        }
+
+        <div class="job-details__card job-details__side">
+          <h3 class="job-details__side-title">Job overview</h3>
+          <dl class="job-details__overview">
+            <div class="job-details__overview-row">
+              <dt><mat-icon aria-hidden="true">tag</mat-icon> Job ID</dt>
+              <dd>#{{ job.id.slice(0, 8) }}</dd>
+            </div>
+            <div class="job-details__overview-row">
+              <dt><mat-icon aria-hidden="true">toggle_on</mat-icon> Status</dt>
+              <dd>{{ statusLabels[job.status] }}</dd>
+            </div>
+            <div class="job-details__overview-row">
+              <dt><mat-icon aria-hidden="true">groups</mat-icon> Vacancies</dt>
+              <dd>{{ job.no_of_vacancies }}</dd>
+            </div>
+            <div class="job-details__overview-row">
+              <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Posted</dt>
+              <dd>{{ job.created_at | date: 'MMM d, y' }}</dd>
+            </div>
+            <div class="job-details__overview-row">
+              <dt><mat-icon aria-hidden="true">schedule</mat-icon> Updated</dt>
+              <dd>{{ job.updated_at | date: 'MMM d, y' }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        @if (job.status === 'active') {
+          <div class="job-details__card job-details__hiring">
+            <h3 class="job-details__hiring-title">
+              <mat-icon aria-hidden="true">verified</mat-icon>
+              Actively hiring
+            </h3>
+            <p class="job-details__body">
+              This role is open with {{ job.no_of_vacancies }}
+              {{ job.no_of_vacancies === 1 ? 'vacancy' : 'vacancies' }}.
+            </p>
+          </div>
+        }
+      </aside>
+    </div>
+  }
+</section>

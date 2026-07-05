@@ -1,0 +1,135 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.job-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--mat-sys-surface-container-lowest);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__title.mat-mdc-dialog-title {
+    margin: 0;
+    padding: 0;
+    font-weight: 700;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__submit {
+    border-radius: 999px;
+    min-width: 6rem;
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    padding-top: 1.5rem;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  // Centered reading column within the full-page surface.
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  &__section {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mat-sys-primary);
+
+    &:first-child {
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Rich company select: avatar + name + type, in both the trigger and options.
+  &__company {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  &__company-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__company-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  &__company-name {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__company-type {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// The company options are taller (two lines), so give them room.
+::ng-deep .mat-mdc-option:has(.job-form__company) {
+  height: auto;
+  min-height: 3.25rem;
+}
+
+mat-progress-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}

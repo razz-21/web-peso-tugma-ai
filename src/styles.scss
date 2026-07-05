@@ -115,3 +115,60 @@ body {
 .material-symbols-outlined.is-filled {
   font-variation-settings: 'FILL' 1;
 }
+
+// Job form dialog: full-page white surface. The panel fills the viewport, drops
+// its rounded corners, and lets the sticky top bar sit flush against the edges
+// (see job-form.component). `surface-container-lowest` resolves to white in the
+// light theme.
+.job-form-dialog {
+  .mat-mdc-dialog-surface {
+    border-radius: 0;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: none;
+    padding: 0 1.25rem 2rem;
+  }
+}
+
+// Searchable company select: the panel renders in an overlay (outside the
+// component view), so its search box is styled globally via `panelClass`.
+.job-form__company-panel {
+  .job-form__company-search {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--mat-sys-surface-container);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    .mat-icon {
+      flex-shrink: 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font: inherit;
+      color: var(--mat-sys-on-surface);
+
+      &::placeholder {
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+  }
+
+  .job-form__company-empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

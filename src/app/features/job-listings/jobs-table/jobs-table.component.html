@@ -1,0 +1,104 @@
+<div class="app-table">
+  <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
+    <!-- Title -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef scope="col">Title</th>
+      <td mat-cell *matCellDef="let row">
+        <span class="jobs-table__title-text">{{ row.job.title }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Company -->
+    <ng-container matColumnDef="company">
+      <th mat-header-cell *matHeaderCellDef scope="col">Company</th>
+      <td mat-cell *matCellDef="let row">{{ row.companyName }}</td>
+    </ng-container>
+
+    <!-- Vacancies -->
+    <ng-container matColumnDef="vacancies">
+      <th mat-header-cell *matHeaderCellDef scope="col">Vacancies</th>
+      <td mat-cell *matCellDef="let row">{{ row.job.no_of_vacancies }}</td>
+    </ng-container>
+
+    <!-- Salary -->
+    <ng-container matColumnDef="salary">
+      <th mat-header-cell *matHeaderCellDef scope="col">Salary / mo</th>
+      <td mat-cell *matCellDef="let row">
+        @if (row.job.salary_per_month != null) {
+          ₱{{ row.job.salary_per_month | number }}
+        } @else {
+          —
+        }
+      </td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+      <td mat-cell *matCellDef="let row">
+        <span class="jobs-table__status" [class]="row.statusClass">{{ row.statusLabel }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Created at -->
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef scope="col">Created at</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.job.created_at | date: 'MMM d, y h:mm a' }}
+      </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+      <td mat-cell *matCellDef="let row">
+        <div
+          class="app-table__actions"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        >
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'Edit ' + row.job.title"
+            (click)="edit.emit(row.job)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="jobs-table__delete"
+            [attr.aria-label]="'Delete ' + row.job.title"
+            (click)="delete.emit(row.job)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="app-table__row--clickable"
+      tabindex="0"
+      [attr.aria-label]="'View ' + row.job.title"
+      (click)="view.emit(row.job)"
+      (keydown.enter)="view.emit(row.job)"
+    ></tr>
+  </table>
+
+  @if (loading()) {
+    <div class="app-table__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p class="app-table__status-text">Loading jobs...</p>
+    </div>
+  } @else if (jobs().length === 0) {
+    <div class="app-table__status">
+      <mat-icon class="app-table__status-icon" aria-hidden="true">work</mat-icon>
+      <p class="app-table__status-text">No jobs</p>
+    </div>
+  }
+</div>
