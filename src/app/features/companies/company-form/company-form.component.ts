@@ -19,8 +19,12 @@ import {
   CompanyPost,
   CompanyType,
 } from '../../../core/models/company.model';
+import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { companiesEvents } from '../../../stores/companies/companies.events';
 import { CompaniesStore } from '../../../stores/companies/companies.store';
+
+/** Character limit shown under the About field. */
+const DESCRIPTION_MAX = 280;
 
 type CompanyFormValue = {
   company_name: string;
@@ -52,6 +56,7 @@ const INITIAL_VALUE: CompanyFormValue = {
     MatButtonModule,
     MatProgressSpinnerModule,
     FormField,
+    AvatarComponent,
   ],
   templateUrl: './company-form.component.html',
   styleUrl: './company-form.component.scss',
@@ -89,6 +94,12 @@ export class CompanyFormComponent {
       : this.companiesStore.createCompanyLoading(),
   );
 
+  protected readonly descriptionMax = DESCRIPTION_MAX;
+  /** Live name used to seed the generated logo avatar. */
+  protected readonly logoSeed = computed(() => this.data().company_name.trim() || 'Company');
+  protected readonly logoUrl = computed(() => this.data().avatar);
+  protected readonly descriptionLength = computed(() => this.data().description.length);
+
   protected readonly companyForm = form(this.data, (p) => {
     required(p.company_name, { message: 'Name is required' });
     maxLength(p.company_name, COMPANY_NAME_MAX, {
@@ -104,8 +115,9 @@ export class CompanyFormComponent {
     });
 
     maxLength(p.address, 500, { message: 'Address must be 500 characters or fewer' });
-    maxLength(p.description, 500, { message: 'Description must be 500 characters or fewer' });
-    maxLength(p.avatar, 2048, { message: 'Avatar URL must be 2048 characters or fewer' });
+    maxLength(p.description, DESCRIPTION_MAX, {
+      message: `About must be ${DESCRIPTION_MAX} characters or fewer`,
+    });
   });
 
   protected readonly canSubmit = computed(() => !this.saving());
@@ -120,7 +132,22 @@ export class CompanyFormComponent {
   protected readonly descriptionError = computed(() =>
     this.fieldError(this.companyForm.description()),
   );
-  protected readonly avatarError = computed(() => this.fieldError(this.companyForm.avatar()));
+
+  /** Reads the chosen image file as a base64 data URL and stores it as the avatar. */
+  protected onUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      this.data.update((current) => ({ ...current, avatar: result }));
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
 
   protected submit(event: Event): void {
     event.preventDefault();

@@ -1,23 +1,58 @@
 <header class="company-form__header">
-  <h2 mat-dialog-title>{{ isEdit ? 'Edit company' : 'Add company' }}</h2>
+  <h2 mat-dialog-title>{{ isEdit ? 'Edit company' : 'Create company' }}</h2>
   <p class="company-form__subtitle">
-    {{ isEdit ? 'Update the company details.' : 'Enter the details of the new company.' }}
-    All fields with an asterisk (*) are required.
+    {{ isEdit ? 'Update the employer details.' : 'Add a new employer to your workspace.' }}
   </p>
 </header>
 
 <form (submit)="submit($event)">
   <mat-dialog-content class="company-form">
+    <!-- Logo -->
+    <div class="company-form__logo-row">
+      @if (logoUrl()) {
+        <img
+          class="company-form__logo"
+          [src]="logoUrl()"
+          alt="Company logo preview"
+          width="64"
+          height="64"
+        />
+      } @else {
+        <app-avatar
+          class="company-form__logo"
+          [name]="logoSeed()"
+          [seed]="logoSeed()"
+          [size]="64"
+          shape="square"
+        />
+      }
+      <div class="company-form__logo-info">
+        <p class="company-form__logo-title">Company logo</p>
+        <p class="company-form__logo-hint">Generated from the name, or upload your own</p>
+        <button mat-stroked-button type="button" (click)="fileInput.click()">Upload image</button>
+        <input
+          #fileInput
+          type="file"
+          accept="image/*"
+          hidden
+          aria-hidden="true"
+          (change)="onUpload($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Name -->
     <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
+      <mat-label>Company name</mat-label>
       <input matInput type="text" autocomplete="off" [formField]="companyForm.company_name" />
       @if (nameError(); as msg) {
         <mat-error>{{ msg }}</mat-error>
       }
     </mat-form-field>
 
+    <!-- Business type -->
     <mat-form-field appearance="outline">
-      <mat-label>Type of company</mat-label>
+      <mat-label>Business type</mat-label>
       <mat-select [formField]="companyForm.company_type">
         @for (option of typeOptions; track option.value) {
           <mat-option [value]="option.value">{{ option.label }}</mat-option>
@@ -28,40 +63,9 @@
       }
     </mat-form-field>
 
+    <!-- About -->
     <mat-form-field appearance="outline">
-      <mat-label>Email address</mat-label>
-      <input matInput type="email" autocomplete="off" [formField]="companyForm.email" />
-      @if (emailError(); as msg) {
-        <mat-error>{{ msg }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Contact number</mat-label>
-      <input matInput type="tel" autocomplete="off" [formField]="companyForm.contact_number" />
-      @if (contactError(); as msg) {
-        <mat-error>{{ msg }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Avatar URL</mat-label>
-      <input matInput type="url" autocomplete="off" [formField]="companyForm.avatar" />
-      @if (avatarError(); as msg) {
-        <mat-error>{{ msg }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Address</mat-label>
-      <textarea matInput rows="2" autocomplete="off" [formField]="companyForm.address"></textarea>
-      @if (addressError(); as msg) {
-        <mat-error>{{ msg }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Description</mat-label>
+      <mat-label>About</mat-label>
       <textarea
         matInput
         rows="3"
@@ -70,8 +74,43 @@
       ></textarea>
       @if (descriptionError(); as msg) {
         <mat-error>{{ msg }}</mat-error>
+      } @else {
+        <mat-hint>Short description of the company</mat-hint>
+      }
+      <mat-hint align="end">{{ descriptionLength() }}/{{ descriptionMax }}</mat-hint>
+    </mat-form-field>
+
+    <!-- Details -->
+    <h3 class="company-form__section">Details</h3>
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="companyForm.address" />
+      @if (addressError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      } @else {
+        <mat-hint>City, region, or full address</mat-hint>
       }
     </mat-form-field>
+
+    <!-- Primary contact -->
+    <h3 class="company-form__section">Primary contact</h3>
+    <div class="company-form__row">
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput type="tel" autocomplete="off" [formField]="companyForm.contact_number" />
+        @if (contactError(); as msg) {
+          <mat-error>{{ msg }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contact email</mat-label>
+        <input matInput type="email" autocomplete="off" [formField]="companyForm.email" />
+        @if (emailError(); as msg) {
+          <mat-error>{{ msg }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
@@ -81,7 +120,7 @@
         <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
         <span>Saving...</span>
       } @else {
-        <span>{{ isEdit ? 'Save changes' : 'Add company' }}</span>
+        <span>{{ isEdit ? 'Save changes' : 'Create Company' }}</span>
       }
     </button>
   </mat-dialog-actions>

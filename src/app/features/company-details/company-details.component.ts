@@ -1,21 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDialog } from '@angular/material/dialog';
 import { injectDispatch } from '@ngrx/signals/events';
-import { COMPANY_TYPE_LABELS, CompanyGet } from '../../core/models/company.model';
-import { AvatarComponent } from '../../core/components/avatar/avatar.component';
+import { CompanyGet } from '../../core/models/company.model';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -25,7 +17,9 @@ import { CompanyDetailsStore } from '../../stores/company-details/company-detail
 import { companyDetailsEvents } from '../../stores/company-details/company-details.events';
 import { companiesEvents } from '../../stores/companies/companies.events';
 import { CompanyFormComponent } from '../companies/company-form/company-form.component';
-import { JOB_STATUS_LABELS, MOCK_COMPANY_JOBS } from './company-jobs.mock';
+import { CompanyProfileComponent } from './company-profile/company-profile.component';
+import { CompanyJobsComponent } from './company-jobs/company-jobs.component';
+import { MOCK_COMPANY_JOBS } from './company-jobs.mock';
 
 @Component({
   selector: 'app-company-details',
@@ -33,9 +27,10 @@ import { JOB_STATUS_LABELS, MOCK_COMPANY_JOBS } from './company-jobs.mock';
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
     MatProgressSpinnerModule,
-    AvatarComponent,
+    MatSidenavModule,
+    CompanyProfileComponent,
+    CompanyJobsComponent,
   ],
   templateUrl: './company-details.component.html',
   styleUrl: './company-details.component.scss',
@@ -52,30 +47,9 @@ export class CompanyDetailsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly jobs = MOCK_COMPANY_JOBS.map((job) => ({
-    ...job,
-    statusLabel: JOB_STATUS_LABELS[job.status],
-  }));
-  protected readonly displayedColumns = [
-    'title',
-    'description',
-    'location',
-    'vacancies',
-    'status',
-  ] as const;
-
-  protected readonly typeLabel = computed(() => {
-    const company = this.store.company();
-    return company ? COMPANY_TYPE_LABELS[company.company_type] : '';
-  });
-
-  /** Open roles and total applicants are derived from the mock job list. */
-  protected readonly openRoles = computed(
-    () => this.jobs.filter((job) => job.status === 'open').length,
-  );
-  protected readonly totalApplied = computed(() =>
-    this.jobs.reduce((sum, job) => sum + job.applicants, 0),
-  );
+  /** Headline stats for the profile panel, derived from the mock job list. */
+  protected readonly openRoles = MOCK_COMPANY_JOBS.filter((job) => job.status === 'open').length;
+  protected readonly totalApplied = MOCK_COMPANY_JOBS.reduce((sum, job) => sum + job.applicants, 0);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

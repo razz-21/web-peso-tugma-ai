@@ -1,0 +1,85 @@
+<div class="company-profile__head">
+  @if (company().avatar) {
+    <img
+      class="company-profile__logo"
+      [src]="company().avatar"
+      [alt]="company().company_name + ' logo'"
+      width="80"
+      height="80"
+    />
+  } @else {
+    <app-avatar
+      class="company-profile__logo"
+      [name]="company().company_name"
+      [seed]="company().id"
+      [size]="80"
+      shape="square"
+    />
+  }
+
+  <div class="company-profile__heading">
+    <h1 class="company-profile__name">{{ company().company_name }}</h1>
+    <span class="company-profile__type">{{ typeLabel() }}</span>
+  </div>
+</div>
+
+<div class="company-profile__actions">
+  <button
+    mat-flat-button
+    type="button"
+    class="company-profile__edit"
+    (click)="edit.emit(company())"
+  >
+    <mat-icon>edit</mat-icon>
+    Edit
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    [attr.aria-label]="'Delete ' + company().company_name"
+    (click)="delete.emit(company())"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
+
+<div class="company-profile__stats">
+  <div class="company-profile__stat">
+    <span class="company-profile__stat-value">{{ openRoles() }}</span>
+    <span class="company-profile__stat-label">Open roles</span>
+  </div>
+  <div class="company-profile__stat">
+    <span class="company-profile__stat-value">{{ applicants() }}</span>
+    <span class="company-profile__stat-label">Applicants</span>
+  </div>
+</div>
+
+<hr class="company-profile__divider" />
+
+<div class="company-profile__section">
+  <h2 class="company-profile__section-title">About</h2>
+  <p class="company-profile__about">{{ company().description || 'No description provided.' }}</p>
+</div>
+
+<hr class="company-profile__divider" />
+
+<div class="company-profile__section">
+  <h2 class="company-profile__section-title">Details</h2>
+  <dl class="company-profile__list">
+    <div class="company-profile__list-row">
+      <dt>Address</dt>
+      <dd>{{ company().address || '—' }}</dd>
+    </div>
+    <div class="company-profile__list-row">
+      <dt>Phone</dt>
+      <dd>{{ company().contact_number || '—' }}</dd>
+    </div>
+  </dl>
+</div>
+
+<hr class="company-profile__divider" />
+
+<div class="company-profile__section">
+  <h2 class="company-profile__section-title">Contact</h2>
+  <p class="company-profile__about">No contact</p>
+</div>
