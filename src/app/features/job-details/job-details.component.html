@@ -90,15 +90,13 @@
         <span class="job-details__stat-value">{{ job.no_of_vacancies }} open</span>
       </div>
 
-      @if (job.minimum_education_attainment) {
-        <div class="job-details__card job-details__stat">
-          <span class="job-details__stat-label">
-            <mat-icon aria-hidden="true">school</mat-icon>
-            Education
-          </span>
-          <span class="job-details__stat-value">{{ job.minimum_education_attainment }}</span>
-        </div>
-      }
+      <div class="job-details__card job-details__stat">
+        <span class="job-details__stat-label">
+          <mat-icon aria-hidden="true">calendar_today</mat-icon>
+          Created at
+        </span>
+        <span class="job-details__stat-value">{{ job.created_at | date: 'MMM d, y h:mma' }}</span>
+      </div>
 
       <div class="job-details__card job-details__stat">
         <span class="job-details__stat-label">
@@ -138,20 +136,6 @@
             <p class="job-details__body">{{ job.experience_required }}</p>
           </div>
         }
-
-        @if (job.skills_required.length) {
-          <div class="job-details__card job-details__section">
-            <h3 class="job-details__section-title">
-              <mat-icon aria-hidden="true">handyman</mat-icon>
-              Skills required
-            </h3>
-            <ul class="job-details__skills" aria-label="Skills required">
-              @for (skill of job.skills_required; track skill) {
-                <li class="job-details__skill">{{ skill }}</li>
-              }
-            </ul>
-          </div>
-        }
       </div>
 
       <aside class="job-details__sidebar">
@@ -184,31 +168,19 @@
           </div>
         }
 
-        <div class="job-details__card job-details__side">
-          <h3 class="job-details__side-title">Job overview</h3>
-          <dl class="job-details__overview">
-            <div class="job-details__overview-row">
-              <dt><mat-icon aria-hidden="true">tag</mat-icon> Job ID</dt>
-              <dd>#{{ job.id.slice(0, 8) }}</dd>
-            </div>
-            <div class="job-details__overview-row">
-              <dt><mat-icon aria-hidden="true">toggle_on</mat-icon> Status</dt>
-              <dd>{{ statusLabels[job.status] }}</dd>
-            </div>
-            <div class="job-details__overview-row">
-              <dt><mat-icon aria-hidden="true">groups</mat-icon> Vacancies</dt>
-              <dd>{{ job.no_of_vacancies }}</dd>
-            </div>
-            <div class="job-details__overview-row">
-              <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Posted</dt>
-              <dd>{{ job.created_at | date: 'MMM d, y' }}</dd>
-            </div>
-            <div class="job-details__overview-row">
-              <dt><mat-icon aria-hidden="true">schedule</mat-icon> Updated</dt>
-              <dd>{{ job.updated_at | date: 'MMM d, y' }}</dd>
-            </div>
-          </dl>
-        </div>
+        @if (job.skills_required.length) {
+          <div class="job-details__card job-details__side">
+            <h3 class="job-details__side-title">
+              <mat-icon aria-hidden="true">handyman</mat-icon>
+              Skills required
+            </h3>
+            <ul class="job-details__skills" aria-label="Skills required">
+              @for (skill of job.skills_required; track skill) {
+                <li class="job-details__skill">{{ skill }}</li>
+              }
+            </ul>
+          </div>
+        }
 
         @if (job.status === 'active') {
           <div class="job-details__card job-details__hiring">
