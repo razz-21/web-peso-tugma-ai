@@ -96,6 +96,8 @@
         </mat-select>
         @if (companyError(); as msg) {
           <mat-error>{{ msg }}</mat-error>
+        } @else if (companyLocked) {
+          <mat-hint>This job will be posted under the selected company</mat-hint>
         } @else {
           <mat-hint>Choose which company this job is posted under</mat-hint>
         }
@@ -127,6 +129,40 @@
 
       <div class="job-form__row">
         <mat-form-field appearance="outline">
+          <mat-label>Age range</mat-label>
+          <input
+            matInput
+            type="text"
+            autocomplete="off"
+            placeholder="e.g. 18-25"
+            [formField]="jobForm.age_range"
+          />
+          <mat-hint>Optional preferred age range</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sex</mat-label>
+          <mat-select [formField]="jobForm.sex">
+            <mat-option [value]="''">Not specified</mat-option>
+            @for (option of sexOptions; track option) {
+              <mat-option [value]="option">{{ sexLabels[option] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Civil status</mat-label>
+        <mat-select [formField]="jobForm.civil_status" multiple>
+          @for (option of civilStatusOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Select all that apply</mat-hint>
+      </mat-form-field>
+
+      <div class="job-form__row">
+        <mat-form-field appearance="outline">
           <mat-label>No. of vacancies</mat-label>
           <input matInput type="number" autocomplete="off" [formField]="jobForm.no_of_vacancies" />
           @if (vacanciesError(); as msg) {
@@ -150,12 +186,12 @@
       <h3 class="job-form__section">Requirements</h3>
       <mat-form-field appearance="outline">
         <mat-label>Minimum education attainment</mat-label>
-        <mat-select [formField]="jobForm.minimum_education_attainment">
-          <mat-option [value]="''">Not specified</mat-option>
+        <mat-select [formField]="jobForm.minimum_education_attainment" multiple>
           @for (option of educationOptions; track option) {
             <mat-option [value]="option">{{ option }}</mat-option>
           }
         </mat-select>
+        <mat-hint>Select all that apply</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

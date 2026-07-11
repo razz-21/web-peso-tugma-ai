@@ -13,7 +13,7 @@ import { jobDetailsRoute } from '../../core/constants/routes.constant';
 import { JobsStore } from '../../stores/jobs/jobs.store';
 import { jobsEvents } from '../../stores/jobs/jobs.events';
 import { JobsTableComponent } from './jobs-table/jobs-table.component';
-import { JobFormComponent } from './job-form/job-form.component';
+import { JobFormComponent, JobFormData } from './job-form/job-form.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -63,7 +63,7 @@ export class JobListingsComponent implements OnInit {
   }
 
   protected onAddJob(): void {
-    this.dialog.open<JobFormComponent, JobGet | null, JobGet>(JobFormComponent, {
+    this.dialog.open<JobFormComponent, JobFormData, JobGet>(JobFormComponent, {
       width: '100vw',
       maxWidth: '100vw',
       height: '100vh',
@@ -71,12 +71,12 @@ export class JobListingsComponent implements OnInit {
       panelClass: 'job-form-dialog',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
-      data: null,
+      data: {},
     });
   }
 
   protected onEdit(job: JobGet): void {
-    this.dialog.open<JobFormComponent, JobGet, JobGet>(JobFormComponent, {
+    this.dialog.open<JobFormComponent, JobFormData, JobGet>(JobFormComponent, {
       width: '100vw',
       maxWidth: '100vw',
       height: '100vh',
@@ -84,7 +84,7 @@ export class JobListingsComponent implements OnInit {
       panelClass: 'job-form-dialog',
       autoFocus: 'first-tabbable',
       restoreFocus: true,
-      data: job,
+      data: { job },
     });
   }
 

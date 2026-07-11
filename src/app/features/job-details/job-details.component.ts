@@ -25,7 +25,10 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
-import { JobFormComponent } from '../../features/job-listings/job-form/job-form.component';
+import {
+  JobFormComponent,
+  JobFormData,
+} from '../../features/job-listings/job-form/job-form.component';
 
 @Component({
   selector: 'app-job-details',
@@ -111,7 +114,7 @@ export class JobDetailsComponent implements OnInit {
 
   protected onEdit(job: JobGet): void {
     this.dialog
-      .open<JobFormComponent, JobGet, JobGet>(JobFormComponent, {
+      .open<JobFormComponent, JobFormData, JobGet>(JobFormComponent, {
         width: '100vw',
         maxWidth: '100vw',
         height: '100vh',
@@ -119,7 +122,7 @@ export class JobDetailsComponent implements OnInit {
         panelClass: 'job-form-dialog',
         autoFocus: 'first-tabbable',
         restoreFocus: true,
-        data: job,
+        data: { job },
       })
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))

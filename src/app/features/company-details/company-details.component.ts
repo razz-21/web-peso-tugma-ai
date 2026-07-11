@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +15,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDialog } from '@angular/material/dialog';
 import { injectDispatch } from '@ngrx/signals/events';
 import { CompanyGet } from '../../core/models/company.model';
+import { JobGet } from '../../core/models/job.model';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -19,7 +27,7 @@ import { companiesEvents } from '../../stores/companies/companies.events';
 import { CompanyFormComponent } from '../companies/company-form/company-form.component';
 import { CompanyProfileComponent } from './company-profile/company-profile.component';
 import { CompanyJobsComponent } from './company-jobs/company-jobs.component';
-import { MOCK_COMPANY_JOBS } from './company-jobs.mock';
+import { CompanyJobDetailsComponent } from './company-job-details/company-job-details.component';
 
 @Component({
   selector: 'app-company-details',
@@ -31,6 +39,7 @@ import { MOCK_COMPANY_JOBS } from './company-jobs.mock';
     MatSidenavModule,
     CompanyProfileComponent,
     CompanyJobsComponent,
+    CompanyJobDetailsComponent,
   ],
   templateUrl: './company-details.component.html',
   styleUrl: './company-details.component.scss',
@@ -47,9 +56,12 @@ export class CompanyDetailsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** Headline stats for the profile panel, derived from the mock job list. */
-  protected readonly openRoles = MOCK_COMPANY_JOBS.filter((job) => job.status === 'open').length;
-  protected readonly totalApplied = MOCK_COMPANY_JOBS.reduce((sum, job) => sum + job.applicants, 0);
+  /** Job shown in the details drawer. */
+  protected readonly selectedJob = signal<JobGet | null>(null);
+
+  protected onViewJob(job: JobGet): void {
+    this.selectedJob.set(job);
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -59,17 +71,15 @@ export class CompanyDetailsComponent implements OnInit {
   }
 
   protected onEdit(company: CompanyGet): void {
-    this.dialog
-      .open<CompanyFormComponent, CompanyGet, CompanyGet>(CompanyFormComponent, {
-        width: '520px',
-        maxWidth: '95vw',
-        autoFocus: 'first-tabbable',
-        restoreFocus: true,
-        data: company,
-      })
-      .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.dispatch.loadCompanyDetails({ id: company.id }));
+    // The store applies the update directly via companiesEvents.updateCompanySuccess,
+    // so there's nothing to do on close.
+    this.dialog.open<CompanyFormComponent, CompanyGet, CompanyGet>(CompanyFormComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      data: company,
+    });
   }
 
   protected onDelete(company: CompanyGet): void {

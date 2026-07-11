@@ -12,7 +12,9 @@
       </button>
     </div>
     <div class="company-details__drawer-body">
-      <p>Job Details Panel</p>
+      @if (selectedJob(); as job) {
+        <app-company-job-details [job]="job" />
+      }
     </div>
   </mat-drawer>
 
@@ -31,12 +33,10 @@
       <div class="company-details__layout">
         <app-company-profile
           [company]="company"
-          [openRoles]="openRoles"
-          [applicants]="totalApplied"
           (edit)="onEdit($event)"
           (delete)="onDelete($event)"
         />
-        <app-company-jobs (viewJob)="jobDrawer.open()" />
+        <app-company-jobs [company]="company" (viewJob)="onViewJob($event); jobDrawer.open()" />
       </div>
     }
   </mat-drawer-content>

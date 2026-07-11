@@ -69,25 +69,14 @@
     font-size: 0.8125rem;
   }
 
-  &__job-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--mat-sys-on-surface);
+  &__delete {
+    color: var(--mat-sys-error);
   }
 
-  &__job-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--mat-sys-outline);
-  }
-
-  &__job-status--open &__job-dot {
-    background: #1f9d55;
-  }
-
-  &__job-status--screening &__job-dot {
-    background: #d9a441;
+  &__empty-hint {
+    margin: 0;
+    max-width: 22rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
   }
 }

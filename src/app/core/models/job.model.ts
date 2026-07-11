@@ -9,6 +9,10 @@ export const JobStatusSchema = z.enum(['active', 'closed']);
 
 export const JOB_STATUSES = JobStatusSchema.options;
 
+export const SexSchema = z.enum(['Female', 'Male', 'Female/Male']);
+
+export const SEXES = SexSchema.options;
+
 /** Company summary embedded in job read responses (resolves the FK). */
 export const JobCompanySchema = z.object({
   id: z.uuid(),
@@ -20,11 +24,14 @@ export const JobCompanySchema = z.object({
 const JobFieldsSchema = z.object({
   title: z.string().min(1).max(JOB_TITLE_MAX),
   description: z.string().nullable(),
-  minimum_education_attainment: z.string().nullable(),
+  minimum_education_attainment: z.array(z.string()),
   experience_required: z.string().nullable(),
   skills_required: z.array(z.string()),
   no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
   salary_per_month: z.number().int().nonnegative().nullable(),
+  age_range: z.string().nullable(),
+  sex: SexSchema.nullable(),
+  civil_status: z.array(z.string()),
   status: JobStatusSchema,
 });
 
@@ -61,6 +68,7 @@ export interface ListJobsParams {
 }
 
 export type JobStatus = z.infer<typeof JobStatusSchema>;
+export type Sex = z.infer<typeof SexSchema>;
 export type JobCompany = z.infer<typeof JobCompanySchema>;
 export type Job = z.infer<typeof JobSchema>;
 export type JobGet = z.infer<typeof JobGetSchema>;
@@ -73,12 +81,28 @@ export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   closed: 'Closed',
 };
 
-/** Preset options for the free-text `minimum_education_attainment` field. */
+export const SEX_LABELS: Record<Sex, string> = {
+  Female: 'Female',
+  Male: 'Male',
+  'Female/Male': 'Female/Male',
+};
+
+/** Preset options for the multi-select `civil_status` field. */
+export const CIVIL_STATUS_OPTIONS = [
+  'Single',
+  'Married',
+  'Widowed',
+  'Separated',
+  'Divorced',
+] as const;
+
+/** Preset options for the multi-select `minimum_education_attainment` field. */
 export const MINIMUM_EDUCATION_OPTIONS = [
   'No formal education required',
   'Elementary',
   'Junior High School',
   'Senior High School',
+  'High School',
   'Vocational / Technical',
   'College Undergraduate',
   "Bachelor's Degree",

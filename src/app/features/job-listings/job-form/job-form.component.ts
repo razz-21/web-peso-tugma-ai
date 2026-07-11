@@ -8,24 +8,39 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { FormField, form, max, maxLength, min, required } from '@angular/forms/signals';
+import { FormField, disabled, form, max, maxLength, min, required } from '@angular/forms/signals';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap } from 'rxjs';
 import {
+  CIVIL_STATUS_OPTIONS,
   JOB_TITLE_MAX,
   JOB_VACANCIES_MAX,
   MINIMUM_EDUCATION_OPTIONS,
+  SEXES,
+  SEX_LABELS,
   JobGet,
   JobPatch,
   JobPost,
   JobStatus,
+  Sex,
 } from '../../../core/models/job.model';
 import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
 import { CompaniesService } from '../../../core/services/companies.service';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { jobsEvents } from '../../../stores/jobs/jobs.events';
 import { JobsStore } from '../../../stores/jobs/jobs.store';
+
+/** Dialog input for the job form. */
+export interface JobFormData {
+  /** Existing job to edit; omit or null to create a new one. */
+  job?: JobGet | null;
+  /**
+   * Preselect and lock the company (create-under-company flow). When set, the
+   * company select is pre-filled with this company and disabled.
+   */
+  lockedCompany?: CompanyGet | null;
+}
 
 /** Character limit shown under the description field. */
 const DESCRIPTION_MAX = 2000;
@@ -37,9 +52,12 @@ type JobFormValue = {
   company_id: string;
   no_of_vacancies: number;
   salary_per_month: number | null;
-  minimum_education_attainment: string;
+  minimum_education_attainment: string[];
   experience_required: string;
   description: string;
+  age_range: string;
+  sex: Sex | '';
+  civil_status: string[];
 };
 
 const INITIAL_VALUE: JobFormValue = {
@@ -47,9 +65,12 @@ const INITIAL_VALUE: JobFormValue = {
   company_id: '',
   no_of_vacancies: 1,
   salary_per_month: null,
-  minimum_education_attainment: '',
+  minimum_education_attainment: [],
   experience_required: '',
   description: '',
+  age_range: '',
+  sex: '',
+  civil_status: [],
 };
 
 @Component({
@@ -75,8 +96,14 @@ export class JobFormComponent {
   private readonly dialogRef = inject<MatDialogRef<JobFormComponent, JobGet>>(MatDialogRef);
   private readonly events = inject(Events);
   private readonly companiesService = inject(CompaniesService);
-  private readonly job = inject<JobGet | null>(MAT_DIALOG_DATA);
+  private readonly dialogData = inject<JobFormData | null>(MAT_DIALOG_DATA);
   protected readonly jobsStore = inject(JobsStore);
+
+  private readonly job = this.dialogData?.job ?? null;
+
+  /** When set (create-under-company flow), the company is preselected and locked. */
+  private readonly lockedCompany = this.dialogData?.lockedCompany ?? null;
+  protected readonly companyLocked = this.lockedCompany !== null;
 
   protected readonly isEdit = this.job !== null;
 
@@ -84,9 +111,15 @@ export class JobFormComponent {
   private readonly status: JobStatus = this.job?.status ?? 'active';
 
   protected readonly educationOptions = MINIMUM_EDUCATION_OPTIONS;
+  protected readonly sexOptions = SEXES;
+  protected readonly sexLabels = SEX_LABELS;
+  protected readonly civilStatusOptions = CIVIL_STATUS_OPTIONS;
 
-  /** Employer options for the company_id select, loaded on open. */
-  protected readonly companies = signal<CompanyGet[]>([]);
+  /** Employer options for the company_id select, loaded on open. Seeded with the
+   * locked company so its rich trigger renders before the full list resolves. */
+  protected readonly companies = signal<CompanyGet[]>(
+    this.lockedCompany ? [this.lockedCompany] : [],
+  );
 
   /** Free-text filter applied to the company dropdown. */
   protected readonly companySearch = signal('');
@@ -107,11 +140,14 @@ export class JobFormComponent {
           company_id: this.job.company?.id ?? '',
           no_of_vacancies: this.job.no_of_vacancies,
           salary_per_month: this.job.salary_per_month,
-          minimum_education_attainment: this.job.minimum_education_attainment ?? '',
+          minimum_education_attainment: this.job.minimum_education_attainment ?? [],
           experience_required: this.job.experience_required ?? '',
           description: this.job.description ?? '',
+          age_range: this.job.age_range ?? '',
+          sex: this.job.sex ?? '',
+          civil_status: this.job.civil_status ?? [],
         }
-      : INITIAL_VALUE,
+      : { ...INITIAL_VALUE, company_id: this.lockedCompany?.id ?? '' },
   );
 
   /** The company backing the current selection, for the rich select trigger. */
@@ -141,6 +177,7 @@ export class JobFormComponent {
     });
 
     required(p.company_id, { message: 'Company is required' });
+    disabled(p.company_id, () => this.companyLocked);
 
     required(p.no_of_vacancies, { message: 'Vacancies is required' });
     min(p.no_of_vacancies, 1, { message: 'At least 1 vacancy' });
@@ -179,9 +216,9 @@ export class JobFormComponent {
     }
 
     const value = this.jobForm().value();
-    const education = value.minimum_education_attainment.trim();
     const experience = value.experience_required.trim();
     const description = value.description.trim();
+    const ageRange = value.age_range.trim();
 
     const fields = {
       title: value.title.trim(),
@@ -189,10 +226,13 @@ export class JobFormComponent {
       status: this.status,
       no_of_vacancies: value.no_of_vacancies,
       salary_per_month: value.salary_per_month ?? null,
-      minimum_education_attainment: education || null,
+      minimum_education_attainment: value.minimum_education_attainment,
       experience_required: experience || null,
       skills_required: this.skills(),
       description: description || null,
+      age_range: ageRange || null,
+      sex: value.sex || null,
+      civil_status: value.civil_status,
     };
 
     if (this.job) {

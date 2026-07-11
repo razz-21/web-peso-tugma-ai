@@ -201,6 +201,13 @@
     white-space: pre-line;
   }
 
+  // Muted placeholder for fields with no value ("Not Indicated").
+  &__na {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    font-weight: 400;
+  }
+
   &__skills {
     display: flex;
     flex-wrap: wrap;
@@ -260,23 +267,28 @@
     border-radius: 999px;
   }
 
-  // --- Actively hiring promo ---
-  &__hiring {
-    background: var(--mat-sys-primary-container);
-    border-color: transparent;
-  }
-
-  &__hiring-title {
+  // --- Candidate preferences meta list ---
+  &__meta {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--mat-sys-on-primary-container);
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
   }
 
-  &__hiring .job-details__body {
-    color: var(--mat-sys-on-primary-container);
+  &__meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__meta-label {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__meta-value {
+    margin: 0;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
   }
 }

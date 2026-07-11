@@ -72,15 +72,17 @@
 
     <!-- Stat cards -->
     <div class="job-details__stats">
-      @if (job.salary_per_month != null) {
-        <div class="job-details__card job-details__stat">
-          <span class="job-details__stat-label">
-            <mat-icon aria-hidden="true">payments</mat-icon>
-            Salary / month
-          </span>
+      <div class="job-details__card job-details__stat">
+        <span class="job-details__stat-label">
+          <mat-icon aria-hidden="true">payments</mat-icon>
+          Salary / month
+        </span>
+        @if (job.salary_per_month != null) {
           <span class="job-details__stat-value">₱{{ job.salary_per_month | number }}</span>
-        </div>
-      }
+        } @else {
+          <span class="job-details__stat-value job-details__na">Not Indicated</span>
+        }
+      </div>
 
       <div class="job-details__card job-details__stat">
         <span class="job-details__stat-label">
@@ -110,32 +112,42 @@
     <!-- Two-column layout -->
     <div class="job-details__layout">
       <div class="job-details__main">
-        @if (job.description) {
-          <div class="job-details__card job-details__section">
-            <h3 class="job-details__section-title">About the role</h3>
+        <div class="job-details__card job-details__section">
+          <h3 class="job-details__section-title">About the role</h3>
+          @if (job.description) {
             <p class="job-details__body">{{ job.description }}</p>
-          </div>
-        }
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
 
-        @if (job.minimum_education_attainment) {
-          <div class="job-details__card job-details__section">
-            <h3 class="job-details__section-title">
-              <mat-icon aria-hidden="true">school</mat-icon>
-              Minimum education
-            </h3>
-            <p class="job-details__body">{{ job.minimum_education_attainment }}</p>
-          </div>
-        }
+        <div class="job-details__card job-details__section">
+          <h3 class="job-details__section-title">
+            <mat-icon aria-hidden="true">school</mat-icon>
+            Minimum education
+          </h3>
+          @if (job.minimum_education_attainment.length) {
+            <ul class="job-details__skills" aria-label="Minimum education attainment">
+              @for (education of job.minimum_education_attainment; track education) {
+                <li class="job-details__skill">{{ education }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
 
-        @if (job.experience_required) {
-          <div class="job-details__card job-details__section">
-            <h3 class="job-details__section-title">
-              <mat-icon aria-hidden="true">work_history</mat-icon>
-              Experience required
-            </h3>
+        <div class="job-details__card job-details__section">
+          <h3 class="job-details__section-title">
+            <mat-icon aria-hidden="true">work_history</mat-icon>
+            Experience required
+          </h3>
+          @if (job.experience_required) {
             <p class="job-details__body">{{ job.experience_required }}</p>
-          </div>
-        }
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
       </div>
 
       <aside class="job-details__sidebar">
@@ -168,32 +180,60 @@
           </div>
         }
 
-        @if (job.skills_required.length) {
-          <div class="job-details__card job-details__side">
-            <h3 class="job-details__side-title">
-              <mat-icon aria-hidden="true">handyman</mat-icon>
-              Skills required
-            </h3>
+        <div class="job-details__card job-details__side">
+          <h3 class="job-details__side-title">
+            <mat-icon aria-hidden="true">handyman</mat-icon>
+            Skills required
+          </h3>
+          @if (job.skills_required.length) {
             <ul class="job-details__skills" aria-label="Skills required">
               @for (skill of job.skills_required; track skill) {
                 <li class="job-details__skill">{{ skill }}</li>
               }
             </ul>
-          </div>
-        }
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
 
-        @if (job.status === 'active') {
-          <div class="job-details__card job-details__hiring">
-            <h3 class="job-details__hiring-title">
-              <mat-icon aria-hidden="true">verified</mat-icon>
-              Actively hiring
-            </h3>
-            <p class="job-details__body">
-              This role is open with {{ job.no_of_vacancies }}
-              {{ job.no_of_vacancies === 1 ? 'vacancy' : 'vacancies' }}.
-            </p>
-          </div>
-        }
+        <div class="job-details__card job-details__side">
+          <h3 class="job-details__side-title">
+            <mat-icon aria-hidden="true">badge</mat-icon>
+            Candidate preferences
+          </h3>
+          <dl class="job-details__meta">
+            <div class="job-details__meta-row">
+              <dt class="job-details__meta-label">Age range</dt>
+              @if (job.age_range) {
+                <dd class="job-details__meta-value">{{ job.age_range }}</dd>
+              } @else {
+                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
+              }
+            </div>
+            <div class="job-details__meta-row">
+              <dt class="job-details__meta-label">Sex</dt>
+              @if (job.sex) {
+                <dd class="job-details__meta-value">{{ job.sex }}</dd>
+              } @else {
+                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
+              }
+            </div>
+            <div class="job-details__meta-row">
+              <dt class="job-details__meta-label">Civil status</dt>
+              @if (job.civil_status.length) {
+                <dd class="job-details__meta-value">
+                  <ul class="job-details__skills" aria-label="Civil status">
+                    @for (civilStatus of job.civil_status; track civilStatus) {
+                      <li class="job-details__skill">{{ civilStatus }}</li>
+                    }
+                  </ul>
+                </dd>
+              } @else {
+                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
+              }
+            </div>
+          </dl>
+        </div>
       </aside>
     </div>
   }

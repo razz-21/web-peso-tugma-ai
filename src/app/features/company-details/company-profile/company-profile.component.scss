@@ -55,32 +55,6 @@
     flex: 1;
   }
 
-  &__stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-
-  &__stat {
-    display: flex;
-    flex-direction: column;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--mat-sys-outline-variant);
-    border-radius: 0.75rem;
-    background: var(--mat-sys-surface);
-  }
-
-  &__stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--mat-sys-on-surface);
-  }
-
-  &__stat-label {
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 0.875rem;
-  }
-
   &__section {
     display: flex;
     flex-direction: column;

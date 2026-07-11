@@ -1,0 +1,137 @@
+@let jobData = job();
+
+<div class="job-panel">
+  <!-- Header -->
+  <div class="job-panel__header">
+    <h3 class="job-panel__title">{{ jobData.title }}</h3>
+    <span
+      class="job-panel__badge"
+      [class.job-panel__badge--active]="jobData.status === 'active'"
+      [class.job-panel__badge--closed]="jobData.status === 'closed'"
+    >
+      <mat-icon aria-hidden="true">{{ jobData.status === 'active' ? 'bolt' : 'lock' }}</mat-icon>
+      {{ statusLabels[jobData.status] }}
+    </span>
+  </div>
+
+  <!-- Quick facts -->
+  <dl class="job-panel__facts">
+    <div class="job-panel__fact">
+      <dt><mat-icon aria-hidden="true">payments</mat-icon> Salary / month</dt>
+      @if (jobData.salary_per_month != null) {
+        <dd class="job-panel__fact-value--salary">₱{{ jobData.salary_per_month | number }}</dd>
+      } @else {
+        <dd class="job-panel__na">Not Indicated</dd>
+      }
+    </div>
+    <div class="job-panel__fact">
+      <dt><mat-icon aria-hidden="true">groups</mat-icon> Vacancies</dt>
+      <dd>{{ jobData.no_of_vacancies }}</dd>
+    </div>
+    <div class="job-panel__fact">
+      <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Created at</dt>
+      <dd>{{ jobData.created_at | date: 'MMM d, y' }}</dd>
+    </div>
+    <div class="job-panel__fact">
+      <dt><mat-icon aria-hidden="true">update</mat-icon> Updated at</dt>
+      <dd>{{ jobData.updated_at | date: 'MMM d, y' }}</dd>
+    </div>
+  </dl>
+
+  <!-- About the role -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">About the role</h4>
+    @if (jobData.description) {
+      <p class="job-panel__body">{{ jobData.description }}</p>
+    } @else {
+      <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+  </section>
+
+  <!-- Minimum education -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">
+      <mat-icon aria-hidden="true">school</mat-icon>
+      Minimum education
+    </h4>
+    @if (jobData.minimum_education_attainment.length) {
+      <ul class="job-panel__chips" aria-label="Minimum education attainment">
+        @for (education of jobData.minimum_education_attainment; track education) {
+          <li class="job-panel__chip">{{ education }}</li>
+        }
+      </ul>
+    } @else {
+      <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+  </section>
+
+  <!-- Experience required -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">
+      <mat-icon aria-hidden="true">work_history</mat-icon>
+      Experience required
+    </h4>
+    @if (jobData.experience_required) {
+      <p class="job-panel__body">{{ jobData.experience_required }}</p>
+    } @else {
+      <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+  </section>
+
+  <!-- Skills required -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">
+      <mat-icon aria-hidden="true">handyman</mat-icon>
+      Skills required
+    </h4>
+    @if (jobData.skills_required.length) {
+      <ul class="job-panel__chips" aria-label="Skills required">
+        @for (skill of jobData.skills_required; track skill) {
+          <li class="job-panel__chip">{{ skill }}</li>
+        }
+      </ul>
+    } @else {
+      <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+  </section>
+
+  <!-- Candidate preferences -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">
+      <mat-icon aria-hidden="true">badge</mat-icon>
+      Candidate preferences
+    </h4>
+    <dl class="job-panel__meta">
+      <div class="job-panel__meta-row">
+        <dt class="job-panel__meta-label">Age range</dt>
+        @if (jobData.age_range) {
+          <dd class="job-panel__meta-value">{{ jobData.age_range }}</dd>
+        } @else {
+          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+        }
+      </div>
+      <div class="job-panel__meta-row">
+        <dt class="job-panel__meta-label">Sex</dt>
+        @if (jobData.sex) {
+          <dd class="job-panel__meta-value">{{ jobData.sex }}</dd>
+        } @else {
+          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+        }
+      </div>
+      <div class="job-panel__meta-row">
+        <dt class="job-panel__meta-label">Civil status</dt>
+        @if (jobData.civil_status.length) {
+          <dd class="job-panel__meta-value">
+            <ul class="job-panel__chips" aria-label="Civil status">
+              @for (civilStatus of jobData.civil_status; track civilStatus) {
+                <li class="job-panel__chip">{{ civilStatus }}</li>
+              }
+            </ul>
+          </dd>
+        } @else {
+          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+        }
+      </div>
+    </dl>
+  </section>
+</div>

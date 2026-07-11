@@ -13,8 +13,6 @@ import { AvatarComponent } from '../../../core/components/avatar/avatar.componen
 })
 export class CompanyProfileComponent {
   readonly company = input.required<CompanyGet>();
-  readonly openRoles = input.required<number>();
-  readonly applicants = input.required<number>();
 
   readonly edit = output<CompanyGet>();
   readonly delete = output<CompanyGet>();
