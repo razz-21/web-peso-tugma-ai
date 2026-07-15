@@ -1,0 +1,44 @@
+<section class="applicants">
+  <header class="applicants__header">
+    <div class="applicants__heading">
+      <h1 class="applicants__title">Applicants</h1>
+      <p class="applicants__subtitle">Manage the applicants registered across the platform</p>
+    </div>
+    <button mat-flat-button type="button" class="applicants__add" (click)="onAddApplicant()">
+      <mat-icon>add</mat-icon>
+      Add applicant
+    </button>
+  </header>
+
+  <div class="applicants__filters">
+    <mat-form-field appearance="outline" class="applicants__search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        type="search"
+        placeholder="Search by name or email"
+        aria-label="Search applicants by name or email"
+        [value]="store.filter.q()"
+        (input)="onSearch($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (store.error(); as error) {
+    <p class="applicants__error" role="alert">{{ error }}</p>
+  }
+
+  <div class="applicants__card">
+    <app-applicants-table (view)="onView($event)" />
+
+    <mat-paginator
+      class="applicants__paginator"
+      [length]="store.total()"
+      [pageSize]="store.filter.pageSize()"
+      [pageIndex]="store.filter.pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      aria-label="Select page of applicants"
+      (page)="onPage($event)"
+    />
+  </div>
+</section>

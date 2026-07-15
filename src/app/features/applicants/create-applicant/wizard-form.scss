@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.wform {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wform__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem 1rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.wform__grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wform__section {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.wform__repeat {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wform__item {
+  padding: 1rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.75rem;
+}
+
+.wform__item-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.wform__remove-btn {
+  // Soft red tint derived from the red label so the background complements the
+  // text. Overridden with !important because the button's default container
+  // color is the theme primary (which resolves to green here).
+  background-color: color-mix(
+    in srgb,
+    var(--mat-sys-on-error-container) 14%,
+    var(--mat-sys-surface)
+  ) !important;
+  color: var(--mat-sys-on-error-container);
+
+  .mat-icon {
+    color: var(--mat-sys-on-error-container);
+  }
+}
+
+.wform__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-form-field {
+    flex: 1 1 auto;
+  }
+}
+
+.wform__empty {
+  margin: 0 0 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.wform__add {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.wform__chip-field {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .wform__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .wform__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

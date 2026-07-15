@@ -25,6 +25,18 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'applicants',
+        loadComponent: () =>
+          import('../applicants/applicants.component').then((m) => m.ApplicantsComponent),
+      },
+      {
+        path: 'applicants/:id',
+        loadComponent: () =>
+          import('../applicant-details/applicant-details.component').then(
+            (m) => m.ApplicantDetailsComponent,
+          ),
+      },
+      {
         path: 'job-listings',
         loadComponent: () =>
           import('../job-listings/job-listings.component').then((m) => m.JobListingsComponent),

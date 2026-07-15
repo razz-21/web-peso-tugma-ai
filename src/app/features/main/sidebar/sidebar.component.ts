@@ -49,8 +49,8 @@ export class SidebarComponent {
   protected readonly navItems: readonly NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', link: APP_ROUTES.dashboard },
     { label: 'Companies', icon: 'apartment', link: APP_ROUTES.companies },
-    { label: 'Applicants', icon: 'group', link: APP_ROUTES.applicants },
     { label: 'Job Listings', icon: 'work', link: APP_ROUTES.jobListings },
+    { label: 'Applicants', icon: 'group', link: APP_ROUTES.applicants },
     { label: 'User Management', icon: 'groups', link: APP_ROUTES.userManagement },
     { label: 'Workspaces', icon: 'computer_arrow_up', link: APP_ROUTES.workspaces },
   ];

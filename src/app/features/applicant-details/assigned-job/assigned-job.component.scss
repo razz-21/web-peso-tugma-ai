@@ -1,0 +1,300 @@
+:host {
+  display: block;
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-sizing: border-box;
+}
+
+.assigned-job {
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__code {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.85rem;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    font-weight: 700;
+
+    &--primary {
+      background: color-mix(in srgb, var(--mat-sys-primary) 35%, var(--mat-sys-surface));
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, var(--mat-sys-surface));
+  }
+
+  &__row-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__row-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    margin: 1.25rem 0 0;
+  }
+
+  &__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    dt {
+      font-size: 0.9rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__score {
+    color: var(--mat-sys-primary) !important;
+  }
+
+  &__divider {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  // --- Status timeline -----------------------------------------------------
+
+  &__stepper {
+    display: flex;
+    margin: 0.5rem 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__step {
+    position: relative;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+
+    // Connector line to the next step, centered on the dot.
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: calc(0.875rem - 1px);
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--mat-sys-outline-variant);
+      z-index: 0;
+    }
+
+    &--line-green:not(:last-child)::after {
+      background: var(--mat-sys-primary);
+    }
+
+    &--line-red:not(:last-child)::after {
+      background: var(--mat-sys-error);
+    }
+
+    &--failed &-label {
+      color: var(--mat-sys-error);
+    }
+  }
+
+  &__step-dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--mat-sys-surface-container-lowest);
+    border: 2px solid var(--mat-sys-outline);
+    box-sizing: border-box;
+
+    mat-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      font-size: 1.05rem;
+    }
+
+    .assigned-job__step--current & {
+      background: var(--mat-sys-primary-container);
+      border-color: var(--mat-sys-primary);
+    }
+
+    .assigned-job__step--done & {
+      background: var(--mat-sys-primary);
+      border-color: var(--mat-sys-primary);
+      color: var(--mat-sys-on-primary);
+    }
+
+    .assigned-job__step--failed & {
+      background: var(--mat-sys-error);
+      border-color: var(--mat-sys-error);
+      color: var(--mat-sys-on-error);
+    }
+
+    .assigned-job__step--withdrawn & {
+      background: var(--mat-sys-surface-container-highest);
+      border-color: var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__step-core {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--mat-sys-primary);
+  }
+
+  &__step-label {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__step-sub {
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Previous referrals --------------------------------------------------
+
+  &__previous-title {
+    margin: 0 0 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__previous-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__previous-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__previous-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__previous-name {
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__previous-sub {
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__status-badge {
+    flex-shrink: 0;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &--danger {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  @media (max-width: 560px) {
+    &__facts {
+      gap: 1.5rem;
+    }
+
+    &__chevron {
+      display: none;
+    }
+  }
+}

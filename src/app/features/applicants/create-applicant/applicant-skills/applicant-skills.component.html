@@ -1,0 +1,22 @@
+<div class="wform">
+  <mat-form-field appearance="outline" class="wform__chip-field">
+    <mat-label>Technical skills</mat-label>
+    <mat-chip-grid #chipGrid aria-label="Technical skills">
+      @for (skill of store.form.technical_skills().value(); track $index; let i = $index) {
+        <mat-chip-row (removed)="store.removeSkill(i)">
+          {{ skill }}
+          <button matChipRemove [attr.aria-label]="'Remove ' + skill">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+      <input
+        placeholder="Add a skill..."
+        [matChipInputFor]="chipGrid"
+        [matChipInputSeparatorKeyCodes]="separatorKeys"
+        (matChipInputTokenEnd)="add($event)"
+      />
+    </mat-chip-grid>
+    <mat-hint>Type a skill and press Enter or comma to add.</mat-hint>
+  </mat-form-field>
+</div>

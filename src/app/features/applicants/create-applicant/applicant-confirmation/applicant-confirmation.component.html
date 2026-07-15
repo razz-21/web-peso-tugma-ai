@@ -1,0 +1,11 @@
+<div class="confirm">
+  <p class="confirm__lead">Review the details below, then create the applicant.</p>
+  <dl class="confirm__list">
+    @for (row of rows(); track row.label) {
+      <div class="confirm__row">
+        <dt class="confirm__label">{{ row.label }}</dt>
+        <dd class="confirm__value">{{ row.value }}</dd>
+      </div>
+    }
+  </dl>
+</div>

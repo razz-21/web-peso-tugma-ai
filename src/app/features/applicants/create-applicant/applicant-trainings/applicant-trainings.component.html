@@ -1,0 +1,87 @@
+<div class="wform">
+  <div class="wform__repeat">
+    @if (store.form.trainings().value().length === 0) {
+      <p class="wform__empty">No trainings or certifications added yet.</p>
+    }
+    @for (item of store.form.trainings().value(); track $index; let i = $index) {
+      <div class="wform__item">
+        <div class="wform__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Training title</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.trainings[i].training_title"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Institution</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.trainings[i].institution"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Certificate received</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.trainings[i].certificate_received"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Duration start</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              [formField]="store.form.trainings[i].duration_start"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+            <mat-datepicker #startPicker />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Duration end</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endPicker"
+              [formField]="store.form.trainings[i].duration_end"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+            <mat-datepicker #endPicker />
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox
+          [checked]="store.form.trainings[i].completed().value()"
+          (change)="store.form.trainings[i].completed().value.set($event.checked)"
+        >
+          Completed
+        </mat-checkbox>
+
+        <div class="wform__item-actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="wform__remove-btn"
+            (click)="store.removeTraining(i)"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </div>
+      </div>
+    }
+    <button mat-stroked-button type="button" class="wform__add" (click)="store.addTraining()">
+      <mat-icon>add</mat-icon>
+      Add training
+    </button>
+  </div>
+</div>

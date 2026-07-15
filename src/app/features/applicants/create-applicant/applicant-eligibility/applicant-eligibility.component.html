@@ -1,0 +1,58 @@
+<div class="wform">
+  <div class="wform__repeat">
+    @if (store.form.eligibility().value().length === 0) {
+      <p class="wform__empty">No eligibilities added yet.</p>
+    }
+    @for (item of store.form.eligibility().value(); track $index; let i = $index) {
+      <div class="wform__item">
+        <div class="wform__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.eligibility[i].title"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>License number</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.eligibility[i].license_number"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Expiry date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="expiryPicker"
+              [formField]="store.form.eligibility[i].expiry_date"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="expiryPicker" />
+            <mat-datepicker #expiryPicker />
+          </mat-form-field>
+        </div>
+        <div class="wform__item-actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="wform__remove-btn"
+            (click)="store.removeEligibility(i)"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </div>
+      </div>
+    }
+    <button mat-stroked-button type="button" class="wform__add" (click)="store.addEligibility()">
+      <mat-icon>add</mat-icon>
+      Add eligibility
+    </button>
+  </div>
+</div>

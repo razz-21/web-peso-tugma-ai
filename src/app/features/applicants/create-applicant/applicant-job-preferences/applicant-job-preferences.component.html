@@ -1,0 +1,103 @@
+<div class="wform">
+  <div class="wform__grid wform__grid--two">
+    <mat-form-field appearance="outline">
+      <mat-label>Employment status</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="store.form.employment_status" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Salary expectation</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="store.form.salary_expectation" />
+    </mat-form-field>
+  </div>
+
+  <!-- Preferred occupation & industry -->
+  <h4 class="wform__section">Preferred occupation &amp; industry</h4>
+  <div class="wform__repeat">
+    @if (store.form.preferred_occupation_industry().value().length === 0) {
+      <p class="wform__empty">No preferred occupations added yet.</p>
+    }
+    @for (
+      item of store.form.preferred_occupation_industry().value();
+      track $index;
+      let i = $index
+    ) {
+      <div class="wform__item">
+        <div class="wform__grid wform__grid--two">
+          <mat-form-field appearance="outline">
+            <mat-label>Occupation</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.preferred_occupation_industry[i].occupation"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Industry</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.preferred_occupation_industry[i].industry"
+            />
+          </mat-form-field>
+        </div>
+        <div class="wform__item-actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="wform__remove-btn"
+            (click)="store.removeOccupationIndustry(i)"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </div>
+      </div>
+    }
+    <button
+      mat-stroked-button
+      type="button"
+      class="wform__add"
+      (click)="store.addOccupationIndustry()"
+    >
+      <mat-icon>add</mat-icon>
+      Add occupation
+    </button>
+  </div>
+
+  <!-- Preferred work locations -->
+  <h4 class="wform__section">Preferred work locations</h4>
+  <div class="wform__repeat">
+    @if (store.form.preferred_work_location().value().length === 0) {
+      <p class="wform__empty">No preferred locations added yet.</p>
+    }
+    @for (location of store.form.preferred_work_location().value(); track $index; let i = $index) {
+      <div class="wform__row">
+        <mat-form-field appearance="outline">
+          <mat-label>Location</mat-label>
+          <input
+            matInput
+            type="text"
+            autocomplete="off"
+            [formField]="store.form.preferred_work_location[i]"
+          />
+        </mat-form-field>
+        <button
+          mat-icon-button
+          type="button"
+          aria-label="Remove location"
+          (click)="store.removeWorkLocation(i)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+    <button mat-stroked-button type="button" class="wform__add" (click)="store.addWorkLocation()">
+      <mat-icon>add</mat-icon>
+      Add location
+    </button>
+  </div>
+</div>

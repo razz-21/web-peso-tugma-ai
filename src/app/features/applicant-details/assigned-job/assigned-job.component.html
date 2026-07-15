@@ -1,0 +1,106 @@
+<div class="assigned-job__head">
+  <h2 class="assigned-job__title">
+    <mat-icon aria-hidden="true">work</mat-icon>
+    Referred job
+  </h2>
+  <button matButton="tonal" type="button" [matMenuTriggerFor]="statusMenu">
+    <mat-icon>check_box</mat-icon>
+    Update status
+  </button>
+  <mat-menu #statusMenu="matMenu" class="assigned-job__menu">
+    @for (option of statusOptions; track option.value) {
+      <button
+        mat-menu-item
+        type="button"
+        [style.color]="option.danger ? 'var(--mat-sys-error)' : null"
+        (click)="setStatus(option.value)"
+      >
+        <mat-icon [style.color]="option.danger ? 'var(--mat-sys-error)' : null">
+          {{ option.icon }}
+        </mat-icon>
+        <span>{{ option.value }}</span>
+      </button>
+    }
+  </mat-menu>
+</div>
+
+<div class="assigned-job__row">
+  <span class="assigned-job__code assigned-job__code--primary">{{ job.code }}</span>
+  <div class="assigned-job__row-body">
+    <h3 class="assigned-job__row-title">{{ job.title }}</h3>
+    <p class="assigned-job__row-meta">
+      <span>{{ job.company }}</span>
+      <span class="assigned-job__dot" aria-hidden="true">·</span>
+      <span>{{ job.location }}</span>
+      <span class="assigned-job__dot" aria-hidden="true">·</span>
+      <span>₱{{ job.salary | number }}/mo</span>
+    </p>
+  </div>
+  <mat-icon class="assigned-job__chevron" aria-hidden="true">chevron_right</mat-icon>
+</div>
+
+<dl class="assigned-job__facts">
+  <div class="assigned-job__fact">
+    <dt>Assigned on</dt>
+    <dd>{{ job.assignedOn }}</dd>
+  </div>
+  <div class="assigned-job__fact">
+    <dt>Assigned by</dt>
+    <dd>{{ job.assignedBy }}</dd>
+  </div>
+  <div class="assigned-job__fact">
+    <dt>Match score</dt>
+    <dd class="assigned-job__score">{{ job.matchScore }}%</dd>
+  </div>
+</dl>
+
+<hr class="assigned-job__divider" />
+
+<ol class="assigned-job__stepper">
+  @for (step of steps(); track $index) {
+    <li
+      class="assigned-job__step"
+      [class.assigned-job__step--done]="step.state === 'done'"
+      [class.assigned-job__step--current]="step.state === 'current'"
+      [class.assigned-job__step--failed]="step.state === 'failed'"
+      [class.assigned-job__step--withdrawn]="step.state === 'withdrawn'"
+      [class.assigned-job__step--line-green]="step.line === 'green'"
+      [class.assigned-job__step--line-red]="step.line === 'red'"
+    >
+      <span class="assigned-job__step-dot">
+        @if (step.state === 'done' || step.state === 'failed') {
+          <mat-icon aria-hidden="true">check</mat-icon>
+        } @else if (step.state === 'withdrawn') {
+          <mat-icon aria-hidden="true">remove</mat-icon>
+        } @else if (step.state === 'current') {
+          <span class="assigned-job__step-core"></span>
+        }
+      </span>
+      <span class="assigned-job__step-label">{{ step.label }}</span>
+      <span class="assigned-job__step-sub">{{ step.sub }}</span>
+    </li>
+  }
+</ol>
+
+<hr class="assigned-job__divider" />
+
+<div class="assigned-job__previous">
+  <h3 class="assigned-job__previous-title">Previous referrals</h3>
+  <ul class="assigned-job__previous-list">
+    @for (referral of previousReferrals; track referral.code) {
+      <li class="assigned-job__previous-item">
+        <span class="assigned-job__code">{{ referral.code }}</span>
+        <div class="assigned-job__previous-body">
+          <span class="assigned-job__previous-name">{{ referral.title }}</span>
+          <span class="assigned-job__previous-sub">{{ referral.subtitle }}</span>
+        </div>
+        <span
+          class="assigned-job__status-badge"
+          [class.assigned-job__status-badge--danger]="referral.tone === 'danger'"
+        >
+          {{ referral.status }}
+        </span>
+      </li>
+    }
+  </ul>
+</div>

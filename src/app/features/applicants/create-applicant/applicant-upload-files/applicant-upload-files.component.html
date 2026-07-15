@@ -1,0 +1,60 @@
+<div class="upload">
+  <button
+    type="button"
+    class="upload__zone"
+    [class.upload__zone--active]="dragActive()"
+    (click)="openPicker()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    aria-label="Upload CSV files. Drag and drop files here, or activate to browse."
+  >
+    <mat-icon class="upload__icon" aria-hidden="true">cloud_upload</mat-icon>
+    <p class="upload__prompt">
+      <span class="upload__prompt-strong">Drag &amp; drop CSV files here</span>
+      <span class="upload__prompt-muted">or click to browse</span>
+    </p>
+    <p class="upload__hint">Only .csv files are accepted.</p>
+  </button>
+
+  <input
+    #fileInput
+    type="file"
+    class="upload__input"
+    accept=".csv,text/csv"
+    multiple
+    tabindex="-1"
+    aria-hidden="true"
+    (change)="onFileChange($event)"
+  />
+
+  @if (errorMessage(); as msg) {
+    <p class="upload__error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      {{ msg }}
+    </p>
+  }
+
+  @if (hasFiles()) {
+    <ul class="upload__list" aria-label="Selected CSV files">
+      @for (file of files(); track file.name + file.size) {
+        <li class="upload__item">
+          <mat-icon class="upload__item-icon" aria-hidden="true">description</mat-icon>
+          <span class="upload__item-info">
+            <span class="upload__item-name">{{ file.name }}</span>
+            <span class="upload__item-size">{{ formatSize(file.size) }}</span>
+          </span>
+          <button
+            type="button"
+            mat-icon-button
+            class="upload__item-remove"
+            (click)="remove($index)"
+            [attr.aria-label]="'Remove ' + file.name"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

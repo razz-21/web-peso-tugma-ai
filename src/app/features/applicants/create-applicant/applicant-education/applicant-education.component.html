@@ -1,0 +1,59 @@
+<div class="wform">
+  <mat-checkbox
+    [checked]="education.current_in_school().value()"
+    (change)="education.current_in_school().value.set($event.checked)"
+  >
+    Currently in school
+  </mat-checkbox>
+
+  <div class="wform__grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Highest education level</mat-label>
+      <mat-select [formField]="education.highest_education_level">
+        @for (level of educationLevels; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Year graduated</mat-label>
+      <input
+        matInput
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        [formField]="education.year_graduated"
+      />
+      @if (error(education.year_graduated()); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Last year attended</mat-label>
+      <input
+        matInput
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        [formField]="education.last_attended"
+      />
+      @if (error(education.last_attended()); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      } @else {
+        <mat-hint>Fill this in if you did not graduate.</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>School / University</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="education.school_university" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Course / Program</mat-label>
+      <input matInput type="text" autocomplete="off" [formField]="education.course_program" />
+    </mat-form-field>
+  </div>
+</div>

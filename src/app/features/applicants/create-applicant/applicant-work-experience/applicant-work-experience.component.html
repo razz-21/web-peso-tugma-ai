@@ -1,0 +1,88 @@
+<div class="wform">
+  <div class="wform__repeat">
+    @if (store.form.work_experience().value().length === 0) {
+      <p class="wform__empty">No work experience added yet.</p>
+    }
+    @for (item of store.form.work_experience().value(); track $index; let i = $index) {
+      <div class="wform__item">
+        <div class="wform__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.work_experience[i].company"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Position</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.work_experience[i].position"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Status of appointment</mat-label>
+            <mat-select [formField]="store.form.work_experience[i].status_of_appointment">
+              @for (status of appointmentStatuses; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Address</mat-label>
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [formField]="store.form.work_experience[i].address"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Start date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              [formField]="store.form.work_experience[i].start_date"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+            <mat-datepicker #startPicker />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>End date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endPicker"
+              [formField]="store.form.work_experience[i].end_date"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+            <mat-datepicker #endPicker />
+          </mat-form-field>
+        </div>
+        <div class="wform__item-actions">
+          <button
+            mat-flat-button
+            type="button"
+            class="wform__remove-btn"
+            (click)="store.removeWorkExperience(i)"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </div>
+      </div>
+    }
+    <button mat-stroked-button type="button" class="wform__add" (click)="store.addWorkExperience()">
+      <mat-icon>add</mat-icon>
+      Add work experience
+    </button>
+  </div>
+</div>

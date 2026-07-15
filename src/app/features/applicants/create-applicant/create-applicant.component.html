@@ -1,0 +1,71 @@
+<div class="wizard">
+  <app-create-applicant-header
+    class="wizard__header"
+    title="Create applicant"
+    [stepLabel]="stepLabel()"
+    (close)="onClose()"
+    (saveDraft)="onSaveDraft()"
+  />
+
+  <div class="wizard__body">
+    <app-create-applicant-stepper
+      class="wizard__stepper"
+      [steps]="steps"
+      [current]="currentIndex()"
+      (select)="goTo($event)"
+    />
+
+    <section class="wizard__wrapper">
+      <section class="wizard__content" aria-live="polite">
+        <p class="wizard__eyebrow">Step {{ stepNumber() }} · {{ currentStep().category }}</p>
+        <h3 class="wizard__title">{{ currentStep().title }}</h3>
+        <p class="wizard__subtitle">{{ currentStep().subtitle }}</p>
+        <hr class="wizard__divider" />
+
+        @switch (currentStep().key) {
+          @case ('upload') {
+            <app-applicant-upload-files />
+          }
+          @case ('details') {
+            <app-applicant-personal-info />
+          }
+          @case ('preferences') {
+            <app-applicant-job-preferences />
+          }
+          @case ('education') {
+            <app-applicant-education />
+          }
+          @case ('eligibility') {
+            <app-applicant-eligibility />
+          }
+          @case ('work') {
+            <app-applicant-work-experience />
+          }
+          @case ('skills') {
+            <app-applicant-skills />
+          }
+          @case ('trainings') {
+            <app-applicant-trainings />
+          }
+          @case ('confirmation') {
+            <app-applicant-confirmation />
+          }
+          @default {
+            <div class="wizard__placeholder">
+              Upload is optional — you can continue to the next step.
+            </div>
+          }
+        }
+      </section>
+    </section>
+  </div>
+
+  <app-create-applicant-footer
+    class="wizard__footer"
+    [canBack]="canBack()"
+    [isLast]="isLast()"
+    [submitting]="submitting()"
+    (back)="onBack()"
+    (next)="onNext()"
+  />
+</div>

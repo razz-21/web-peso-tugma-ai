@@ -28,6 +28,9 @@ export const userDetailsRoute = (id: string): string => `${APP_ROUTES.userManage
 /** Route to a single company's detail page. */
 export const companyDetailsRoute = (id: string): string => `${APP_ROUTES.companies}/${id}`;
 
+/** Route to a single applicant's detail page. */
+export const applicantDetailsRoute = (id: string): string => `${APP_ROUTES.applicants}/${id}`;
+
 /** Route to a single job's detail page. */
 export const jobDetailsRoute = (id: string): string => `${APP_ROUTES.jobListings}/${id}`;
 
