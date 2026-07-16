@@ -132,6 +132,13 @@ body {
   }
 }
 
+// Applicant section edit dialog: white surface (the themed default is cream).
+.applicant-edit-dialog {
+  .mat-mdc-dialog-surface {
+    background: var(--mat-sys-surface-container-lowest);
+  }
+}
+
 // Create applicant wizard dialog: a full-window, edge-to-edge surface whose own
 // header / stepper / footer regions manage all internal spacing, so the dialog
 // surface itself carries no padding (see create-applicant.component).

@@ -1,0 +1,64 @@
+.edit-dialog {
+  &__title {
+    text-transform: capitalize;
+    margin-bottom: 0.25rem;
+  }
+
+  &__subtitle {
+    margin: 0 0 0.5rem;
+    padding: 0 1.5rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.9rem;
+  }
+
+  &__content {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  &__fieldset {
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  &__legend {
+    padding: 0;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__same {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  &__subheading {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__actions {
+    padding: 0.5rem 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .edit-dialog__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

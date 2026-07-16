@@ -140,6 +140,12 @@ export class CreateApplicantDraftStore {
     this.sameAsPresent.set(checked);
   }
 
+  /** Replace the draft with seeded values (used when editing an existing applicant). */
+  hydrate(draft: ApplicantDraft, sameAsPresent: boolean): void {
+    this.sameAsPresent.set(sameAsPresent);
+    this.data.set(structuredClone(draft));
+  }
+
   // --- Uploaded files ------------------------------------------------------
 
   /**
@@ -174,9 +180,14 @@ export class CreateApplicantDraftStore {
 
   /** Marks the step's fields touched and returns whether they are all valid. */
   validateStep(key: WizardStepKey): boolean {
+    return this.validateFields(STEP_FIELDS[key] as string[]);
+  }
+
+  /** Marks the given top-level fields touched and returns whether they are all valid. */
+  validateFields(fields: readonly string[]): boolean {
     const tree = this.form as unknown as Record<string, FieldTreeLike>;
     let valid = true;
-    for (const name of STEP_FIELDS[key]) {
+    for (const name of fields) {
       const node = tree[name];
       markTreeTouched(node);
       if (!node().valid()) {

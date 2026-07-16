@@ -7,6 +7,7 @@ import {
   ApplicantGetSchema,
   ApplicantList,
   ApplicantListSchema,
+  ApplicantPatch,
   ApplicantPost,
   ListApplicantsParams,
 } from '../models/applicant.model';
@@ -41,6 +42,13 @@ export class ApplicantsService {
 
   async create(payload: ApplicantPost): Promise<ApplicantGet> {
     const body = await firstValueFrom(this.http.post<ApplicantGet>(this.baseUrl, payload));
+    return ApplicantGetSchema.parse(body);
+  }
+
+  async update(id: string, patch: ApplicantPatch): Promise<ApplicantGet> {
+    const body = await firstValueFrom(
+      this.http.patch<ApplicantGet>(`${this.baseUrl}/${id}`, patch),
+    );
     return ApplicantGetSchema.parse(body);
   }
 

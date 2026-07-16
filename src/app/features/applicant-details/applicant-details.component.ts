@@ -32,6 +32,11 @@ import { applicantDetailsEvents } from '../../stores/applicant-details/applicant
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
 import { DetailFieldComponent } from './detail-field/detail-field.component';
 import { AssignedJobComponent } from './assigned-job/assigned-job.component';
+import {
+  ApplicantEditDialogComponent,
+  ApplicantEditDialogData,
+  EditSectionId,
+} from './applicant-edit-dialog/applicant-edit-dialog.component';
 
 interface SectionLink {
   readonly id: string;
@@ -342,11 +347,23 @@ export class ApplicantDetailsComponent implements OnInit {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  protected onEditSection(label: string): void {
-    // TODO: open an edit form for this section once applicant editing is available.
-    this.snackBar.open(`Editing ${label.toLowerCase()} is not available yet.`, 'Close', {
-      duration: 3000,
-    });
+  protected onEditSection(section: EditSectionId, label: string): void {
+    const applicant = this.applicant();
+    if (!applicant) {
+      return;
+    }
+    this.dialog.open<ApplicantEditDialogComponent, ApplicantEditDialogData>(
+      ApplicantEditDialogComponent,
+      {
+        width: '760px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        panelClass: 'applicant-edit-dialog',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        data: { section, sectionLabel: label, applicant },
+      },
+    );
   }
 
   protected onViewResume(): void {

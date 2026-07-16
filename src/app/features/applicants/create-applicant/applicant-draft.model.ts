@@ -1,4 +1,4 @@
-import { ApplicantPost, Sex } from '../../../core/models/applicant.model';
+import { Address, ApplicantGet, ApplicantPost, Sex } from '../../../core/models/applicant.model';
 
 export type DraftAddress = {
   province: string;
@@ -238,3 +238,93 @@ export const draftToPayload = (draft: ApplicantDraft, sameAsPresent: boolean): A
       })),
   };
 };
+
+/** Parse a `yyyy-MM-dd` (or ISO) string into a local Date, or null when unset. */
+const parseDate = (value: string | null | undefined): Date | null => {
+  if (!value) {
+    return null;
+  }
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+  if (year && month && day) {
+    return new Date(year, month - 1, day);
+  }
+  const fallback = new Date(value);
+  return Number.isNaN(fallback.getTime()) ? null : fallback;
+};
+
+const toDraftAddress = (address: Address | null | undefined): DraftAddress => ({
+  province: address?.province ?? '',
+  municipality_city: address?.municipality_city ?? '',
+  baranggay: address?.baranggay ?? '',
+  house_no_street: address?.house_no_street ?? '',
+});
+
+/** Whether the permanent address matches the present address (or is absent). */
+export const isPermanentSameAsPresent = (applicant: ApplicantGet): boolean => {
+  if (applicant.permanent_address === null) {
+    return true;
+  }
+  const present = toDraftAddress(applicant.present_address);
+  const permanent = toDraftAddress(applicant.permanent_address);
+  return (
+    present.province === permanent.province &&
+    present.municipality_city === permanent.municipality_city &&
+    present.baranggay === permanent.baranggay &&
+    present.house_no_street === permanent.house_no_street
+  );
+};
+
+/** Seed an editable draft from an existing applicant (inverse of draftToPayload). */
+export const applicantToDraft = (applicant: ApplicantGet): ApplicantDraft => ({
+  firstname: applicant.firstname,
+  lastname: applicant.lastname,
+  middlename: applicant.middlename ?? '',
+  suffix: applicant.suffix ?? '',
+  date_of_birth: parseDate(applicant.date_of_birth),
+  sex: applicant.sex ?? '',
+  citizenship: applicant.citizenship ?? '',
+  height_in_cm: applicant.height_in_cm,
+  weight_in_kg: applicant.weight_in_kg,
+  present_address: toDraftAddress(applicant.present_address),
+  permanent_address: toDraftAddress(applicant.permanent_address),
+  primary_mobile_number: applicant.primary_mobile_number ?? '',
+  secondary_mobile_number: applicant.secondary_mobile_number ?? '',
+  email_address: applicant.email_address ?? '',
+  employment_status: applicant.employment_status ?? '',
+  preferred_occupation_industry: applicant.preferred_occupation_industry.map((item) => ({
+    occupation: item.occupation ?? '',
+    industry: item.industry ?? '',
+  })),
+  preferred_work_location: [...applicant.preferred_work_location],
+  salary_expectation: applicant.salary_expectation ?? '',
+  educational_background: {
+    current_in_school: applicant.educational_background?.current_in_school ?? false,
+    highest_education_level: applicant.educational_background?.highest_education_level ?? '',
+    year_graduated: applicant.educational_background?.year_graduated ?? '',
+    last_attended: applicant.educational_background?.last_attended ?? '',
+    school_university: applicant.educational_background?.school_university ?? '',
+    course_program: applicant.educational_background?.course_program ?? '',
+  },
+  eligibility: applicant.eligibility.map((item) => ({
+    title: item.title ?? '',
+    license_number: item.license_number ?? '',
+    expiry_date: parseDate(item.expiry_date),
+  })),
+  work_experience: applicant.work_experience.map((item) => ({
+    company: item.company ?? '',
+    address: item.address ?? '',
+    position: item.position ?? '',
+    start_date: parseDate(item.start_date),
+    end_date: parseDate(item.end_date),
+    status_of_appointment: item.status_of_appointment ?? '',
+  })),
+  technical_skills: [...applicant.technical_skills],
+  trainings: applicant.trainings.map((item) => ({
+    training_title: item.training_title ?? '',
+    duration_start: parseDate(item.duration_start),
+    duration_end: parseDate(item.duration_end),
+    institution: item.institution ?? '',
+    certificate_received: item.certificate_received ?? '',
+    completed: item.completed,
+  })),
+});

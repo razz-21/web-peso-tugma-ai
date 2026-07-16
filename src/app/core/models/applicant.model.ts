@@ -115,6 +115,9 @@ export const ApplicantPostSchema = z.object({
   technical_skills: z.array(z.string()).optional(),
 });
 
+/** Payload for PATCH /applicants/:id — every field optional (partial update). */
+export const ApplicantPatchSchema = ApplicantPostSchema.partial();
+
 export const ApplicantListSchema = z.object({
   total: z.number().int().nonnegative(),
   limit: z.number().int(),
@@ -138,4 +141,5 @@ export type WorkExperience = z.infer<typeof WorkExperienceSchema>;
 export type Applicant = z.infer<typeof ApplicantSchema>;
 export type ApplicantGet = z.infer<typeof ApplicantGetSchema>;
 export type ApplicantPost = z.infer<typeof ApplicantPostSchema>;
+export type ApplicantPatch = z.infer<typeof ApplicantPatchSchema>;
 export type ApplicantList = z.infer<typeof ApplicantListSchema>;
