@@ -14,6 +14,7 @@ import {
   ApplicantGet,
   ApplicantPatch,
   ApplicantPost,
+  EMPLOYMENT_STATUSES,
   SEXES,
 } from '../../../core/models/applicant.model';
 import { CreateApplicantDraftStore } from '../../applicants/create-applicant/create-applicant-draft.store';
@@ -35,7 +36,8 @@ export type EditSectionId =
   | 'education'
   | 'skills'
   | 'work'
-  | 'preferences';
+  | 'preferences'
+  | 'employment';
 
 export interface ApplicantEditDialogData {
   readonly section: EditSectionId;
@@ -58,6 +60,7 @@ const SECTION_DESCRIPTIONS: Record<EditSectionId, string> = {
   skills: 'Update technical skills, trainings, and certifications.',
   work: 'Update previous roles and responsibilities.',
   preferences: 'Update desired roles, locations, and expected salary.',
+  employment: 'Update the applicant’s employment status and expected salary.',
 };
 
 /** Which top-level payload keys are patched for each editable section. */
@@ -84,6 +87,7 @@ const SECTION_KEYS: Record<EditSectionId, (keyof ApplicantPost)[]> = {
     'preferred_work_location',
     'salary_expectation',
   ],
+  employment: ['employment_status', 'salary_expectation'],
 };
 
 @Component({
@@ -118,6 +122,7 @@ export class ApplicantEditDialogComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly sexOptions = SEXES;
+  protected readonly employmentStatusOptions = EMPLOYMENT_STATUSES;
   protected readonly saving = signal(false);
   protected readonly description = SECTION_DESCRIPTIONS[this.data.section];
 

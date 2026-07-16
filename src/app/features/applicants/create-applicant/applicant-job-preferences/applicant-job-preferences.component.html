@@ -2,7 +2,11 @@
   <div class="wform__grid wform__grid--two">
     <mat-form-field appearance="outline">
       <mat-label>Employment status</mat-label>
-      <input matInput type="text" autocomplete="off" [formField]="store.form.employment_status" />
+      <mat-select [formField]="store.form.employment_status">
+        @for (option of employmentStatusOptions; track option) {
+          <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">

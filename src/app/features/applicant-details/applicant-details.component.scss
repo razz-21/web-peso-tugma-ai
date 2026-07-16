@@ -160,6 +160,12 @@
     background: currentColor;
   }
 
+  &__title-edit {
+    margin-left: auto;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
+  }
+
   &__subtitle {
     display: flex;
     flex-wrap: wrap;

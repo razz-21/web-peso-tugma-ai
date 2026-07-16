@@ -6,6 +6,20 @@ export const NAME_MAX = 100;
 export const SexSchema = z.enum(['Male', 'Female']);
 export const SEXES = SexSchema.options;
 
+/** Selectable employment status options shown in applicant forms. Stored as a
+ *  free-form string on the backend, so this list is UI-only guidance. */
+export const EMPLOYMENT_STATUSES = [
+  'Employed',
+  'Unemployed',
+  'Self-employed',
+  'Underemployed',
+  'New Entrant / Fresh Graduate',
+  'Finished Contract',
+  'Resigned',
+  'Retired',
+  'Terminated / Laid off',
+] as const;
+
 export const AddressSchema = z.object({
   id: z.uuid().optional(),
   province: z.string().nullable().optional(),

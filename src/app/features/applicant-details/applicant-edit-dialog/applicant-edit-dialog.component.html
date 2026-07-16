@@ -230,6 +230,35 @@
     @case ('preferences') {
       <app-applicant-job-preferences />
     }
+
+    @case ('employment') {
+      <div class="edit-dialog__grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Employment status</mat-label>
+          <mat-select [formField]="store.form.employment_status">
+            @for (option of employmentStatusOptions; track option) {
+              <mat-option [value]="option">{{ option }}</mat-option>
+            }
+          </mat-select>
+          @if (error(store.form.employment_status()); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Salary expectation</mat-label>
+          <input
+            matInput
+            type="text"
+            autocomplete="off"
+            [formField]="store.form.salary_expectation"
+          />
+          @if (error(store.form.salary_expectation()); as msg) {
+            <mat-error>{{ msg }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    }
   }
 </mat-dialog-content>
 

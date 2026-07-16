@@ -49,6 +49,15 @@
                   <span class="applicant-details__badge-dot" aria-hidden="true"></span>
                   Active
                 </span>
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="applicant-details__title-edit"
+                  aria-label="Edit salary expectation and employment status"
+                  (click)="onEditSection('employment', 'Salary & employment')"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
               </div>
 
               <div class="applicant-details__actions">
