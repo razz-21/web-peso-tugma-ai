@@ -1,0 +1,75 @@
+<section class="workspace-details">
+  <a class="workspace-details__back" [routerLink]="routes.workspaces">
+    <mat-icon>arrow_back</mat-icon>
+    <span>Back to workspaces</span>
+  </a>
+
+  @if (store.loading() && !store.workspace()) {
+    <div class="workspace-details__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p>Loading workspace...</p>
+    </div>
+  } @else if (store.workspace(); as workspace) {
+    <header class="workspace-details__header">
+      <app-avatar
+        class="workspace-details__avatar"
+        [name]="workspace.name"
+        [seed]="workspace.id"
+        [size]="72"
+      />
+
+      <div class="workspace-details__heading">
+        <h1 class="workspace-details__name">{{ workspace.name }}</h1>
+        <div class="workspace-details__meta">
+          <span class="workspace-details__key">{{ workspace.key }}</span>
+          <span class="workspace-details__dot" aria-hidden="true">·</span>
+          <span
+            class="workspace-details__badge"
+            [class.workspace-details__badge--active]="workspace.status === 'active'"
+            [class.workspace-details__badge--inactive]="workspace.status === 'inactive'"
+          >
+            {{ workspace.status === 'active' ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="workspace-details__actions">
+        <button matButton="tonal" type="button" (click)="onEdit(workspace)">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          class="workspace-details__delete"
+          [attr.aria-label]="'Delete ' + workspace.name"
+          (click)="onDelete(workspace)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <mat-tab-group class="workspace-details__tabs" mat-stretch-tabs="false" animationDuration="0ms">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon aria-hidden="true">info</mat-icon>
+          Overview
+        </ng-template>
+        <div class="workspace-details__panel">
+          <app-workspace-overview [workspace]="workspace" />
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+          Match Scoring
+        </ng-template>
+        <div class="workspace-details__panel">
+          <app-match-scoring [workspace]="workspace" />
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</section>

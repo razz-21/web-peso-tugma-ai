@@ -4,6 +4,29 @@ export const WorkspaceStatusSchema = z.enum(['active', 'inactive']);
 
 export const WORKSPACE_STATUSES = WorkspaceStatusSchema.options;
 
+/**
+ * Weights (in percent) controlling how the AI scores job matches for a
+ * workspace. The five factors are expected to total 100%.
+ */
+export const MatchingScoreSchema = z.object({
+  semantic_similarity: z.number().min(0).max(100),
+  skills_match: z.number().min(0).max(100),
+  experience_match: z.number().min(0).max(100),
+  educational_match: z.number().min(0).max(100),
+  location_preference: z.number().min(0).max(100),
+});
+
+export type MatchingScore = z.infer<typeof MatchingScoreSchema>;
+
+/** Standard scoring profile applied to new workspaces. */
+export const DEFAULT_MATCHING_SCORE: MatchingScore = {
+  semantic_similarity: 50,
+  skills_match: 20,
+  experience_match: 15,
+  educational_match: 10,
+  location_preference: 5,
+};
+
 /** Slug format for a workspace key, e.g. "Workspace 1" -> "workspace_1". */
 export const WORKSPACE_KEY_PATTERN = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
 
@@ -26,6 +49,8 @@ export const WorkspaceSchema = z.object({
   description: z.string().nullable(),
   avatar: z.string().nullable(),
   status: WorkspaceStatusSchema,
+  // Defaulted on read so legacy workspaces without weights still parse.
+  matching_score: MatchingScoreSchema.default(DEFAULT_MATCHING_SCORE),
   created_at: z.string(),
   updated_at: z.string(),
 });

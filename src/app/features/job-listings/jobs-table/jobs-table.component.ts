@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { JOB_STATUS_LABELS, JobGet, JobStatus } from '../../../core/models/job.model';
 import { JobsStore } from '../../../stores/jobs/jobs.store';
+import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 
 interface JobRow {
   job: JobGet;
@@ -28,6 +29,7 @@ const STATUS_CLASS: Record<JobStatus, string> = {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    AvatarComponent,
   ],
   templateUrl: './jobs-table.component.html',
   styleUrl: './jobs-table.component.scss',

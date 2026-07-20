@@ -11,7 +11,12 @@
     <!-- Company -->
     <ng-container matColumnDef="company">
       <th mat-header-cell *matHeaderCellDef scope="col">Company</th>
-      <td mat-cell *matCellDef="let row">{{ row.companyName }}</td>
+      <td mat-cell *matCellDef="let row">
+        <div class="jobs-table__company">
+          <app-avatar [name]="row.companyName" [seed]="row.job.company?.id ?? row.companyName" />
+          <span class="jobs-table__company-name">{{ row.companyName }}</span>
+        </div>
+      </td>
     </ng-container>
 
     <!-- Vacancies -->

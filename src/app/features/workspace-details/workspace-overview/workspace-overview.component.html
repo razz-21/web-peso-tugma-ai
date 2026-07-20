@@ -1,0 +1,45 @@
+<section class="workspace-overview">
+  <h2 class="workspace-overview__title">Workspace details</h2>
+
+  <dl class="workspace-overview__grid">
+    <div class="workspace-overview__field">
+      <dt class="workspace-overview__label">Name</dt>
+      <dd class="workspace-overview__value">{{ workspace().name }}</dd>
+    </div>
+
+    <div class="workspace-overview__field">
+      <dt class="workspace-overview__label">Key</dt>
+      <dd class="workspace-overview__value">{{ workspace().key }}</dd>
+    </div>
+
+    <div class="workspace-overview__field">
+      <dt class="workspace-overview__label">Status</dt>
+      <dd class="workspace-overview__value">
+        <span
+          class="workspace-overview__badge"
+          [class.workspace-overview__badge--active]="workspace().status === 'active'"
+          [class.workspace-overview__badge--inactive]="workspace().status === 'inactive'"
+        >
+          {{ statusLabel() }}
+        </span>
+      </dd>
+    </div>
+
+    <div class="workspace-overview__field">
+      <dt class="workspace-overview__label">Created</dt>
+      <dd class="workspace-overview__value">{{ workspace().created_at | date: 'MMM d, y' }}</dd>
+    </div>
+
+    <div class="workspace-overview__field">
+      <dt class="workspace-overview__label">Last updated</dt>
+      <dd class="workspace-overview__value">{{ workspace().updated_at | date: 'MMM d, y' }}</dd>
+    </div>
+
+    <div class="workspace-overview__field workspace-overview__field--wide">
+      <dt class="workspace-overview__label">Description</dt>
+      <dd class="workspace-overview__value">
+        {{ workspace().description || 'No description provided.' }}
+      </dd>
+    </div>
+  </dl>
+</section>

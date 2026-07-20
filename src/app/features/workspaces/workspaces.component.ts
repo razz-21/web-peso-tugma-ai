@@ -6,7 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { WorkspaceGet } from '../../core/models/workspace.model';
+import { APP_ROUTES } from '../../core/constants/routes.constant';
 import { WorkspacesStore } from '../../stores/workspaces/workspaces.store';
 import { workspacesEvents } from '../../stores/workspaces/workspaces.events';
 import { injectDispatch } from '@ngrx/signals/events';
@@ -36,6 +38,7 @@ export class WorkspacesComponent implements OnInit {
   private readonly dispatch = injectDispatch(workspacesEvents);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   protected readonly pageSizeOptions = [10, 25, 50] as const;
 
@@ -53,6 +56,10 @@ export class WorkspacesComponent implements OnInit {
       pageSize: event.pageSize,
       q: this.store.filter.q(),
     });
+  }
+
+  protected onView(workspace: WorkspaceGet): void {
+    this.router.navigate([APP_ROUTES.workspaces, workspace.id]);
   }
 
   protected onDelete(workspace: WorkspaceGet): void {

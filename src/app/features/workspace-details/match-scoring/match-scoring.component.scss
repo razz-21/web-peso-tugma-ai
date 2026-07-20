@@ -1,0 +1,297 @@
+.match-scoring {
+  display: block;
+  padding: 1.75rem 2rem 2rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__intro {
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__lead {
+    margin: 0;
+    max-width: 62rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__factors {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+
+  &__factor {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(260px, 21rem);
+    grid-template-areas: 'icon text control';
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.35rem 0;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__icon {
+    grid-area: icon;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.85rem;
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &__factor-text {
+    grid-area: text;
+    min-width: 0;
+  }
+
+  &__factor-title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__factor-desc {
+    margin: 0.2rem 0 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__control {
+    grid-area: control;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  // ---- Custom range slider ----
+  &__slider {
+    --track: #c9cdbf;
+    flex: 1;
+    min-width: 0;
+    height: 1.15rem;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      height: 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--factor) 0 var(--fill),
+        var(--track) var(--fill) 100%
+      );
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-top: -0.325rem;
+      border-radius: 50%;
+      background: var(--factor);
+      border: 2px solid var(--mat-sys-surface-container-lowest);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    }
+
+    &::-moz-range-track {
+      height: 0.5rem;
+      border-radius: 999px;
+      background: var(--track);
+    }
+
+    &::-moz-range-progress {
+      height: 0.5rem;
+      border-radius: 999px;
+      background: var(--factor);
+    }
+
+    &::-moz-range-thumb {
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 50%;
+      background: var(--factor);
+      border: 2px solid var(--mat-sys-surface-container-lowest);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    }
+
+    &:focus-visible {
+      outline: none;
+
+      &::-webkit-slider-thumb {
+        outline: 2px solid var(--mat-sys-primary);
+        outline-offset: 2px;
+      }
+
+      &::-moz-range-thumb {
+        outline: 2px solid var(--mat-sys-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // ---- Percentage input box ----
+  &__number {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.65rem;
+    background: var(--mat-sys-surface-container-lowest);
+
+    &:focus-within {
+      border-color: var(--mat-sys-primary);
+    }
+  }
+
+  &__number-input {
+    width: 2.4rem;
+    border: none;
+    background: transparent;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+    text-align: right;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__number-suffix {
+    color: var(--mat-sys-on-surface-variant);
+    font-weight: 600;
+  }
+
+  // ---- Total weight ----
+  &__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1.15rem 1.35rem;
+    border-radius: 0.85rem;
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &__total-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  &__total-label {
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__total-message {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.9rem;
+  }
+
+  &__total-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    mat-icon {
+      width: 1.2rem;
+      height: 1.2rem;
+      font-size: 1.2rem;
+    }
+
+    &--ok {
+      background: var(--mat-sys-secondary-container);
+      color: var(--mat-sys-on-secondary-container);
+    }
+
+    &--error {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  // ---- Footer ----
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  &__footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__reset {
+    color: var(--mat-sys-primary);
+  }
+
+  // ---- Note banner ----
+  &__note {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 1.25rem 0 0;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.85rem;
+    background: #d7eae7;
+    color: #123f3a;
+    font-size: 0.95rem;
+
+    mat-icon {
+      flex-shrink: 0;
+      color: inherit;
+    }
+  }
+
+  @media (max-width: 720px) {
+    padding: 1.25rem;
+
+    &__factor {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        'icon text'
+        'control control';
+      row-gap: 1rem;
+    }
+  }
+}

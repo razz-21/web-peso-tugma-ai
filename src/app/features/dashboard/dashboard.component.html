@@ -1,0 +1,106 @@
+<section class="dashboard">
+  <header class="dashboard__header">
+    <div class="dashboard__heading">
+      <h1 class="dashboard__title">{{ greeting() }}, {{ userName() }}</h1>
+      <p class="dashboard__subtitle">
+        Here's what's happening across your employment office this month — {{ monthLabel() }}.
+      </p>
+    </div>
+    <app-date-range-filter (rangeChange)="onRangeChange($event)" />
+  </header>
+
+  <div class="dashboard__kpis">
+    @for (kpi of kpis(); track kpi.label) {
+      <article class="kpi-card">
+        <span class="kpi-card__icon" [class]="'kpi-card__icon--' + kpi.tone">
+          <mat-icon aria-hidden="true">{{ kpi.icon }}</mat-icon>
+        </span>
+        <p class="kpi-card__value">{{ kpi.value }}</p>
+        <p class="kpi-card__label">{{ kpi.label }}</p>
+        <span class="kpi-card__delta" [class.kpi-card__delta--up]="kpi.delta.trend === 'up'">
+          @if (kpi.delta.trend === 'up') {
+            <mat-icon class="kpi-card__delta-icon" aria-hidden="true">north_east</mat-icon>
+          }
+          {{ kpi.delta.text }}
+        </span>
+      </article>
+    }
+  </div>
+
+  <div class="dashboard__charts">
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">Placements over time</h2>
+          <p class="chart-card__subtitle">Applicants hired per month</p>
+        </div>
+        <a class="chart-card__link" href="#">
+          Report
+          <mat-icon aria-hidden="true">chevron_right</mat-icon>
+        </a>
+      </header>
+      <app-placements-chart />
+    </article>
+
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">Matching funnel</h2>
+          <p class="chart-card__subtitle">2,940 AI matches generated</p>
+        </div>
+      </header>
+      <app-matching-funnel />
+      <div class="chart-card__footer">
+        <span class="chart-card__footer-label">Placement rate</span>
+        <span class="chart-card__footer-value">36.5%</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="dashboard__charts dashboard__charts--even">
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">Job seekers by status</h2>
+          <p class="chart-card__subtitle">1,284 total</p>
+        </div>
+      </header>
+      <app-seekers-status />
+    </article>
+
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">In-demand occupations</h2>
+          <p class="chart-card__subtitle">Open vacancies by field</p>
+        </div>
+      </header>
+      <app-in-demand-occupations />
+    </article>
+  </div>
+
+  <div class="dashboard__charts dashboard__charts--even">
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">Recent applicants</h2>
+        </div>
+        <a class="chart-card__link" href="#">
+          View all
+          <mat-icon aria-hidden="true">chevron_right</mat-icon>
+        </a>
+      </header>
+      <app-recent-applicants />
+    </article>
+
+    <article class="chart-card">
+      <header class="chart-card__header">
+        <div class="chart-card__heading">
+          <h2 class="chart-card__title">Top hiring companies</h2>
+          <p class="chart-card__subtitle">By placements this month</p>
+        </div>
+      </header>
+      <app-top-hiring-companies />
+    </article>
+  </div>
+</section>

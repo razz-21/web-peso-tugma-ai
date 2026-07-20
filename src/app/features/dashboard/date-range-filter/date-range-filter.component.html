@@ -1,0 +1,26 @@
+<div class="date-range">
+  <button
+    type="button"
+    class="date-range__trigger"
+    (click)="picker.open()"
+    aria-label="Filter dashboard by date range"
+  >
+    <mat-icon class="date-range__icon" aria-hidden="true">calendar_today</mat-icon>
+    <span class="date-range__label">{{ label() }}</span>
+    <mat-icon class="date-range__chevron" aria-hidden="true">expand_more</mat-icon>
+  </button>
+
+  <!-- Off-flow range picker anchored under the trigger. -->
+  <mat-form-field class="date-range__picker-field" appearance="outline" subscriptSizing="dynamic">
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate [formControl]="customStart" placeholder="Start" />
+      <input
+        matEndDate
+        [formControl]="customEnd"
+        placeholder="End"
+        (dateChange)="applyCustomRange()"
+      />
+    </mat-date-range-input>
+    <mat-date-range-picker #picker />
+  </mat-form-field>
+</div>

@@ -1,0 +1,108 @@
+<section class="match-scoring">
+  <header class="match-scoring__intro">
+    <h2 class="match-scoring__title">Match scoring weights</h2>
+    <p class="match-scoring__lead">
+      These weights control how the AI scores job matches for every applicant in this workspace.
+      They must total <strong>100%</strong>. Higher weight means that factor influences the match
+      score more.
+    </p>
+  </header>
+
+  <ul class="match-scoring__factors">
+    @for (factor of factors; track factor.key) {
+      <li class="match-scoring__factor">
+        <span class="match-scoring__icon" [style.color]="factor.color" aria-hidden="true">
+          <mat-icon>{{ factor.icon }}</mat-icon>
+        </span>
+
+        <div class="match-scoring__factor-text">
+          <h3 class="match-scoring__factor-title">{{ factor.label }}</h3>
+          <p class="match-scoring__factor-desc">{{ factor.description }}</p>
+        </div>
+
+        <div class="match-scoring__control">
+          <input
+            class="match-scoring__slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            [style.--factor]="factor.color"
+            [style.--fill.%]="weights()[factor.key]"
+            [value]="weights()[factor.key]"
+            [attr.aria-label]="factor.label + ' weight'"
+            [attr.aria-valuetext]="weights()[factor.key] + '%'"
+            (input)="setWeight(factor.key, $event)"
+          />
+
+          <div class="match-scoring__number">
+            <input
+              class="match-scoring__number-input"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              [value]="weights()[factor.key]"
+              [attr.aria-label]="factor.label + ' weight percentage'"
+              (input)="setWeight(factor.key, $event)"
+            />
+            <span class="match-scoring__number-suffix" aria-hidden="true">%</span>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+
+  <div class="match-scoring__total">
+    <div class="match-scoring__total-text">
+      <span class="match-scoring__total-label">Total weight</span>
+      <span class="match-scoring__total-message">{{ totalMessage() }}</span>
+    </div>
+    <span
+      class="match-scoring__total-badge"
+      [class.match-scoring__total-badge--ok]="isBalanced()"
+      [class.match-scoring__total-badge--error]="!isBalanced()"
+      role="status"
+    >
+      <mat-icon aria-hidden="true">{{ isBalanced() ? 'check' : 'error_outline' }}</mat-icon>
+      {{ total() }}%
+    </span>
+  </div>
+
+  <div class="match-scoring__footer">
+    <button
+      matButton
+      type="button"
+      class="match-scoring__reset"
+      [disabled]="saving()"
+      (click)="reset()"
+    >
+      <mat-icon>restart_alt</mat-icon>
+      Reset to defaults
+    </button>
+
+    <div class="match-scoring__footer-actions">
+      @if (!isBalanced()) {
+        <button matButton="outlined" type="button" (click)="balance()">
+          <mat-icon>balance</mat-icon>
+          Balance to 100%
+        </button>
+      }
+      <button
+        matButton="filled"
+        type="button"
+        class="match-scoring__save"
+        [disabled]="!isBalanced() || saving()"
+        (click)="save()"
+      >
+        {{ saving() ? 'Saving…' : 'Save changes' }}
+      </button>
+    </div>
+  </div>
+
+  <p class="match-scoring__note" role="note">
+    <mat-icon aria-hidden="true">info</mat-icon>
+    Changes apply the next time recommendations are generated. Existing scores stay as they were
+    until an applicant is re-matched.
+  </p>
+</section>

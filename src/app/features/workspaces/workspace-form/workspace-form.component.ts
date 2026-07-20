@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormField, form, maxLength, pattern, readonly, required } from '@angular/forms/signals';
 import {
+  DEFAULT_MATCHING_SCORE,
   WORKSPACE_KEY_PATTERN,
   WORKSPACE_STATUSES,
   WORKSPACE_STATUS_LABELS,
@@ -154,6 +155,7 @@ export class WorkspaceFormComponent {
       description: description || null,
       avatar: null,
       status: value.status,
+      matching_score: DEFAULT_MATCHING_SCORE,
     };
     this.dispatch.createWorkspace(payload);
   }

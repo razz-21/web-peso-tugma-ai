@@ -32,7 +32,6 @@ const avatarClassOf = (seed: string): string => {
     [style.width.px]="size()"
     [style.height.px]="size()"
     [style.fontSize.px]="fontSizePx()"
-    [style.borderRadius.px]="borderRadiusPx()"
     aria-hidden="true"
     >{{ initials() }}</span
   >`,
@@ -47,8 +46,6 @@ export class AvatarComponent {
   readonly seed = input('');
   /** Optional pixel diameter; falls back to the CSS default (2.25rem) when null. */
   readonly size = input<number | null>(null);
-  /** Silhouette shape; `square` renders a rounded square instead of a circle. */
-  readonly shape = input<'circle' | 'square'>('circle');
 
   protected readonly initials = computed(() => initialsOf(this.name()));
   protected readonly colorClass = computed(() => avatarClassOf(this.seed() || this.name()));
@@ -56,7 +53,4 @@ export class AvatarComponent {
     const size = this.size();
     return size === null ? null : Math.round(size * 0.36);
   });
-  protected readonly borderRadiusPx = computed(() =>
-    this.shape() === 'square' ? Math.round((this.size() ?? 36) * 0.28) : null,
-  );
 }

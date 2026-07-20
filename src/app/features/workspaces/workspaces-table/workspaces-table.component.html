@@ -78,7 +78,15 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="app-table__row--clickable"
+      tabindex="0"
+      [attr.aria-label]="'View ' + row.workspace.name"
+      (click)="view.emit(row.workspace)"
+      (keydown.enter)="view.emit(row.workspace)"
+    ></tr>
   </table>
 
   @if (loading()) {

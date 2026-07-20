@@ -34,4 +34,7 @@ export const applicantDetailsRoute = (id: string): string => `${APP_ROUTES.appli
 /** Route to a single job's detail page. */
 export const jobDetailsRoute = (id: string): string => `${APP_ROUTES.jobListings}/${id}`;
 
+/** Route to a single workspace's detail page. */
+export const workspaceDetailsRoute = (id: string): string => `${APP_ROUTES.workspaces}/${id}`;
+
 export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES];
