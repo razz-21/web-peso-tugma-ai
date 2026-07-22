@@ -10,7 +10,7 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,9 +32,11 @@ import { applicantDetailsEvents } from '../../stores/applicant-details/applicant
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
 import { RecommendationsStore } from '../../stores/recommendations/recommendations.store';
 import { recommendationsEvents } from '../../stores/recommendations/recommendations.events';
-import { RecommendationScores, RecommendedJob } from '../../core/models/recommended-job.model';
 import { DetailFieldComponent } from './detail-field/detail-field.component';
 import { AssignedJobComponent } from './assigned-job/assigned-job.component';
+import { MatchDetailsComponent } from './match-details/match-details.component';
+import { ComparisonComponent, ComparisonDialogData } from './comparison/comparison.component';
+import { JobMatch, toJobMatch } from './job-match.model';
 import {
   ApplicantEditDialogComponent,
   ApplicantEditDialogData,
@@ -46,107 +48,6 @@ interface SectionLink {
   readonly label: string;
   readonly icon: string;
 }
-
-interface JobMatchTag {
-  readonly icon: string;
-  readonly label: string;
-}
-
-/** One scoring dimension shown in the match-details breakdown. */
-interface JobMatchDimension {
-  readonly label: string;
-  readonly value: number;
-  readonly icon: string;
-}
-
-/** Hiring company of a recommended job. */
-interface JobMatchCompany {
-  readonly id: string;
-  readonly name: string;
-  readonly avatar: string | null;
-}
-
-/** A single AI-ranked job recommendation shown in the Recommended jobs list. */
-interface JobMatch {
-  /** Recommendation record id (used for relevance updates + tracking). */
-  readonly recommendationId: string;
-  /** Final MatchScore 0–100. */
-  readonly score: number;
-  /** Ring color, derived from the score band. */
-  readonly color: string;
-  readonly title: string;
-  readonly company: JobMatchCompany | null;
-  readonly location: string | null;
-  /** Monthly salary in PHP, when the job specifies one. */
-  readonly salary: number | null;
-  /** Preformatted meta line: company · location · salary. */
-  readonly metaSegments: readonly string[];
-  /** Human-in-the-Loop relevance flag. */
-  readonly isRelevant: boolean;
-  /** A relevance update is in flight for this recommendation. */
-  readonly updating: boolean;
-  readonly tags: readonly JobMatchTag[];
-  readonly breakdown: readonly JobMatchDimension[];
-  readonly keyMatched: readonly string[];
-}
-
-const RING_GREEN = '#4d6a24';
-const RING_TEAL = '#3f7d88';
-const RING_AMBER = '#9a7b1e';
-
-/** Ring color band for a MatchScore. */
-const ringColor = (score: number): string =>
-  score >= 85 ? RING_GREEN : score >= 70 ? RING_TEAL : RING_AMBER;
-
-/** Scoring dimensions, in display order, mapped to labels and icons. */
-const SCORE_DIMENSIONS: readonly {
-  key: keyof RecommendationScores;
-  label: string;
-  icon: string;
-}[] = [
-  { key: 'semantic_similarity', label: 'Semantic', icon: 'auto_awesome' },
-  { key: 'skills', label: 'Skills', icon: 'edit' },
-  { key: 'experience', label: 'Experience', icon: 'work' },
-  { key: 'educational_background', label: 'Education', icon: 'school' },
-  { key: 'location_preference', label: 'Location', icon: 'location_on' },
-];
-
-/** Map a recommendation read model into the card/drawer view model. */
-const toJobMatch = (recommendation: RecommendedJob, updating: boolean): JobMatch => {
-  const scores = recommendation.scores;
-  const breakdown = SCORE_DIMENSIONS.map((dimension) => ({
-    label: dimension.label,
-    value: scores[dimension.key],
-    icon: dimension.icon,
-  }));
-  const company = recommendation.job?.company ?? null;
-  const location = recommendation.job?.location ?? null;
-  const salary = recommendation.job?.salary_per_month ?? null;
-  const salaryText = salary === null ? null : `₱${salary.toLocaleString('en-US')}/mo`;
-  return {
-    recommendationId: recommendation.id,
-    score: recommendation.score,
-    color: ringColor(recommendation.score),
-    title: recommendation.job?.title ?? 'Job',
-    company,
-    location,
-    salary,
-    metaSegments: [company?.name ?? null, location, salaryText].filter(
-      (segment): segment is string => Boolean(segment),
-    ),
-    isRelevant: recommendation.is_relevant,
-    updating,
-    // Surface the dimensions that scored well as quick chips.
-    tags: breakdown
-      .filter((dimension) => dimension.value >= 50)
-      .map((dimension) => ({
-        icon: dimension.icon,
-        label: `${dimension.label} ${dimension.value}%`,
-      })),
-    breakdown,
-    keyMatched: recommendation.key_matched,
-  };
-};
 
 const SECTIONS: readonly SectionLink[] = [
   { id: 'personal', label: 'Personal information', icon: 'person' },
@@ -162,7 +63,6 @@ const SECTIONS: readonly SectionLink[] = [
   selector: 'app-applicant-details',
   imports: [
     DatePipe,
-    DecimalPipe,
     RouterLink,
     MatButtonModule,
     MatIconModule,
@@ -171,6 +71,7 @@ const SECTIONS: readonly SectionLink[] = [
     AvatarComponent,
     DetailFieldComponent,
     AssignedJobComponent,
+    MatchDetailsComponent,
   ],
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',
@@ -412,6 +313,31 @@ export class ApplicantDetailsComponent implements OnInit {
       return;
     }
     this.recommendationsDispatch.setRelevance({ id: match.recommendationId, isRelevant });
+  }
+
+  protected onViewComparison(match: JobMatch): void {
+    const applicant = this.applicant();
+    if (!applicant) {
+      return;
+    }
+    this.dialog.open<ComparisonComponent, ComparisonDialogData>(ComparisonComponent, {
+      panelClass: 'comparison-dialog',
+      width: '100vw',
+      maxWidth: '100vw',
+      height: '100vh',
+      maxHeight: '100vh',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      ariaLabel: 'Applicant and job comparison',
+      data: { applicant, match },
+    });
+  }
+
+  protected onReferApplicant(match: JobMatch): void {
+    // TODO: wire to the referral flow once the endpoint is available.
+    this.snackBar.open(`Referral for "${match.title}" isn't available yet.`, 'Close', {
+      duration: 3000,
+    });
   }
 
   protected onDelete(applicant: ApplicantGet): void {

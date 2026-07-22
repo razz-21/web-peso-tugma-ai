@@ -5,7 +5,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormField } from '@angular/forms/signals';
-import { SEXES } from '../../../../core/models/applicant.model';
+import { CIVIL_STATUSES, SEXES } from '../../../../core/models/applicant.model';
 import { CreateApplicantDraftStore } from '../create-applicant-draft.store';
 
 type FieldState = {
@@ -31,6 +31,7 @@ type FieldState = {
 export class ApplicantPersonalInfoComponent {
   protected readonly store = inject(CreateApplicantDraftStore);
   protected readonly sexOptions = SEXES;
+  protected readonly civilStatusOptions = CIVIL_STATUSES;
 
   protected error(field: FieldState): string | null {
     if (!field.touched() || field.valid()) {

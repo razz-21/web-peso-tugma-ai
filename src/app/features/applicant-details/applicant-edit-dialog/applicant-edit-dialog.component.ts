@@ -14,6 +14,7 @@ import {
   ApplicantGet,
   ApplicantPatch,
   ApplicantPost,
+  CIVIL_STATUSES,
   EMPLOYMENT_STATUSES,
   SEXES,
 } from '../../../core/models/applicant.model';
@@ -72,6 +73,7 @@ const SECTION_KEYS: Record<EditSectionId, (keyof ApplicantPost)[]> = {
     'suffix',
     'date_of_birth',
     'sex',
+    'civil_status',
     'citizenship',
     'height_in_cm',
     'weight_in_kg',
@@ -122,6 +124,7 @@ export class ApplicantEditDialogComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly sexOptions = SEXES;
+  protected readonly civilStatusOptions = CIVIL_STATUSES;
   protected readonly employmentStatusOptions = EMPLOYMENT_STATUSES;
   protected readonly saving = signal(false);
   protected readonly description = SECTION_DESCRIPTIONS[this.data.section];

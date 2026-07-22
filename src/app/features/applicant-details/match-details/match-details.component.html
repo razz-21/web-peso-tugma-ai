@@ -1,0 +1,160 @@
+@let match = this.match();
+
+<div class="match-details">
+  <header class="match-details__topbar">
+    <h2 class="match-details__title">Match details</h2>
+    <button mat-icon-button type="button" aria-label="Close match details" (click)="closed.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div class="match-details__body">
+    <!-- Job summary -->
+    <section class="match-details__summary">
+      <div
+        class="match-details__ring"
+        [style.--score]="match.score"
+        [style.--ring-color]="match.color"
+      >
+        <span class="match-details__ring-value">{{ match.score }}%</span>
+        <span class="match-details__ring-label">MATCH</span>
+      </div>
+      <div class="match-details__summary-body">
+        <h3 class="match-details__job">{{ match.title }}</h3>
+        @if (match.company; as company) {
+          <div class="match-details__company">
+            @if (company.avatar) {
+              <img
+                class="match-details__company-avatar"
+                [src]="company.avatar"
+                [alt]="company.name + ' logo'"
+                width="24"
+                height="24"
+                loading="lazy"
+              />
+            } @else {
+              <app-avatar [name]="company.name" [seed]="company.id" [size]="24" />
+            }
+            <span>{{ company.name }}</span>
+          </div>
+        }
+        @if (metaSegments().length > 0) {
+          <p class="match-details__meta">
+            @for (segment of metaSegments(); track $index; let first = $first) {
+              @if (!first) {
+                <span class="match-details__dot" aria-hidden="true">·</span>
+              }
+              <span>{{ segment }}</span>
+            }
+          </p>
+        }
+      </div>
+    </section>
+
+    <!-- Score-band banner -->
+    @let assessment = this.assessment();
+    <p
+      class="match-details__banner"
+      [class.match-details__banner--positive]="assessment.tone === 'positive'"
+      [class.match-details__banner--caution]="assessment.tone === 'caution'"
+      [class.match-details__banner--critical]="assessment.tone === 'critical'"
+      role="note"
+    >
+      <mat-icon aria-hidden="true">info</mat-icon>
+      <span
+        ><strong>{{ assessment.title }}.</strong> {{ assessment.summary }}</span
+      >
+    </p>
+
+    <!-- Vector comparison -->
+    @if (match.resumeVector.length > 1 && match.jobVector.length > 1) {
+      <app-vector-comparison [resume]="match.resumeVector" [job]="match.jobVector" />
+    }
+
+    <!-- Score breakdown -->
+    <section class="match-details__breakdown">
+      <div class="match-details__breakdown-head">
+        <h4 class="match-details__subhead">Score breakdown</h4>
+        <span class="match-details__formula">score × weight</span>
+      </div>
+      <p class="match-details__breakdown-note">
+        Each factor is scored 0–100%, then multiplied by its workspace weight to produce the final
+        match score.
+      </p>
+
+      <ul class="match-details__factors">
+        @for (dimension of match.breakdown; track dimension.key) {
+          <li class="match-details__factor">
+            <div class="match-details__factor-head">
+              <span class="match-details__factor-label">
+                <mat-icon aria-hidden="true">{{ dimension.icon }}</mat-icon>
+                {{ dimension.label }}
+              </span>
+              <span class="match-details__weight">weight {{ dimension.weight }}%</span>
+              <span class="match-details__factor-value" [style.color]="dimension.color">
+                {{ dimension.value }}%
+              </span>
+            </div>
+            <div class="match-details__factor-foot">
+              <span class="match-details__track" aria-hidden="true">
+                <span
+                  class="match-details__track-fill"
+                  [style.width.%]="dimension.value"
+                  [style.background]="dimension.color"
+                ></span>
+              </span>
+              <span class="match-details__pts">
+                <strong>{{ dimension.points }}</strong> / {{ dimension.weight }} pts
+              </span>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- Weighted total -->
+    <section class="match-details__total">
+      <div>
+        <p class="match-details__total-title">Total match score</p>
+        <p class="match-details__total-sub">Sum of all weighted points</p>
+      </div>
+      <p class="match-details__total-value" [style.color]="match.color">
+        {{ match.score }}<span class="match-details__total-max">/{{ maxScore }}</span>
+      </p>
+    </section>
+
+    <!-- Assessment -->
+    <section class="match-details__assessment">
+      <h4 class="match-details__subhead">Assessment</h4>
+      <p class="match-details__assessment-note">
+        Your feedback trains future recommendations for this workspace.
+      </p>
+      <mat-button-toggle-group
+        class="match-details__relevance"
+        aria-label="Recommendation relevance"
+        [value]="match.isRelevant"
+        [disabled]="match.updating"
+        (change)="relevanceChange.emit($event.value)"
+      >
+        <mat-button-toggle [value]="true">Relevant</mat-button-toggle>
+        <mat-button-toggle [value]="false">Not relevant</mat-button-toggle>
+      </mat-button-toggle-group>
+    </section>
+  </div>
+
+  <footer class="match-details__footer">
+    <button
+      matButton="outlined"
+      type="button"
+      class="match-details__view-job"
+      (click)="viewComparison.emit()"
+    >
+      <mat-icon>compare_arrows</mat-icon>
+      View comparison
+    </button>
+    <button matButton="filled" type="button" class="match-details__refer" (click)="refer.emit()">
+      <mat-icon>send</mat-icon>
+      Refer applicant
+    </button>
+  </footer>
+</div>

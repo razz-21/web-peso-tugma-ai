@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+.vector-comparison {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__cosine {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__note {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__panel {
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    border-radius: 0.85rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: #fff;
+  }
+
+  &__chart {
+    position: relative;
+    height: 18rem;
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__legend-line {
+    width: 1.5rem;
+    height: 0.2rem;
+    border-radius: 999px;
+
+    &--resume {
+      background: #4d6a24;
+    }
+
+    &--job {
+      background: #9a7b1e;
+    }
+  }
+
+  &__divider {
+    margin: 1rem 0;
+    border: none;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      flex-shrink: 0;
+      color: #9a7b1e;
+    }
+  }
+
+  &__dim {
+    font-weight: 700;
+    color: #9a7b1e;
+  }
+
+  @media (max-width: 560px) {
+    &__chart {
+      height: 15rem;
+    }
+  }
+}

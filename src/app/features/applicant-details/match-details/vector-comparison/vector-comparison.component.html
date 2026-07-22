@@ -1,0 +1,55 @@
+<section class="vector-comparison">
+  <header class="vector-comparison__head">
+    <h4 class="vector-comparison__title">Vector comparison</h4>
+    <span class="vector-comparison__cosine">cosine similarity {{ cosineLabel() }}</span>
+  </header>
+  <p class="vector-comparison__note">
+    Embedding values for the applicant and the job vacancy, dimension by dimension. Shaded areas are
+    where the two diverge.
+  </p>
+
+  <div class="vector-comparison__panel">
+    <div class="vector-comparison__chart">
+      <canvas
+        baseChart
+        type="line"
+        [data]="chartData()"
+        [options]="chartOptions"
+        role="img"
+        [attr.aria-label]="
+          'Line chart comparing the applicant and job embeddings across ' +
+          bins().length +
+          ' dimensions. Cosine similarity ' +
+          cosineLabel() +
+          '.'
+        "
+      ></canvas>
+    </div>
+
+    <ul class="vector-comparison__legend">
+      <li class="vector-comparison__legend-item">
+        <span class="vector-comparison__legend-line vector-comparison__legend-line--resume"></span>
+        Applicant
+      </li>
+      <li class="vector-comparison__legend-item">
+        <span class="vector-comparison__legend-line vector-comparison__legend-line--job"></span>
+        Job
+      </li>
+    </ul>
+
+    <hr class="vector-comparison__divider" />
+
+    <p class="vector-comparison__footer">
+      <mat-icon aria-hidden="true">warning_amber</mat-icon>
+      <span>
+        Largest divergence at
+        @for (dim of largestDivergence(); track dim; let last = $last) {
+          <strong class="vector-comparison__dim">dim {{ dim }}</strong>
+          @if (!last) {
+            and
+          }
+        }
+      </span>
+    </p>
+  </div>
+</section>

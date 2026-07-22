@@ -1,0 +1,388 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.match-details {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--mat-sys-on-surface-variant);
+
+  // --- Top bar -------------------------------------------------------------
+
+  &__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    min-height: 4.05rem;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  // --- Scrolling body ------------------------------------------------------
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+
+    // Keep each block at its natural height so the body scrolls rather than
+    // flex-shrinking (which would clip the chart / cards).
+    > * {
+      flex-shrink: 0;
+    }
+  }
+
+  // --- Job summary ---------------------------------------------------------
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+  }
+
+  &__ring {
+    --size: 5rem;
+    --thickness: 0.4rem;
+    --row-bg: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    flex-shrink: 0;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: conic-gradient(
+      var(--ring-color, var(--mat-sys-primary)) calc(var(--score, 0) * 1%),
+      color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent) 0
+    );
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: var(--thickness);
+      border-radius: 50%;
+      background: var(--row-bg);
+    }
+  }
+
+  &__ring-value {
+    position: relative;
+    z-index: 1;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ring-color, var(--mat-sys-on-surface));
+  }
+
+  &__ring-label {
+    position: relative;
+    z-index: 1;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__summary-body {
+    min-width: 0;
+  }
+
+  &__job {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__company {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    color: var(--mat-sys-on-surface);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__company-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.4rem;
+    object-fit: cover;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.95rem;
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  // --- Score-band banner ---------------------------------------------------
+
+  &__banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    strong {
+      font-weight: 700;
+    }
+
+    mat-icon {
+      flex-shrink: 0;
+    }
+
+    &--positive {
+      background: color-mix(in srgb, #4d6a24 16%, var(--mat-sys-surface));
+      color: #33481a;
+    }
+
+    &--caution {
+      background: color-mix(in srgb, #e0a91b 30%, var(--mat-sys-surface));
+      color: #6b4e07;
+    }
+
+    &--critical {
+      background: color-mix(in srgb, var(--mat-sys-error) 16%, var(--mat-sys-surface));
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  // --- Score breakdown -----------------------------------------------------
+
+  &__breakdown-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  &__subhead {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__formula {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__breakdown-note {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__factors {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__factor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 0;
+
+    & + & {
+      border-top: 1px solid var(--mat-sys-outline-variant);
+    }
+  }
+
+  &__factor-head {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__factor-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__weight {
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__factor-value {
+    min-width: 3rem;
+    text-align: right;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  &__factor-foot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  &__track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
+    overflow: hidden;
+  }
+
+  &__track-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--mat-sys-primary);
+  }
+
+  &__pts {
+    white-space: nowrap;
+    font-size: 0.92rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    strong {
+      font-weight: 700;
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  // --- Weighted total ------------------------------------------------------
+
+  &__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &__total-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__total-sub {
+    margin: 0.2rem 0 0;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__total-value {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &__total-max {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  // --- Assessment ----------------------------------------------------------
+
+  &__assessment-note {
+    margin: 0.35rem 0 1rem;
+    font-size: 0.95rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__relevance {
+    display: inline-flex;
+  }
+
+  // --- Footer --------------------------------------------------------------
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  &__view-job {
+    flex: 0 0 auto;
+  }
+
+  &__refer {
+    flex: 1 1 auto;
+  }
+
+  @media (max-width: 560px) {
+    &__body {
+      gap: 1.25rem;
+      padding: 1.25rem;
+    }
+
+    &__summary {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    &__factor-label {
+      font-size: 0.95rem;
+    }
+  }
+}

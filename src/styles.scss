@@ -156,6 +156,24 @@ body {
   }
 }
 
+// Applicant-vs-job comparison dialog: a full-window, edge-to-edge surface whose
+// own top bar / body manage all internal spacing (see comparison.component).
+.comparison-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--mat-sys-surface);
+  }
+
+  .mat-mdc-dialog-container {
+    --mat-dialog-container-max-width: 100vw;
+  }
+}
+
 // Searchable company select: the panel renders in an overlay (outside the
 // component view), so its search box is styled globally via `panelClass`.
 .job-form__company-panel {

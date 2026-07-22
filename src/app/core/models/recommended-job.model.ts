@@ -32,11 +32,18 @@ export const RecommendedJobJobSchema = z.object({
   status: JobStatusSchema,
   location: z.string().nullable(),
   salary_per_month: z.number().int().nullable(),
+  no_of_vacancies: z.number().int().default(0),
+  skills_required: z.array(z.string()).default([]),
+  experience_required: z.string().nullable().default(null),
+  minimum_education_attainment: z.array(z.string()).default([]),
+  age_range: z.string().nullable().default(null),
+  sex: z.string().nullable().default(null),
+  civil_status: z.array(z.string()).default([]),
   company: RecommendedJobCompanySchema.nullable(),
 });
 
-// Unknown keys (e.g. the large `embedded_applicant` / `embedded_job` vectors)
-// are stripped by zod — the client never needs them.
+// The dense `embedded_applicant` / `embedded_job` vectors power the résumé vs
+// job "vector comparison" chart; every other unknown key is stripped by zod.
 export const RecommendedJobSchema = z.object({
   id: z.uuid(),
   applicant_id: z.uuid().nullable(),
@@ -44,6 +51,8 @@ export const RecommendedJobSchema = z.object({
   score: z.number().int(),
   is_relevant: z.boolean(),
   status: RecommendedJobStatusSchema,
+  embedded_applicant: z.array(z.number()).default([]),
+  embedded_job: z.array(z.number()).default([]),
   key_matched: z.array(z.string()),
   job: RecommendedJobJobSchema.nullable(),
   date_registered: z.string(),

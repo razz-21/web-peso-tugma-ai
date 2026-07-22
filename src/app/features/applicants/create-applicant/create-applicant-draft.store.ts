@@ -48,6 +48,7 @@ const STEP_FIELDS: Record<WizardStepKey, (keyof ApplicantDraft)[]> = {
     'suffix',
     'date_of_birth',
     'sex',
+    'civil_status',
     'citizenship',
     'height_in_cm',
     'weight_in_kg',

@@ -46,6 +46,7 @@ export type ApplicantDraft = {
   suffix: string;
   date_of_birth: Date | null;
   sex: Sex | '';
+  civil_status: string;
   citizenship: string;
   height_in_cm: number | null;
   weight_in_kg: number | null;
@@ -105,6 +106,7 @@ export const INITIAL_DRAFT: ApplicantDraft = {
   suffix: '',
   date_of_birth: null,
   sex: '',
+  civil_status: '',
   citizenship: '',
   height_in_cm: null,
   weight_in_kg: null,
@@ -175,6 +177,7 @@ export const draftToPayload = (draft: ApplicantDraft, sameAsPresent: boolean): A
     suffix: clean(draft.suffix),
     date_of_birth: toDateString(draft.date_of_birth),
     sex: draft.sex === '' ? undefined : draft.sex,
+    civil_status: clean(draft.civil_status),
     citizenship: clean(draft.citizenship),
     height_in_cm: draft.height_in_cm ?? undefined,
     weight_in_kg: draft.weight_in_kg ?? undefined,
@@ -282,6 +285,7 @@ export const applicantToDraft = (applicant: ApplicantGet): ApplicantDraft => ({
   suffix: applicant.suffix ?? '',
   date_of_birth: parseDate(applicant.date_of_birth),
   sex: applicant.sex ?? '',
+  civil_status: applicant.civil_status ?? '',
   citizenship: applicant.citizenship ?? '',
   height_in_cm: applicant.height_in_cm,
   weight_in_kg: applicant.weight_in_kg,

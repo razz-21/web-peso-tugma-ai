@@ -6,6 +6,10 @@ export const NAME_MAX = 100;
 export const SexSchema = z.enum(['Male', 'Female']);
 export const SEXES = SexSchema.options;
 
+/** Selectable civil status options shown in applicant forms. Stored as a
+ *  free-form string on the backend, so this list is UI-only guidance. */
+export const CIVIL_STATUSES = ['Single', 'Married', 'Widowed', 'Separated', 'Divorced'] as const;
+
 /** Selectable employment status options shown in applicant forms. Stored as a
  *  free-form string on the backend, so this list is UI-only guidance. */
 export const EMPLOYMENT_STATUSES = [
@@ -78,6 +82,7 @@ export const ApplicantSchema = z.object({
   suffix: z.string().nullable(),
   date_of_birth: z.string().nullable(),
   sex: SexSchema.nullable(),
+  civil_status: z.string().nullable(),
   citizenship: z.string().nullable(),
   height_in_cm: z.number().nullable(),
   weight_in_kg: z.number().nullable(),
@@ -110,6 +115,7 @@ export const ApplicantPostSchema = z.object({
   suffix: z.string().nullable().optional(),
   date_of_birth: z.string().nullable().optional(),
   sex: SexSchema.nullable().optional(),
+  civil_status: z.string().nullable().optional(),
   citizenship: z.string().nullable().optional(),
   height_in_cm: z.number().nullable().optional(),
   weight_in_kg: z.number().nullable().optional(),
