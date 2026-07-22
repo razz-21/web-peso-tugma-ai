@@ -1,4 +1,8 @@
-import { RecommendationScores, RecommendedJob } from '../../core/models/recommended-job.model';
+import {
+  RecommendationScores,
+  RecommendedJob,
+  RecommendedJobStatus,
+} from '../../core/models/recommended-job.model';
 
 /** Highest MatchScore, i.e. the sum of every dimension's full weight. */
 export const MAX_MATCH_SCORE = 100;
@@ -79,10 +83,18 @@ export interface JobMatch {
   readonly ageRange: string | null;
   readonly requiredSex: string | null;
   readonly civilStatusAllowed: readonly string[];
+  /** Free-text eligibility requirement (licenses, civil-service, ...), for the comparison view. */
+  readonly eligibilityRequired: string | null;
+  /** Whether the applicant satisfies the job's eligibility requirement (computed at generation). */
+  readonly eligible: boolean;
   /** Preformatted meta line: company · location · salary. */
   readonly metaSegments: readonly string[];
   /** Human-in-the-Loop relevance flag. */
   readonly isRelevant: boolean;
+  /** Referral lifecycle status; null until the applicant is referred to this job. */
+  readonly status: RecommendedJobStatus | null;
+  /** When this recommendation was created (ISO string), for the referral timeline. */
+  readonly createdAt: string;
   /** A relevance update is in flight for this recommendation. */
   readonly updating: boolean;
   readonly tags: readonly JobMatchTag[];
@@ -128,10 +140,14 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
     ageRange: recommendation.job?.age_range ?? null,
     requiredSex: recommendation.job?.sex ?? null,
     civilStatusAllowed: recommendation.job?.civil_status ?? [],
+    eligibilityRequired: recommendation.job?.eligibility ?? null,
+    eligible: recommendation.eligible,
     metaSegments: [company?.name ?? null, location, salaryText].filter(
       (segment): segment is string => Boolean(segment),
     ),
     isRelevant: recommendation.is_relevant,
+    status: recommendation.status,
+    createdAt: recommendation.created_at,
     updating,
     // Surface the dimensions that scored well as quick chips.
     tags: breakdown

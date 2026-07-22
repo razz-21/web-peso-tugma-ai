@@ -18,22 +18,28 @@
         <mat-icon [style.color]="option.danger ? 'var(--mat-sys-error)' : null">
           {{ option.icon }}
         </mat-icon>
-        <span>{{ option.value }}</span>
+        <span>{{ option.label }}</span>
       </button>
     }
   </mat-menu>
 </div>
 
 <div class="assigned-job__row">
-  <span class="assigned-job__code assigned-job__code--primary">{{ job.code }}</span>
+  <mat-icon class="assigned-job__row-icon" aria-hidden="true">work</mat-icon>
   <div class="assigned-job__row-body">
-    <h3 class="assigned-job__row-title">{{ job.title }}</h3>
+    <h3 class="assigned-job__row-title">{{ referral().title }}</h3>
     <p class="assigned-job__row-meta">
-      <span>{{ job.company }}</span>
-      <span class="assigned-job__dot" aria-hidden="true">·</span>
-      <span>{{ job.location }}</span>
-      <span class="assigned-job__dot" aria-hidden="true">·</span>
-      <span>₱{{ job.salary | number }}/mo</span>
+      @if (referral().company; as company) {
+        <span>{{ company.name }}</span>
+      }
+      @if (referral().location; as location) {
+        <span class="assigned-job__dot" aria-hidden="true">·</span>
+        <span>{{ location }}</span>
+      }
+      @if (referral().salary !== null) {
+        <span class="assigned-job__dot" aria-hidden="true">·</span>
+        <span>₱{{ referral().salary | number }}/mo</span>
+      }
     </p>
   </div>
   <mat-icon class="assigned-job__chevron" aria-hidden="true">chevron_right</mat-icon>
@@ -41,16 +47,12 @@
 
 <dl class="assigned-job__facts">
   <div class="assigned-job__fact">
-    <dt>Assigned on</dt>
-    <dd>{{ job.assignedOn }}</dd>
-  </div>
-  <div class="assigned-job__fact">
-    <dt>Assigned by</dt>
-    <dd>{{ job.assignedBy }}</dd>
+    <dt>Status</dt>
+    <dd>{{ statusLabel() }}</dd>
   </div>
   <div class="assigned-job__fact">
     <dt>Match score</dt>
-    <dd class="assigned-job__score">{{ job.matchScore }}%</dd>
+    <dd class="assigned-job__score">{{ referral().score }}%</dd>
   </div>
 </dl>
 
@@ -77,30 +79,31 @@
         }
       </span>
       <span class="assigned-job__step-label">{{ step.label }}</span>
-      <span class="assigned-job__step-sub">{{ step.sub }}</span>
     </li>
   }
 </ol>
 
-<hr class="assigned-job__divider" />
+@if (previousRows().length > 0) {
+  <hr class="assigned-job__divider" />
 
-<div class="assigned-job__previous">
-  <h3 class="assigned-job__previous-title">Previous referrals</h3>
-  <ul class="assigned-job__previous-list">
-    @for (referral of previousReferrals; track referral.code) {
-      <li class="assigned-job__previous-item">
-        <span class="assigned-job__code">{{ referral.code }}</span>
-        <div class="assigned-job__previous-body">
-          <span class="assigned-job__previous-name">{{ referral.title }}</span>
-          <span class="assigned-job__previous-sub">{{ referral.subtitle }}</span>
-        </div>
-        <span
-          class="assigned-job__status-badge"
-          [class.assigned-job__status-badge--danger]="referral.tone === 'danger'"
-        >
-          {{ referral.status }}
-        </span>
-      </li>
-    }
-  </ul>
-</div>
+  <div class="assigned-job__previous">
+    <h3 class="assigned-job__previous-title">Previous referrals</h3>
+    <ul class="assigned-job__previous-list">
+      @for (referral of previousRows(); track referral.id) {
+        <li class="assigned-job__previous-item">
+          <mat-icon class="assigned-job__code" aria-hidden="true">work</mat-icon>
+          <div class="assigned-job__previous-body">
+            <span class="assigned-job__previous-name">{{ referral.title }}</span>
+            <span class="assigned-job__previous-sub">{{ referral.subtitle }}</span>
+          </div>
+          <span
+            class="assigned-job__status-badge"
+            [class.assigned-job__status-badge--danger]="referral.danger"
+          >
+            {{ referral.status }}
+          </span>
+        </li>
+      }
+    </ul>
+  </div>
+}

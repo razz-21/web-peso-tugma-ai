@@ -33,6 +33,7 @@ const JobFieldsSchema = z.object({
   age_range: z.string().nullable(),
   sex: SexSchema.nullable(),
   civil_status: z.array(z.string()),
+  eligibility: z.string().nullable(),
   status: JobStatusSchema,
 });
 

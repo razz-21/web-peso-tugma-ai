@@ -8,6 +8,7 @@ import {
   RecommendedJobList,
   RecommendedJobListSchema,
   RecommendedJobSchema,
+  RecommendedJobStatus,
 } from '../models/recommended-job.model';
 
 @Injectable({ providedIn: 'root' })
@@ -37,6 +38,14 @@ export class RecommendationsService {
   async setRelevance(id: string, isRelevant: boolean): Promise<RecommendedJob> {
     const body = await firstValueFrom(
       this.http.patch<RecommendedJob>(`${this.baseUrl}/${id}`, { is_relevant: isRelevant }),
+    );
+    return RecommendedJobSchema.parse(body);
+  }
+
+  /** Human-in-the-Loop: set a recommendation's referral lifecycle status. */
+  async setStatus(id: string, status: RecommendedJobStatus): Promise<RecommendedJob> {
+    const body = await firstValueFrom(
+      this.http.patch<RecommendedJob>(`${this.baseUrl}/${id}`, { status }),
     );
     return RecommendedJobSchema.parse(body);
   }

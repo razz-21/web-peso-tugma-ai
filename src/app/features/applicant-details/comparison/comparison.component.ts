@@ -65,6 +65,22 @@ interface RequirementSummary {
   readonly met: boolean;
 }
 
+/** Applicant-vs-job eligibility comparison (licenses / civil-service, ...). */
+interface EligibilityView {
+  /** Whether the job states an eligibility requirement at all. */
+  readonly hasRequirement: boolean;
+  /** The job's free-text requirement, when stated. */
+  readonly required: string | null;
+  /** Titles of the eligibilities the applicant holds. */
+  readonly applicantHeld: readonly string[];
+  /** pass = eligible, fail = not eligible, na = no requirement. */
+  readonly state: RequirementState;
+  /** Header pill text. */
+  readonly badge: string;
+  /** One-line explanation shown under the columns. */
+  readonly reason: string;
+}
+
 // "Female/Male" on either side means "no sex restriction" (mirrors the backend).
 const BOTH_SEXES = 'female/male';
 
@@ -412,6 +428,53 @@ export class ComparisonComponent {
       partialCount,
       unmetCount,
       unknownCount,
+    };
+  });
+
+  /**
+   * Eligibility comparison. `eligible` is computed and stored on the
+   * recommendation at generation time; here we pair it with the job's
+   * requirement text and the applicant's held eligibilities for display.
+   */
+  protected readonly eligibility = computed<EligibilityView>(() => {
+    const required = this.match.eligibilityRequired?.trim() ?? '';
+    const applicantHeld = this.applicant.eligibility
+      .map((item) => item.title?.trim())
+      .filter((title): title is string => Boolean(title));
+
+    if (required.length === 0) {
+      return {
+        hasRequirement: false,
+        required: null,
+        applicantHeld,
+        state: 'na',
+        badge: 'No requirement',
+        reason: 'This job lists no eligibility requirement.',
+      };
+    }
+    if (this.match.eligible) {
+      return {
+        hasRequirement: true,
+        required: this.match.eligibilityRequired,
+        applicantHeld,
+        state: 'pass',
+        badge: 'Eligible',
+        reason:
+          applicantHeld.length > 0
+            ? `Applicant holds ${joinList(applicantHeld)}.`
+            : 'Applicant meets the eligibility requirement.',
+      };
+    }
+    return {
+      hasRequirement: true,
+      required: this.match.eligibilityRequired,
+      applicantHeld,
+      state: 'fail',
+      badge: 'Not eligible',
+      reason:
+        applicantHeld.length > 0
+          ? `Applicant holds ${joinList(applicantHeld)}, which does not match the requirement.`
+          : 'Applicant has no matching eligibility on file.',
     };
   });
 

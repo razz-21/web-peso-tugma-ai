@@ -97,8 +97,15 @@
           </dl>
         </article>
 
-        <!-- Assigned job card -->
-        <app-assigned-job class="applicant-details__card" />
+        <!-- Referred job card (only once the applicant has an active referral) -->
+        @if (referral(); as referral) {
+          <app-assigned-job
+            class="applicant-details__card"
+            [referral]="referral"
+            [previous]="previousReferrals()"
+            (statusChange)="onSetStatus(referral, $event)"
+          />
+        }
 
         <!-- Recommended jobs card -->
         <article

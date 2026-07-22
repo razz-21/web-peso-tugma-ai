@@ -1,6 +1,6 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
-import { RecommendedJob } from '../../core/models/recommended-job.model';
+import { RecommendedJob, RecommendedJobStatus } from '../../core/models/recommended-job.model';
 
 export const recommendationsEvents = eventGroup({
   source: 'Recommendations',
@@ -19,5 +19,10 @@ export const recommendationsEvents = eventGroup({
     setRelevance: type<{ id: string; isRelevant: boolean }>(),
     setRelevanceSuccess: type<RecommendedJob>(),
     setRelevanceFailed: type<{ id: string; message: string }>(),
+
+    // Human-in-the-Loop referral lifecycle status for a single recommendation.
+    setStatus: type<{ id: string; status: RecommendedJobStatus }>(),
+    setStatusSuccess: type<RecommendedJob>(),
+    setStatusFailed: type<{ id: string; message: string }>(),
   },
 });

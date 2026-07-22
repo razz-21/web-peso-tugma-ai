@@ -340,6 +340,24 @@
 
   // --- Assessment ----------------------------------------------------------
 
+  &__ineligible {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--mat-sys-error) 16%, var(--mat-sys-surface));
+    color: var(--mat-sys-on-error-container);
+
+    mat-icon {
+      flex-shrink: 0;
+    }
+  }
+
   &__assessment-note {
     margin: 0.35rem 0 1rem;
     font-size: 0.95rem;

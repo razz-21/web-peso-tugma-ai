@@ -4,7 +4,10 @@ import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events
 import { mapResponse } from '@ngrx/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { exhaustMap, from, mergeMap, switchMap, tap } from 'rxjs';
-import { RecommendedJob } from '../../core/models/recommended-job.model';
+import {
+  RECOMMENDED_JOB_STATUS_LABEL,
+  RecommendedJob,
+} from '../../core/models/recommended-job.model';
 import { RecommendationsService } from '../../core/services/recommendations.service';
 import { recommendationsEvents } from './recommendations.events';
 
@@ -62,6 +65,19 @@ export const RecommendationsStore = signalStore(
       updatingIds: state.updatingIds.filter((id) => id !== payload.id),
       error: payload.message,
     })),
+
+    on(recommendationsEvents.setStatus, ({ payload }, state) => ({
+      updatingIds: [...state.updatingIds, payload.id],
+      error: null,
+    })),
+    on(recommendationsEvents.setStatusSuccess, ({ payload }, state) => ({
+      items: state.items.map((item) => (item.id === payload.id ? payload : item)),
+      updatingIds: state.updatingIds.filter((id) => id !== payload.id),
+    })),
+    on(recommendationsEvents.setStatusFailed, ({ payload }, state) => ({
+      updatingIds: state.updatingIds.filter((id) => id !== payload.id),
+      error: payload.message,
+    })),
   ),
   withEventHandlers(
     (
@@ -110,6 +126,20 @@ export const RecommendationsStore = signalStore(
           ),
         ),
       ),
+      setStatus$: events.on(recommendationsEvents.setStatus).pipe(
+        mergeMap(({ payload }) =>
+          from(recommendationsService.setStatus(payload.id, payload.status)).pipe(
+            mapResponse({
+              next: (recommendation) => recommendationsEvents.setStatusSuccess(recommendation),
+              error: (error: unknown) =>
+                recommendationsEvents.setStatusFailed({
+                  id: payload.id,
+                  message: errorMessage(error, 'Failed to update referral status.'),
+                }),
+            }),
+          ),
+        ),
+      ),
       generateSuccess$: events
         .on(recommendationsEvents.generateSuccess)
         .pipe(
@@ -134,11 +164,24 @@ export const RecommendationsStore = signalStore(
             ),
           ),
         ),
+      setStatusSuccess$: events
+        .on(recommendationsEvents.setStatusSuccess)
+        .pipe(
+          tap(({ payload }) =>
+            snackBar.open(
+              payload.status
+                ? `Status updated to ${RECOMMENDED_JOB_STATUS_LABEL[payload.status]}`
+                : 'Referral status cleared',
+              'Close',
+              { duration: 2000 },
+            ),
+          ),
+        ),
       failures$: events
         .on(recommendationsEvents.loadFailed, recommendationsEvents.generateFailed)
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
       relevanceFailure$: events
-        .on(recommendationsEvents.setRelevanceFailed)
+        .on(recommendationsEvents.setRelevanceFailed, recommendationsEvents.setStatusFailed)
         .pipe(tap(({ payload }) => snackBar.open(payload.message, 'Close', { duration: 3000 }))),
     }),
   ),

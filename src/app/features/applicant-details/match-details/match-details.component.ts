@@ -68,6 +68,22 @@ export class MatchDetailsComponent {
 
   protected readonly maxScore = MAX_MATCH_SCORE;
 
+  /**
+   * Ineligibility notice shown under Assessment. Null when the applicant meets
+   * the job's eligibility requirement (or the job states none), so the message
+   * only appears when there is a real eligibility gap.
+   */
+  protected readonly eligibilityNotice = computed<string | null>(() => {
+    const match = this.match();
+    if (match.eligible) {
+      return null;
+    }
+    const requirement = match.eligibilityRequired?.trim();
+    return requirement
+      ? `This applicant is not eligible for this job, which requires ${requirement}.`
+      : 'This applicant is not eligible for this job.';
+  });
+
   /** Header meta line under the company: salary · location. */
   protected readonly metaSegments = computed<readonly string[]>(() => {
     const match = this.match();

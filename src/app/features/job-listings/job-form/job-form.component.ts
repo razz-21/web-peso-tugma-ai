@@ -59,6 +59,7 @@ type JobFormValue = {
   age_range: string;
   sex: Sex | '';
   civil_status: string[];
+  eligibility: string;
 };
 
 const INITIAL_VALUE: JobFormValue = {
@@ -73,6 +74,7 @@ const INITIAL_VALUE: JobFormValue = {
   age_range: '',
   sex: '',
   civil_status: [],
+  eligibility: '',
 };
 
 @Component({
@@ -149,6 +151,7 @@ export class JobFormComponent {
           age_range: this.job.age_range ?? '',
           sex: this.job.sex ?? '',
           civil_status: this.job.civil_status ?? [],
+          eligibility: this.job.eligibility ?? '',
         }
       : { ...INITIAL_VALUE, company_id: this.lockedCompany?.id ?? '' },
   );
@@ -223,6 +226,7 @@ export class JobFormComponent {
     const description = value.description.trim();
     const ageRange = value.age_range.trim();
     const location = value.location.trim();
+    const eligibility = value.eligibility.trim();
 
     const fields = {
       title: value.title.trim(),
@@ -238,6 +242,7 @@ export class JobFormComponent {
       age_range: ageRange || null,
       sex: value.sex || null,
       civil_status: value.civil_status,
+      eligibility: eligibility || null,
     };
 
     if (this.job) {

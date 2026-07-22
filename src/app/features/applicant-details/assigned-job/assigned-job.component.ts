@@ -1,13 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-
-type ReferralStatus = 'Referred' | 'Interview scheduled' | 'Hired' | 'Withdrawn' | 'Not hired';
+import {
+  RECOMMENDED_JOB_STATUS_LABEL,
+  RecommendedJobStatus,
+} from '../../../core/models/recommended-job.model';
+import { JobMatch } from '../job-match.model';
 
 interface StatusOption {
-  readonly value: ReferralStatus;
+  readonly value: RecommendedJobStatus;
+  readonly label: string;
   readonly icon: string;
   readonly danger?: boolean;
 }
@@ -16,35 +20,31 @@ type StepState = 'done' | 'current' | 'pending' | 'failed' | 'withdrawn';
 
 interface StepNode {
   readonly label: string;
-  readonly sub: string;
   readonly state: StepState;
   /** Color of the connector line to the next step. */
   readonly line?: 'green' | 'red';
 }
 
-interface PreviousReferral {
-  readonly code: string;
+interface PreviousRow {
+  readonly id: string;
   readonly title: string;
   readonly subtitle: string;
   readonly status: string;
-  readonly tone: 'neutral' | 'danger';
+  readonly danger: boolean;
 }
 
-const STATUS_INDEX: Record<ReferralStatus, number> = {
-  Referred: 0,
-  'Interview scheduled': 1,
-  Hired: 2,
-  Withdrawn: 0,
-  'Not hired': 0,
+/** Position of each status on the Referred → Interview → Hired timeline. */
+const STATUS_INDEX: Record<RecommendedJobStatus, number> = {
+  referred: 0,
+  interview_scheduled: 1,
+  hired: 2,
+  withdrawn: 0,
+  not_hired: 0,
 };
 
-const STEP_META: readonly { label: string; sub: string }[] = [
-  { label: 'Referred', sub: 'Jul 13' },
-  { label: 'Interview', sub: 'Jul 15' },
-  { label: 'Hired', sub: 'Pending' },
-];
+const STEP_LABELS: readonly string[] = ['Referred', 'Interview', 'Hired'];
 
-/** Assigned job card with a status timeline and previous referrals (mock data). */
+/** Referred-job card: tracks and advances a recommendation's referral status. */
 @Component({
   selector: 'app-assigned-job',
   imports: [DecimalPipe, MatButtonModule, MatIconModule, MatMenuModule],
@@ -53,66 +53,59 @@ const STEP_META: readonly { label: string; sub: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignedJobComponent {
+  /** The active referral this card tracks (status is guaranteed non-null). */
+  readonly referral = input.required<JobMatch>();
+  /** Earlier referrals for the same applicant, shown as history. */
+  readonly previous = input<readonly JobMatch[]>([]);
+  /** Emitted when the officer picks a new status from the menu. */
+  readonly statusChange = output<RecommendedJobStatus>();
+
   protected readonly statusOptions: readonly StatusOption[] = [
-    { value: 'Referred', icon: 'send' },
-    { value: 'Interview scheduled', icon: 'calendar_today' },
-    { value: 'Hired', icon: 'check' },
-    { value: 'Withdrawn', icon: 'undo' },
-    { value: 'Not hired', icon: 'close', danger: true },
+    { value: 'referred', label: 'Referred', icon: 'send' },
+    { value: 'interview_scheduled', label: 'Interview scheduled', icon: 'calendar_today' },
+    { value: 'hired', label: 'Hired', icon: 'check' },
+    { value: 'withdrawn', label: 'Withdrawn', icon: 'undo' },
+    { value: 'not_hired', label: 'Not hired', icon: 'close', danger: true },
   ];
 
-  protected readonly job = {
-    code: 'C1',
-    title: 'Frontend Developer',
-    company: 'Company 1sadadasd',
-    location: 'Cagayan de Oro City',
-    salary: 100000,
-    assignedOn: 'Jul 13, 2026',
-    assignedBy: 'Ernesto Razo',
-    matchScore: 96,
-  };
+  /** Current status, defaulting to 'referred' (the referral is always set). */
+  protected readonly status = computed<RecommendedJobStatus>(
+    () => this.referral().status ?? 'referred',
+  );
 
-  protected readonly previousReferrals: readonly PreviousReferral[] = [
-    {
-      code: 'C3',
-      title: 'Jpb asdasd',
-      subtitle: 'Company 3 · Referred Mar 2, 2026',
-      status: 'Not hired',
-      tone: 'danger',
-    },
-    {
-      code: 'CP',
-      title: 'IT Support Specialist',
-      subtitle: 'Cebu Pacific Logistics · Referred Jan 18, 2026',
-      status: 'Withdrawn',
-      tone: 'neutral',
-    },
-  ];
+  protected readonly statusLabel = computed(() => RECOMMENDED_JOB_STATUS_LABEL[this.status()]);
 
-  protected readonly status = signal<ReferralStatus>('Referred');
+  protected readonly previousRows = computed<readonly PreviousRow[]>(() =>
+    this.previous().map((match) => ({
+      id: match.recommendationId,
+      title: match.title,
+      subtitle: match.company?.name ?? match.location ?? '',
+      status: RECOMMENDED_JOB_STATUS_LABEL[match.status ?? 'referred'],
+      danger: match.status === 'not_hired' || match.status === 'withdrawn',
+    })),
+  );
 
   protected readonly steps = computed<StepNode[]>(() => {
     const status = this.status();
 
     // "Not hired" / "Withdrawn" are terminal outcomes: the first two steps are
     // completed and the final step is replaced with the terminal node.
-    let base: { label: string; sub: string; state: StepState }[];
-    if (status === 'Not hired' || status === 'Withdrawn') {
+    let base: { label: string; state: StepState }[];
+    if (status === 'not_hired' || status === 'withdrawn') {
       base = [
-        { label: 'Referred', sub: 'Jul 13', state: 'done' },
-        { label: 'Interview', sub: 'Jul 15', state: 'done' },
+        { label: 'Referred', state: 'done' },
+        { label: 'Interview', state: 'done' },
         {
-          label: status,
-          sub: 'Jul 16',
-          state: status === 'Not hired' ? 'failed' : 'withdrawn',
+          label: RECOMMENDED_JOB_STATUS_LABEL[status],
+          state: status === 'not_hired' ? 'failed' : 'withdrawn',
         },
       ];
     } else {
-      base = STEP_META.map((meta, index) => {
-        const activeIndex = STATUS_INDEX[status];
+      const activeIndex = STATUS_INDEX[status];
+      base = STEP_LABELS.map((label, index) => {
         const state: StepState =
           index < activeIndex ? 'done' : index === activeIndex ? 'current' : 'pending';
-        return { ...meta, state };
+        return { label, state };
       });
     }
 
@@ -132,8 +125,9 @@ export class AssignedJobComponent {
     });
   });
 
-  protected setStatus(status: ReferralStatus): void {
-    // TODO: persist the referral status once the backend endpoint exists.
-    this.status.set(status);
+  protected setStatus(status: RecommendedJobStatus): void {
+    if (status !== this.status()) {
+      this.statusChange.emit(status);
+    }
   }
 }

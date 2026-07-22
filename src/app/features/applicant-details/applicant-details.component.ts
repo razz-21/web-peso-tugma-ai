@@ -21,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { injectDispatch } from '@ngrx/signals/events';
 import { Address, ApplicantGet } from '../../core/models/applicant.model';
+import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
 import { APP_ROUTES } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import {
@@ -104,6 +105,23 @@ export class ApplicantDetailsComponent implements OnInit {
   });
 
   protected readonly generating = computed(() => this.recommendationsStore.generating());
+
+  /**
+   * The applicant's active referral: the highest-scored recommendation the
+   * officer has acted on (status set). `recommendations()` is score-sorted, so
+   * the first with a status is the top one. Null until someone is referred.
+   */
+  protected readonly referral = computed<JobMatch | null>(
+    () => this.recommendations().find((match) => match.status !== null) ?? null,
+  );
+
+  /** Other recommendations that have a referral status, shown as history. */
+  protected readonly previousReferrals = computed<readonly JobMatch[]>(() => {
+    const activeId = this.referral()?.recommendationId;
+    return this.recommendations().filter(
+      (match) => match.status !== null && match.recommendationId !== activeId,
+    );
+  });
 
   /** When the current recommendations were generated, shown in the card footer. */
   protected readonly generatedAt = computed<Date | null>(() => {
@@ -315,6 +333,14 @@ export class ApplicantDetailsComponent implements OnInit {
     this.recommendationsDispatch.setRelevance({ id: match.recommendationId, isRelevant });
   }
 
+  /** Advance a referral's lifecycle status (Referred → Interview → Hired, …). */
+  protected onSetStatus(match: JobMatch, status: RecommendedJobStatus): void {
+    if (match.updating) {
+      return;
+    }
+    this.recommendationsDispatch.setStatus({ id: match.recommendationId, status });
+  }
+
   protected onViewComparison(match: JobMatch): void {
     const applicant = this.applicant();
     if (!applicant) {
@@ -334,10 +360,44 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferApplicant(match: JobMatch): void {
-    // TODO: wire to the referral flow once the endpoint is available.
-    this.snackBar.open(`Referral for "${match.title}" isn't available yet.`, 'Close', {
-      duration: 3000,
-    });
+    // Referring an ineligible applicant is allowed but guarded: confirm first,
+    // surfacing why the applicant failed the job's eligibility requirement.
+    if (!match.eligible) {
+      const requirement = match.eligibilityRequired?.trim();
+      const reason = requirement
+        ? `they are not eligible for this job, which requires <strong>${requirement}</strong>`
+        : 'they are not eligible for this job';
+      const data: ConfirmDialogData = {
+        title: 'Refer despite ineligibility?',
+        message: `Are you sure you want to refer <strong>${this.fullName()}</strong>? Based on the assessment, ${reason}.`,
+        confirmLabel: 'Refer anyway',
+        destructive: true,
+      };
+
+      this.dialog
+        .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+          width: '420px',
+          maxWidth: '95vw',
+          restoreFocus: true,
+          data,
+        })
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this.sendReferral(match);
+          }
+        });
+      return;
+    }
+
+    this.sendReferral(match);
+  }
+
+  private sendReferral(match: JobMatch): void {
+    // Referring the applicant to this job starts its referral lifecycle by
+    // setting the recommendation's status to 'referred' (persisted via PATCH).
+    this.recommendationsDispatch.setStatus({ id: match.recommendationId, status: 'referred' });
   }
 
   protected onDelete(applicant: ApplicantGet): void {

@@ -5,6 +5,7 @@ import { JobStatusSchema } from './job.model';
 export const RecommendedJobStatusSchema = z.enum([
   'referred',
   'interview_scheduled',
+  'hired',
   'withdrawn',
   'not_hired',
 ]);
@@ -39,6 +40,7 @@ export const RecommendedJobJobSchema = z.object({
   age_range: z.string().nullable().default(null),
   sex: z.string().nullable().default(null),
   civil_status: z.array(z.string()).default([]),
+  eligibility: z.string().nullable().default(null),
   company: RecommendedJobCompanySchema.nullable(),
 });
 
@@ -49,8 +51,11 @@ export const RecommendedJobSchema = z.object({
   applicant_id: z.uuid().nullable(),
   scores: RecommendationScoresSchema,
   score: z.number().int(),
+  eligible: z.boolean().default(true),
   is_relevant: z.boolean(),
-  status: RecommendedJobStatusSchema,
+  // Nullable: a fresh recommendation is unassessed until an officer refers the
+  // applicant (which sets 'referred') and advances the referral lifecycle.
+  status: RecommendedJobStatusSchema.nullable(),
   embedded_applicant: z.array(z.number()).default([]),
   embedded_job: z.array(z.number()).default([]),
   key_matched: z.array(z.string()),
@@ -71,6 +76,16 @@ export const RecommendedJobListSchema = z.object({
 });
 
 export type RecommendedJobStatus = z.infer<typeof RecommendedJobStatusSchema>;
+
+/** Human-readable label for each referral lifecycle status. */
+export const RECOMMENDED_JOB_STATUS_LABEL: Record<RecommendedJobStatus, string> = {
+  referred: 'Referred',
+  interview_scheduled: 'Interview scheduled',
+  hired: 'Hired',
+  withdrawn: 'Withdrawn',
+  not_hired: 'Not hired',
+};
+
 export type RecommendationScores = z.infer<typeof RecommendationScoresSchema>;
 export type RecommendedJobCompany = z.infer<typeof RecommendedJobCompanySchema>;
 export type RecommendedJobJob = z.infer<typeof RecommendedJobJobSchema>;

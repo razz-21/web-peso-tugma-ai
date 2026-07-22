@@ -218,6 +218,18 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
+        <mat-label>Eligibility</mat-label>
+        <input
+          matInput
+          type="text"
+          autocomplete="off"
+          placeholder="e.g. Civil Service Eligible, PRC License"
+          [formField]="jobForm.eligibility"
+        />
+        <mat-hint>Required eligibility, licenses or certifications</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Skills required</mat-label>
         <mat-chip-grid #skillsGrid aria-label="Skills required">
           @for (skill of skills(); track skill) {

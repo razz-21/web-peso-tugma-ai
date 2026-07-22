@@ -78,6 +78,19 @@
     }
   </section>
 
+  <!-- Eligibility -->
+  <section class="job-panel__section">
+    <h4 class="job-panel__section-title">
+      <mat-icon aria-hidden="true">verified</mat-icon>
+      Eligibility
+    </h4>
+    @if (jobData.eligibility) {
+      <p class="job-panel__body">{{ jobData.eligibility }}</p>
+    } @else {
+      <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+  </section>
+
   <!-- Skills required -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">

@@ -167,6 +167,65 @@
       </ul>
     </section>
 
+    <!-- Eligibility (only when the job states a requirement) -->
+    @let elig = this.eligibility();
+    @if (elig.hasRequirement) {
+      <section class="comparison__req">
+        <header class="comparison__req-head">
+          <h3 class="comparison__req-title">
+            <mat-icon aria-hidden="true">verified</mat-icon>
+            Eligibility
+          </h3>
+          <span
+            class="comparison__pill"
+            [class.comparison__pill--met]="elig.state === 'pass'"
+            [class.comparison__pill--unmet]="elig.state === 'fail'"
+            [class.comparison__pill--unknown]="elig.state === 'na'"
+          >
+            <mat-icon aria-hidden="true">
+              {{
+                elig.state === 'pass' ? 'check_circle' : elig.state === 'fail' ? 'cancel' : 'remove'
+              }}
+            </mat-icon>
+            {{ elig.badge }}
+          </span>
+        </header>
+
+        <div class="comparison__req-grid">
+          <!-- Required column -->
+          <div class="comparison__col">
+            <p class="comparison__col-kicker">
+              <mat-icon aria-hidden="true">work</mat-icon>
+              Required
+            </p>
+            <p class="comparison__col-text">{{ elig.required }}</p>
+          </div>
+
+          <!-- Applicant column -->
+          <div class="comparison__col">
+            <p class="comparison__col-kicker">
+              <mat-icon aria-hidden="true">person</mat-icon>
+              Applicant has
+            </p>
+            @if (elig.applicantHeld.length > 0) {
+              <div class="comparison__chips">
+                @for (item of elig.applicantHeld; track $index) {
+                  <span class="comparison__chip comparison__chip--matched-soft">{{ item }}</span>
+                }
+              </div>
+            } @else {
+              <p class="comparison__col-text">None on file</p>
+            }
+          </div>
+        </div>
+
+        <p class="comparison__note">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          <span>{{ elig.reason }}</span>
+        </p>
+      </section>
+    }
+
     <!-- Requirement sections -->
     @for (requirement of requirements(); track requirement.key) {
       <section class="comparison__req">

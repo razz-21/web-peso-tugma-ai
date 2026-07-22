@@ -147,6 +147,18 @@
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
         </div>
+
+        <div class="job-details__card job-details__section">
+          <h3 class="job-details__section-title">
+            <mat-icon aria-hidden="true">verified</mat-icon>
+            Eligibility
+          </h3>
+          @if (job.eligibility) {
+            <p class="job-details__body">{{ job.eligibility }}</p>
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
       </div>
 
       <aside class="job-details__sidebar">

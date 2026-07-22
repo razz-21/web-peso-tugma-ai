@@ -139,6 +139,12 @@
         <mat-button-toggle [value]="true">Relevant</mat-button-toggle>
         <mat-button-toggle [value]="false">Not relevant</mat-button-toggle>
       </mat-button-toggle-group>
+      @if (eligibilityNotice(); as notice) {
+        <p class="match-details__ineligible" role="alert">
+          <mat-icon aria-hidden="true">gpp_maybe</mat-icon>
+          <span>{{ notice }}</span>
+        </p>
+      }
     </section>
   </div>
 
