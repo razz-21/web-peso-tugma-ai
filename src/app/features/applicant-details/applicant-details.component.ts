@@ -30,6 +30,9 @@ import {
 import { ApplicantDetailsStore } from '../../stores/applicant-details/applicant-details.store';
 import { applicantDetailsEvents } from '../../stores/applicant-details/applicant-details.events';
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
+import { RecommendationsStore } from '../../stores/recommendations/recommendations.store';
+import { recommendationsEvents } from '../../stores/recommendations/recommendations.events';
+import { RecommendationScores, RecommendedJob } from '../../core/models/recommended-job.model';
 import { DetailFieldComponent } from './detail-field/detail-field.component';
 import { AssignedJobComponent } from './assigned-job/assigned-job.component';
 import {
@@ -49,99 +52,101 @@ interface JobMatchTag {
   readonly label: string;
 }
 
+/** One scoring dimension shown in the match-details breakdown. */
+interface JobMatchDimension {
+  readonly label: string;
+  readonly value: number;
+  readonly icon: string;
+}
+
+/** Hiring company of a recommended job. */
+interface JobMatchCompany {
+  readonly id: string;
+  readonly name: string;
+  readonly avatar: string | null;
+}
+
 /** A single AI-ranked job recommendation shown in the Recommended jobs list. */
 interface JobMatch {
-  readonly id: string;
-  /** Fit score 0–100. */
+  /** Recommendation record id (used for relevance updates + tracking). */
+  readonly recommendationId: string;
+  /** Final MatchScore 0–100. */
   readonly score: number;
   /** Ring color, derived from the score band. */
   readonly color: string;
   readonly title: string;
-  readonly company: string;
-  readonly location: string;
-  /** Monthly salary in PHP. */
-  readonly salary: number;
+  readonly company: JobMatchCompany | null;
+  readonly location: string | null;
+  /** Monthly salary in PHP, when the job specifies one. */
+  readonly salary: number | null;
+  /** Preformatted meta line: company · location · salary. */
+  readonly metaSegments: readonly string[];
+  /** Human-in-the-Loop relevance flag. */
+  readonly isRelevant: boolean;
+  /** A relevance update is in flight for this recommendation. */
+  readonly updating: boolean;
   readonly tags: readonly JobMatchTag[];
+  readonly breakdown: readonly JobMatchDimension[];
+  readonly keyMatched: readonly string[];
 }
 
 const RING_GREEN = '#4d6a24';
 const RING_TEAL = '#3f7d88';
 const RING_AMBER = '#9a7b1e';
 
-/** Placeholder matches until the recommendation engine is wired to the backend. */
-const MOCK_MATCHES: readonly JobMatch[] = [
-  {
-    id: 'frontend-developer',
-    score: 96,
-    color: RING_GREEN,
-    title: 'Frontend Developer',
-    company: 'Company 1sadadasd',
-    location: 'Cagayan de Oro City',
-    salary: 100000,
-    tags: [
-      { icon: 'edit', label: 'Skills match' },
-      { icon: 'location_on', label: 'Preferred location' },
-      { icon: 'payments', label: 'Above expectation' },
-      { icon: 'school', label: 'Education met' },
-    ],
-  },
-  {
-    id: 'ui-ux-designer',
-    score: 91,
-    color: RING_GREEN,
-    title: 'UI/UX Designer',
-    company: 'Northwind Robotics',
-    location: 'Remote',
-    salary: 65000,
-    tags: [
-      { icon: 'edit', label: 'Skills match' },
-      { icon: 'location_on', label: 'Preferred location' },
-      { icon: 'payments', label: 'Above expectation' },
-    ],
-  },
-  {
-    id: 'web-developer',
-    score: 84,
-    color: RING_TEAL,
-    title: 'Web Developer',
-    company: 'Davao Tech Solutions',
-    location: 'Davao City',
-    salary: 55000,
-    tags: [
-      { icon: 'edit', label: 'Partial skills match' },
-      { icon: 'location_on', label: 'Preferred location' },
-      { icon: 'payments', label: 'Above expectation' },
-    ],
-  },
-  {
-    id: 'junior-software-engineer',
-    score: 76,
-    color: RING_TEAL,
-    title: 'Junior Software Engineer',
-    company: 'BrightPath Staffing',
-    location: 'Cagayan de Oro City',
-    salary: 38000,
-    tags: [
-      { icon: 'edit', label: 'Skills match' },
-      { icon: 'location_on', label: 'Preferred location' },
-      { icon: 'error_outline', label: 'Below salary expectation' },
-    ],
-  },
-  {
-    id: 'it-support-specialist',
-    score: 68,
-    color: RING_AMBER,
-    title: 'IT Support Specialist',
-    company: 'Cebu Pacific Logistics',
-    location: 'Cagayan de Oro City',
-    salary: 30000,
-    tags: [
-      { icon: 'location_on', label: 'Preferred location' },
-      { icon: 'school', label: 'Education met' },
-      { icon: 'error_outline', label: 'Different occupation' },
-    ],
-  },
+/** Ring color band for a MatchScore. */
+const ringColor = (score: number): string =>
+  score >= 85 ? RING_GREEN : score >= 70 ? RING_TEAL : RING_AMBER;
+
+/** Scoring dimensions, in display order, mapped to labels and icons. */
+const SCORE_DIMENSIONS: readonly {
+  key: keyof RecommendationScores;
+  label: string;
+  icon: string;
+}[] = [
+  { key: 'semantic_similarity', label: 'Semantic', icon: 'auto_awesome' },
+  { key: 'skills', label: 'Skills', icon: 'edit' },
+  { key: 'experience', label: 'Experience', icon: 'work' },
+  { key: 'educational_background', label: 'Education', icon: 'school' },
+  { key: 'location_preference', label: 'Location', icon: 'location_on' },
 ];
+
+/** Map a recommendation read model into the card/drawer view model. */
+const toJobMatch = (recommendation: RecommendedJob, updating: boolean): JobMatch => {
+  const scores = recommendation.scores;
+  const breakdown = SCORE_DIMENSIONS.map((dimension) => ({
+    label: dimension.label,
+    value: scores[dimension.key],
+    icon: dimension.icon,
+  }));
+  const company = recommendation.job?.company ?? null;
+  const location = recommendation.job?.location ?? null;
+  const salary = recommendation.job?.salary_per_month ?? null;
+  const salaryText = salary === null ? null : `₱${salary.toLocaleString('en-US')}/mo`;
+  return {
+    recommendationId: recommendation.id,
+    score: recommendation.score,
+    color: ringColor(recommendation.score),
+    title: recommendation.job?.title ?? 'Job',
+    company,
+    location,
+    salary,
+    metaSegments: [company?.name ?? null, location, salaryText].filter(
+      (segment): segment is string => Boolean(segment),
+    ),
+    isRelevant: recommendation.is_relevant,
+    updating,
+    // Surface the dimensions that scored well as quick chips.
+    tags: breakdown
+      .filter((dimension) => dimension.value >= 50)
+      .map((dimension) => ({
+        icon: dimension.icon,
+        label: `${dimension.label} ${dimension.value}%`,
+      })),
+    breakdown,
+    keyMatched: recommendation.key_matched,
+  };
+};
 
 const SECTIONS: readonly SectionLink[] = [
   { id: 'personal', label: 'Personal information', icon: 'person' },
@@ -170,7 +175,7 @@ const SECTIONS: readonly SectionLink[] = [
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ApplicantDetailsStore],
+  providers: [ApplicantDetailsStore, RecommendationsStore],
 })
 export class ApplicantDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
@@ -178,6 +183,8 @@ export class ApplicantDetailsComponent implements OnInit {
   protected readonly store = inject(ApplicantDetailsStore);
   private readonly dispatch = injectDispatch(applicantDetailsEvents);
   private readonly applicantsDispatch = injectDispatch(applicantsEvents);
+  private readonly recommendationsStore = inject(RecommendationsStore);
+  private readonly recommendationsDispatch = injectDispatch(recommendationsEvents);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -187,16 +194,34 @@ export class ApplicantDetailsComponent implements OnInit {
 
   protected readonly applicant = this.store.applicant;
 
-  /** Recommended jobs are generated on demand; empty until the engine is wired. */
-  protected readonly recommendations = signal<readonly JobMatch[]>([]);
-  protected readonly generating = signal(false);
+  /** AI recommendations for this applicant, ranked by MatchScore (desc). */
+  protected readonly recommendations = computed<readonly JobMatch[]>(() => {
+    const updating = new Set(this.recommendationsStore.updatingIds());
+    return [...this.recommendationsStore.items()]
+      .sort((a, b) => b.score - a.score)
+      .map((recommendation) => toJobMatch(recommendation, updating.has(recommendation.id)));
+  });
+
+  protected readonly generating = computed(() => this.recommendationsStore.generating());
+
   /** When the current recommendations were generated, shown in the card footer. */
-  protected readonly generatedAt = signal<Date | null>(null);
-  /** Match shown in the details drawer. */
-  protected readonly selectedMatch = signal<JobMatch | null>(null);
+  protected readonly generatedAt = computed<Date | null>(() => {
+    const times = this.recommendationsStore
+      .items()
+      .map((recommendation) => new Date(recommendation.created_at).getTime())
+      .filter((time) => !Number.isNaN(time));
+    return times.length > 0 ? new Date(Math.max(...times)) : null;
+  });
+
+  /** Recommendation id shown in the details drawer; the match is derived live. */
+  protected readonly selectedId = signal<string | null>(null);
+  protected readonly selectedMatch = computed<JobMatch | null>(
+    () =>
+      this.recommendations().find((match) => match.recommendationId === this.selectedId()) ?? null,
+  );
 
   protected selectMatch(match: JobMatch): void {
-    this.selectedMatch.set(match);
+    this.selectedId.set(match.recommendationId);
   }
 
   /** Section currently in view, highlighted in the Sections rail. */
@@ -339,6 +364,7 @@ export class ApplicantDetailsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.dispatch.loadApplicantDetails({ id });
+      this.recommendationsDispatch.load({ applicantId: id });
     }
   }
 
@@ -374,16 +400,18 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onGenerate(): void {
-    if (this.generating()) {
+    const applicant = this.applicant();
+    if (!applicant || this.generating()) {
       return;
     }
-    this.generating.set(true);
-    // TODO: replace the mock delay with the AI recommendation endpoint.
-    setTimeout(() => {
-      this.recommendations.set(MOCK_MATCHES);
-      this.generatedAt.set(new Date());
-      this.generating.set(false);
-    }, 700);
+    this.recommendationsDispatch.generate({ applicantId: applicant.id, topK: 5 });
+  }
+
+  protected onSetRelevance(match: JobMatch, isRelevant: boolean): void {
+    if (match.updating) {
+      return;
+    }
+    this.recommendationsDispatch.setRelevance({ id: match.recommendationId, isRelevant });
   }
 
   protected onDelete(applicant: ApplicantGet): void {

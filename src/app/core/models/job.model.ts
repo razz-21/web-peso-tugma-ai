@@ -29,6 +29,7 @@ const JobFieldsSchema = z.object({
   skills_required: z.array(z.string()),
   no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
   salary_per_month: z.number().int().nonnegative().nullable(),
+  location: z.string().nullable(),
   age_range: z.string().nullable(),
   sex: SexSchema.nullable(),
   civil_status: z.array(z.string()),

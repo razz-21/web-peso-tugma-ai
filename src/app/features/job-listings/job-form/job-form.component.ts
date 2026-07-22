@@ -52,6 +52,7 @@ type JobFormValue = {
   company_id: string;
   no_of_vacancies: number;
   salary_per_month: number | null;
+  location: string;
   minimum_education_attainment: string[];
   experience_required: string;
   description: string;
@@ -65,6 +66,7 @@ const INITIAL_VALUE: JobFormValue = {
   company_id: '',
   no_of_vacancies: 1,
   salary_per_month: null,
+  location: '',
   minimum_education_attainment: [],
   experience_required: '',
   description: '',
@@ -140,6 +142,7 @@ export class JobFormComponent {
           company_id: this.job.company?.id ?? '',
           no_of_vacancies: this.job.no_of_vacancies,
           salary_per_month: this.job.salary_per_month,
+          location: this.job.location ?? '',
           minimum_education_attainment: this.job.minimum_education_attainment ?? [],
           experience_required: this.job.experience_required ?? '',
           description: this.job.description ?? '',
@@ -219,6 +222,7 @@ export class JobFormComponent {
     const experience = value.experience_required.trim();
     const description = value.description.trim();
     const ageRange = value.age_range.trim();
+    const location = value.location.trim();
 
     const fields = {
       title: value.title.trim(),
@@ -226,6 +230,7 @@ export class JobFormComponent {
       status: this.status,
       no_of_vacancies: value.no_of_vacancies,
       salary_per_month: value.salary_per_month ?? null,
+      location: location || null,
       minimum_education_attainment: value.minimum_education_attainment,
       experience_required: experience || null,
       skills_required: this.skills(),

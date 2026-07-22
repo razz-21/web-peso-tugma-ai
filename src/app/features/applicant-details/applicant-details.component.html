@@ -11,7 +11,114 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    <div class="applicant-details__drawer-body">Match details</div>
+    <div class="applicant-details__drawer-body">
+      @if (selectedMatch(); as match) {
+        <div class="applicant-details__match-detail">
+          <div class="applicant-details__match-detail-head">
+            <div
+              class="applicant-details__ring applicant-details__drawer-ring"
+              [style.--score]="match.score"
+              [style.--ring-color]="match.color"
+            >
+              <span class="applicant-details__ring-value">{{ match.score }}%</span>
+            </div>
+            <div>
+              <h3 class="applicant-details__drawer-job">{{ match.title }}</h3>
+              @if (match.company; as company) {
+                <div class="applicant-details__drawer-company">
+                  @if (company.avatar) {
+                    <img
+                      class="applicant-details__drawer-company-avatar"
+                      [src]="company.avatar"
+                      [alt]="company.name + ' logo'"
+                      width="20"
+                      height="20"
+                      loading="lazy"
+                    />
+                  } @else {
+                    <app-avatar [name]="company.name" [seed]="company.id" [size]="20" />
+                  }
+                  <span>{{ company.name }}</span>
+                </div>
+              }
+              <p class="applicant-details__drawer-meta">
+                @if (match.location) {
+                  <span>{{ match.location }}</span>
+                }
+                @if (match.salary !== null) {
+                  @if (match.location) {
+                    <span class="applicant-details__dot" aria-hidden="true">·</span>
+                  }
+                  <span>₱{{ match.salary | number }}/mo</span>
+                }
+              </p>
+            </div>
+          </div>
+
+          <h4 class="applicant-details__drawer-subhead">Score breakdown</h4>
+          <ul class="applicant-details__breakdown">
+            @for (dimension of match.breakdown; track dimension.label) {
+              <li class="applicant-details__breakdown-row">
+                <span class="applicant-details__breakdown-label">
+                  <mat-icon aria-hidden="true">{{ dimension.icon }}</mat-icon>
+                  {{ dimension.label }}
+                </span>
+                <span class="applicant-details__breakdown-track" aria-hidden="true">
+                  <span
+                    class="applicant-details__breakdown-fill"
+                    [style.width.%]="dimension.value"
+                  ></span>
+                </span>
+                <span class="applicant-details__breakdown-value">{{ dimension.value }}%</span>
+              </li>
+            }
+          </ul>
+
+          @if (match.keyMatched.length > 0) {
+            <h4 class="applicant-details__drawer-subhead">Why it matched</h4>
+            <div class="applicant-details__chips">
+              @for (reason of match.keyMatched; track reason) {
+                <span class="applicant-details__chip">{{ reason }}</span>
+              }
+            </div>
+          }
+
+          <h4 class="applicant-details__drawer-subhead">Assessment</h4>
+          <div
+            class="applicant-details__relevance"
+            role="group"
+            aria-label="Recommendation relevance"
+          >
+            <button
+              matButton="tonal"
+              type="button"
+              class="applicant-details__relevance-btn"
+              [class.applicant-details__relevance-btn--yes]="match.isRelevant"
+              [disabled]="match.updating"
+              [attr.aria-pressed]="match.isRelevant"
+              (click)="onSetRelevance(match, true)"
+            >
+              <mat-icon>thumb_up</mat-icon>
+              Relevant
+            </button>
+            <button
+              matButton="tonal"
+              type="button"
+              class="applicant-details__relevance-btn"
+              [class.applicant-details__relevance-btn--no]="!match.isRelevant"
+              [disabled]="match.updating"
+              [attr.aria-pressed]="!match.isRelevant"
+              (click)="onSetRelevance(match, false)"
+            >
+              <mat-icon>thumb_down</mat-icon>
+              Not relevant
+            </button>
+          </div>
+        </div>
+      } @else {
+        <p class="applicant-details__muted">Select a match to see its score breakdown.</p>
+      }
+    </div>
   </mat-drawer>
 
   <mat-drawer-content class="applicant-details__content">
@@ -150,7 +257,7 @@
             </div>
           } @else {
             <ol class="applicant-details__matches">
-              @for (match of recommendations(); track match.id; let i = $index) {
+              @for (match of recommendations(); track match.recommendationId; let i = $index) {
                 <li
                   class="applicant-details__match"
                   role="button"
@@ -170,11 +277,18 @@
                   <div class="applicant-details__match-body">
                     <h3 class="applicant-details__match-title">{{ match.title }}</h3>
                     <p class="applicant-details__match-meta">
-                      <span>{{ match.company }}</span>
-                      <span class="applicant-details__dot" aria-hidden="true">·</span>
-                      <span>{{ match.location }}</span>
-                      <span class="applicant-details__dot" aria-hidden="true">·</span>
-                      <span>₱{{ match.salary | number }}/mo</span>
+                      @for (segment of match.metaSegments; track $index; let first = $first) {
+                        @if (!first) {
+                          <span class="applicant-details__dot" aria-hidden="true">·</span>
+                        }
+                        <span>{{ segment }}</span>
+                      }
+                      @if (match.isRelevant) {
+                        <span class="applicant-details__relevant-chip">
+                          <mat-icon aria-hidden="true">check_circle</mat-icon>
+                          Relevant
+                        </span>
+                      }
                     </p>
                     <div class="applicant-details__match-tags">
                       @for (tag of match.tags; track tag.label) {
