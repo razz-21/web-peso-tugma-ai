@@ -20,6 +20,7 @@ import { workspacesEvents } from '../../stores/workspaces/workspaces.events';
 import { WorkspaceFormComponent } from '../workspaces/workspace-form/workspace-form.component';
 import { WorkspaceOverviewComponent } from './workspace-overview/workspace-overview.component';
 import { MatchScoringComponent } from './match-scoring/match-scoring.component';
+import { WorkspaceMembersComponent } from './workspace-members/workspace-members.component';
 
 @Component({
   selector: 'app-workspace-details',
@@ -32,6 +33,7 @@ import { MatchScoringComponent } from './match-scoring/match-scoring.component';
     AvatarComponent,
     WorkspaceOverviewComponent,
     MatchScoringComponent,
+    WorkspaceMembersComponent,
   ],
   templateUrl: './workspace-details.component.html',
   styleUrl: './workspace-details.component.scss',

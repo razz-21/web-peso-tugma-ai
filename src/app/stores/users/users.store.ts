@@ -15,6 +15,8 @@ type UsersState = {
   loading: boolean;
   createUserLoading: boolean;
   deleteUserLoading: boolean;
+  inviteUsersLoading: boolean;
+  removeMemberLoading: boolean;
   error: string | null;
 };
 
@@ -32,6 +34,8 @@ const initialState: UsersState = {
   loading: false,
   createUserLoading: false,
   deleteUserLoading: false,
+  inviteUsersLoading: false,
+  removeMemberLoading: false,
   error: null,
 };
 
@@ -118,10 +122,33 @@ export const UsersStore = signalStore(
       createUserLoading: false,
       error: payload,
     })),
+    on(usersEvents.inviteUsers, () => ({ inviteUsersLoading: true, error: null })),
+    on(usersEvents.inviteUsersSuccess, ({ payload }, state) => {
+      const updated = new Map(payload.map((user) => [user.id, user]));
+      return {
+        users: state.users.map((user) => updated.get(user.id) ?? user),
+        inviteUsersLoading: false,
+        error: null,
+      };
+    }),
+    on(usersEvents.inviteUsersFailed, ({ payload }) => ({
+      inviteUsersLoading: false,
+      error: payload,
+    })),
     on(usersEvents.deleteUser, () => ({ deleteUserLoading: true, error: null })),
     on(usersEvents.deleteUserSuccess, () => ({ deleteUserLoading: false, error: null })),
     on(usersEvents.deleteUserFailed, ({ payload }) => ({
       deleteUserLoading: false,
+      error: payload,
+    })),
+    on(usersEvents.removeMember, () => ({ removeMemberLoading: true, error: null })),
+    on(usersEvents.removeMemberSuccess, ({ payload: id }, state) => ({
+      users: state.users.map((user) => (user.id === id ? { ...user, workspace: null } : user)),
+      removeMemberLoading: false,
+      error: null,
+    })),
+    on(usersEvents.removeMemberFailed, ({ payload }) => ({
+      removeMemberLoading: false,
       error: payload,
     })),
   ),
@@ -182,6 +209,55 @@ export const UsersStore = signalStore(
         }),
       ),
       createUserFailed$: events.on(usersEvents.createUserFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      inviteUsers$: events.on(usersEvents.inviteUsers).pipe(
+        exhaustMap(({ payload }) =>
+          from(
+            Promise.all(
+              payload.userIds.map((id) =>
+                usersService.update(id, { workspace_id: payload.workspaceId }),
+              ),
+            ),
+          ).pipe(
+            mapResponse({
+              next: (users) => usersEvents.inviteUsersSuccess(users),
+              error: (error: unknown) =>
+                usersEvents.inviteUsersFailed(errorMessage(error, 'Failed to invite members.')),
+            }),
+          ),
+        ),
+      ),
+      inviteUsersSuccess$: events.on(usersEvents.inviteUsersSuccess).pipe(
+        tap(({ payload }) => {
+          const label = payload.length === 1 ? 'member' : 'members';
+          snackBar.open(`Invited ${payload.length} ${label}`, 'Close', { duration: 3000 });
+        }),
+      ),
+      inviteUsersFailed$: events.on(usersEvents.inviteUsersFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      removeMember$: events.on(usersEvents.removeMember).pipe(
+        exhaustMap(({ payload: id }) =>
+          from(usersService.update(id, { workspace_id: null })).pipe(
+            mapResponse({
+              next: () => usersEvents.removeMemberSuccess(id),
+              error: (error: unknown) =>
+                usersEvents.removeMemberFailed(errorMessage(error, 'Failed to remove member.')),
+            }),
+          ),
+        ),
+      ),
+      removeMemberSuccess$: events.on(usersEvents.removeMemberSuccess).pipe(
+        tap(() => {
+          snackBar.open('Member removed', 'Close', { duration: 3000 });
+        }),
+      ),
+      removeMemberFailed$: events.on(usersEvents.removeMemberFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
         }),

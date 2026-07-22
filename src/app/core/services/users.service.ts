@@ -31,6 +31,9 @@ export class UsersService {
     if (params.role) {
       httpParams = httpParams.set('role', params.role);
     }
+    if (params.workspace_id) {
+      httpParams = httpParams.set('workspace_id', params.workspace_id);
+    }
 
     const body = await firstValueFrom(this.http.get<UserGet>(this.baseUrl, { params: httpParams }));
     return UserListSchema.parse(body);

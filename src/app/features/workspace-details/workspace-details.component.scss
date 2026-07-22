@@ -103,6 +103,13 @@
 
   &__tabs {
     --mat-tab-header-divider-color: var(--mat-sys-outline-variant);
+
+    // Space the icon from its label inside each tab.
+    ::ng-deep .mdc-tab__text-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
   }
 
   &__panel {

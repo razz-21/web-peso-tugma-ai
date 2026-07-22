@@ -1,0 +1,87 @@
+.invite-dialog {
+  &__header {
+    margin-bottom: 0.5rem;
+  }
+
+  &__subtitle {
+    margin: 0.25rem 1.5rem 0 1.5rem;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.5;
+  }
+
+  &__field {
+    width: 100%;
+    min-width: 26rem;
+    max-width: 100%;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__option-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+    min-width: 0;
+  }
+
+  &__option-name {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__option-email {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Workspace pill, pinned to the right of the option row.
+  &__option-workspace {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  &__status {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Center the spinner + label inside the (full-width) option row.
+  &__status-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+  }
+}
+
+// The autocomplete panel renders in an overlay (outside this component's DOM),
+// so it's reached via its unique `panelClass` with `::ng-deep`. Material gives
+// the option's primary-text wrapper `margin-right: auto` and no flex-grow, which
+// keeps it shrunk to its content — override that so it fills the option row and
+// the workspace pill sits flush at the right edge.
+::ng-deep .invite-dialog__panel .mat-mdc-option .mdc-list-item__primary-text {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  margin-right: 0;
+}
+
+@media (max-width: 520px) {
+  .invite-dialog__field {
+    min-width: 0;
+  }
+}

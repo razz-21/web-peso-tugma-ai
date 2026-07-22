@@ -1,0 +1,81 @@
+<header class="invite-dialog__header">
+  <h2 mat-dialog-title>Invite members</h2>
+  <p class="invite-dialog__subtitle">
+    Search for people by name or email and add them to <strong>{{ data.workspace.name }}</strong
+    >.
+  </p>
+</header>
+
+<mat-dialog-content class="invite-dialog">
+  <mat-form-field appearance="outline" class="invite-dialog__field">
+    <mat-label>People</mat-label>
+    <mat-chip-grid #chipGrid aria-label="Selected people">
+      @for (user of selected(); track user.id) {
+        <mat-chip-row (removed)="remove(user)">
+          <app-avatar matChipAvatar [name]="user.fullname" [seed]="user.email" [size]="24" />
+          {{ user.fullname }}
+          <button matChipRemove [attr.aria-label]="'Remove ' + user.fullname">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+      <input
+        #searchInput
+        placeholder="Search by name or email..."
+        autocomplete="off"
+        [matChipInputFor]="chipGrid"
+        [matAutocomplete]="auto"
+        (input)="onSearch($event)"
+      />
+    </mat-chip-grid>
+
+    <mat-autocomplete #auto panelClass="invite-dialog__panel" (optionSelected)="onSelected($event)">
+      @if (loading()) {
+        <mat-option class="invite-dialog__status" disabled>
+          <span class="invite-dialog__status-content">
+            <mat-progress-spinner mode="indeterminate" diameter="18" aria-hidden="true" />
+            <span>Searching...</span>
+          </span>
+        </mat-option>
+      } @else if (options().length === 0) {
+        <mat-option class="invite-dialog__status" disabled>
+          <span class="invite-dialog__status-content">No people found</span>
+        </mat-option>
+      } @else {
+        @for (user of options(); track user.id) {
+          <mat-option [value]="user" [disabled]="!!user.workspace">
+            <div class="invite-dialog__option">
+              <app-avatar [name]="user.fullname" [seed]="user.email" [size]="32" />
+              <span class="invite-dialog__option-text">
+                <span class="invite-dialog__option-name">{{ user.fullname }}</span>
+                <span class="invite-dialog__option-email">{{ user.email }}</span>
+              </span>
+              @if (user.workspace; as workspace) {
+                <span class="invite-dialog__option-workspace">{{ workspace.name }}</span>
+              }
+            </div>
+          </mat-option>
+        }
+      }
+    </mat-autocomplete>
+
+    <mat-hint>Showing up to 6 matches.</mat-hint>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton="tonal" type="button" (click)="cancel()" [disabled]="inviting()">Cancel</button>
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="selected().length === 0 || inviting()"
+    (click)="invite()"
+  >
+    @if (inviting()) {
+      <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+      <span>Inviting...</span>
+    } @else {
+      <span>Invite{{ selected().length ? ' (' + selected().length + ')' : '' }}</span>
+    }
+  </button>
+</mat-dialog-actions>

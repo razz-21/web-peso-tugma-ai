@@ -21,5 +21,13 @@ export const usersEvents = eventGroup({
     createUser: type<UserPost>(),
     createUserSuccess: type<UserGet>(),
     createUserFailed: type<string>(),
+
+    inviteUsers: type<{ userIds: string[]; workspaceId: string }>(),
+    inviteUsersSuccess: type<UserGet[]>(),
+    inviteUsersFailed: type<string>(),
+
+    removeMember: type<string>(),
+    removeMemberSuccess: type<string>(),
+    removeMemberFailed: type<string>(),
   },
 });

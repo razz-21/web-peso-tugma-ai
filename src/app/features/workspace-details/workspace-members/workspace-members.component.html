@@ -1,0 +1,96 @@
+<section class="workspace-members">
+  <header class="workspace-members__intro">
+    <div class="workspace-members__intro-text">
+      <h2 class="workspace-members__title">Members</h2>
+      <p class="workspace-members__lead">
+        People who can access this workspace and act on its applicants and jobs.
+      </p>
+    </div>
+    <button
+      matButton="filled"
+      type="button"
+      class="workspace-members__invite"
+      (click)="openInvite()"
+    >
+      <mat-icon>person_add</mat-icon>
+      Invite member
+    </button>
+  </header>
+
+  <div class="app-table">
+    <table mat-table [dataSource]="loading() ? [] : members()" class="app-table__table">
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
+        <td mat-cell *matCellDef="let member">
+          <div class="workspace-members__user">
+            <app-avatar [name]="member.fullname" [seed]="member.email" />
+            <div class="workspace-members__identity">
+              <span class="workspace-members__name">{{ member.fullname }}</span>
+              <span class="workspace-members__email">{{ member.email }}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Role -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef scope="col">Role</th>
+        <td mat-cell *matCellDef="let member">{{ roleLabel(member) }}</td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+        <td mat-cell *matCellDef="let member">
+          <span
+            class="workspace-members__badge"
+            [class.workspace-members__badge--active]="member.status === 'active'"
+            [class.workspace-members__badge--invited]="member.status === 'inactive'"
+          >
+            {{ statusLabel(member) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Joined -->
+      <ng-container matColumnDef="joined">
+        <th mat-header-cell *matHeaderCellDef scope="col">Joined</th>
+        <td mat-cell *matCellDef="let member">{{ member.created_at | date: 'MMM d, y' }}</td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+        <td mat-cell *matCellDef="let member">
+          <div class="app-table__actions">
+            <button
+              mat-icon-button
+              type="button"
+              [disabled]="removing()"
+              [attr.aria-label]="'Remove ' + member.fullname"
+              (click)="onRemove(member)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let member; columns: displayedColumns"></tr>
+    </table>
+
+    @if (loading()) {
+      <div class="app-table__status" role="status">
+        <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+        <p class="app-table__status-text">Loading members...</p>
+      </div>
+    } @else if (members().length === 0) {
+      <div class="app-table__status">
+        <mat-icon class="app-table__status-icon" aria-hidden="true">group_off</mat-icon>
+        <p class="app-table__status-text">No members</p>
+      </div>
+    }
+  </div>
+</section>

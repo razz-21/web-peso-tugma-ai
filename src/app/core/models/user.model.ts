@@ -8,6 +8,12 @@ export const UserStatusSchema = z.enum(['active', 'inactive']);
 
 export const USER_STATUSES = UserStatusSchema.options;
 
+/** Lightweight workspace reference embedded in user reads. */
+export const WorkspaceRefSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+});
+
 export const UserSchema = z.object({
   id: z.uuid(),
   fullname: z.string().min(1).max(100),
@@ -21,7 +27,11 @@ export const UserSchema = z.object({
   updated_at: z.string(),
 });
 
-export const UserGetSchema = UserSchema.omit({ password: true });
+// Reads expose the resolved `workspace` (id + name) instead of the raw
+// `workspace_id`; writes (POST/PATCH) still use `workspace_id`.
+export const UserGetSchema = UserSchema.omit({ password: true, workspace_id: true }).extend({
+  workspace: WorkspaceRefSchema.nullable().default(null),
+});
 
 export const UserPostSchema = UserSchema;
 
@@ -50,6 +60,7 @@ export interface ListUsersParams {
   offset?: number;
   q?: string;
   role?: UserRole;
+  workspace_id?: string;
 }
 
 export type UserRole = z.infer<typeof UserRoleSchema>;
@@ -60,6 +71,7 @@ export type UserList = z.infer<typeof UserListSchema>;
 export type UserPatch = z.infer<typeof UserPatchSchema>;
 export type MePatch = z.infer<typeof MePatchSchema>;
 export type UserGet = z.infer<typeof UserGetSchema>;
+export type WorkspaceRef = z.infer<typeof WorkspaceRefSchema>;
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   super_admin: 'Super Admin',
