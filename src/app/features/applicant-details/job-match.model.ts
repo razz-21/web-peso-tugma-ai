@@ -75,7 +75,7 @@ export interface JobMatch {
   readonly skillsRequired: readonly string[];
   readonly experienceRequired: string | null;
   readonly educationRequired: readonly string[];
-  /** Hard eligibility constraints, for the comparison view's eligibility card. */
+  /** Hard primary-requirement constraints, for the comparison view's requirements card. */
   readonly ageRange: string | null;
   readonly requiredSex: string | null;
   readonly civilStatusAllowed: readonly string[];

@@ -48,21 +48,21 @@ interface ComparisonSummary {
   readonly unknownCount: number;
 }
 
-/** Outcome of a single hard-eligibility gate. */
-type EligibilityState = 'pass' | 'fail' | 'na' | 'unknown';
+/** Outcome of a single hard primary-requirement gate. */
+type RequirementState = 'pass' | 'fail' | 'na' | 'unknown';
 
-/** One eligibility gate row (vacancies / age / sex / civil status). */
-interface EligibilityRow {
+/** One primary-requirement gate row (vacancies / age / sex / civil status). */
+interface RequirementRow {
   readonly key: string;
   readonly label: string;
   readonly icon: string;
-  readonly state: EligibilityState;
+  readonly state: RequirementState;
   readonly reason: string;
 }
 
-interface EligibilitySummary {
-  readonly rows: readonly EligibilityRow[];
-  readonly eligible: boolean;
+interface RequirementSummary {
+  readonly rows: readonly RequirementRow[];
+  readonly met: boolean;
 }
 
 // "Female/Male" on either side means "no sex restriction" (mirrors the backend).
@@ -415,18 +415,18 @@ export class ComparisonComponent {
     };
   });
 
-  /** Hard eligibility gates enforced during generation, shown with reasons. */
-  protected readonly eligibility = computed<EligibilitySummary>(() => {
-    const rows: EligibilityRow[] = [
+  /** Hard primary-requirement gates enforced during generation, shown with reasons. */
+  protected readonly primaryRequirements = computed<RequirementSummary>(() => {
+    const rows: RequirementRow[] = [
       this.vacancyRow(),
       this.ageRow(),
       this.sexRow(),
       this.civilStatusRow(),
     ];
-    return { rows, eligible: rows.every((row) => row.state !== 'fail') };
+    return { rows, met: rows.every((row) => row.state !== 'fail') };
   });
 
-  private vacancyRow(): EligibilityRow {
+  private vacancyRow(): RequirementRow {
     const vacancies = this.match.vacancies;
     const base = { key: 'vacancies', label: 'Vacancies', icon: 'event_seat' } as const;
     if (vacancies === null) {
@@ -442,7 +442,7 @@ export class ComparisonComponent {
     return { ...base, state: 'fail', reason: 'No open positions left' };
   }
 
-  private ageRow(): EligibilityRow {
+  private ageRow(): RequirementRow {
     const base = { key: 'age', label: 'Age range', icon: 'cake' } as const;
     const ageRange = this.match.ageRange?.trim() ?? '';
     if (ageRange.length === 0) {
@@ -464,7 +464,7 @@ export class ComparisonComponent {
       : { ...base, state: 'fail', reason: `Age ${age} is outside ${label}` };
   }
 
-  private sexRow(): EligibilityRow {
+  private sexRow(): RequirementRow {
     const base = { key: 'sex', label: 'Sex', icon: 'wc' } as const;
     const required = this.match.requiredSex?.trim() ?? '';
     if (required.length === 0 || required.toLowerCase() === BOTH_SEXES) {
@@ -482,7 +482,7 @@ export class ComparisonComponent {
       : { ...base, state: 'fail', reason: `Requires ${required}, applicant is ${applicantSex}` };
   }
 
-  private civilStatusRow(): EligibilityRow {
+  private civilStatusRow(): RequirementRow {
     const base = { key: 'civil_status', label: 'Civil status', icon: 'diversity_1' } as const;
     const allowed = this.match.civilStatusAllowed;
     if (allowed.length === 0) {

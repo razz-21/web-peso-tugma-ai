@@ -7,7 +7,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface-variant);
 
   // --- Top bar -------------------------------------------------------------
@@ -21,7 +20,6 @@
     gap: 0.5rem;
     flex-shrink: 0;
     padding: 0.75rem 1.5rem;
-    background: var(--mat-sys-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
@@ -246,16 +244,16 @@
     }
   }
 
-  // --- Eligibility ---------------------------------------------------------
+  // --- Primary requirements ------------------------------------------------
 
-  &__eligibility {
+  &__requirements {
     border-radius: 1.25rem;
     background: var(--mat-sys-surface-container-lowest);
     border: 1px solid var(--mat-sys-outline-variant);
     overflow: hidden;
   }
 
-  &__eligibility-head {
+  &__requirements-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -264,7 +262,7 @@
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
-  &__eligibility-title {
+  &__requirements-title {
     display: flex;
     align-items: center;
     gap: 0.6rem;

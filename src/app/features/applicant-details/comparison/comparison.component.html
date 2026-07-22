@@ -108,27 +108,27 @@
       </div>
     </section>
 
-    <!-- Eligibility gates -->
-    @let eligibility = this.eligibility();
-    <section class="comparison__eligibility">
-      <header class="comparison__eligibility-head">
-        <h3 class="comparison__eligibility-title">
+    <!-- Primary requirement gates -->
+    @let primaryReqs = this.primaryRequirements();
+    <section class="comparison__requirements">
+      <header class="comparison__requirements-head">
+        <h3 class="comparison__requirements-title">
           <mat-icon aria-hidden="true">verified_user</mat-icon>
-          Eligibility
+          Primary requirements
         </h3>
         <span
           class="comparison__pill"
-          [class.comparison__pill--met]="eligibility.eligible"
-          [class.comparison__pill--unmet]="!eligibility.eligible"
+          [class.comparison__pill--met]="primaryReqs.met"
+          [class.comparison__pill--unmet]="!primaryReqs.met"
         >
           <mat-icon aria-hidden="true">
-            {{ eligibility.eligible ? 'check_circle' : 'cancel' }}
+            {{ primaryReqs.met ? 'check_circle' : 'cancel' }}
           </mat-icon>
-          {{ eligibility.eligible ? 'Eligible' : 'Not eligible' }}
+          {{ primaryReqs.met ? 'Met' : 'Not met' }}
         </span>
       </header>
       <ul class="comparison__gates">
-        @for (gate of eligibility.rows; track gate.key) {
+        @for (gate of primaryReqs.rows; track gate.key) {
           <li class="comparison__gate">
             <mat-icon class="comparison__gate-icon" aria-hidden="true">{{ gate.icon }}</mat-icon>
             <div class="comparison__gate-body">

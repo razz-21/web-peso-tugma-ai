@@ -120,7 +120,7 @@ body {
 // than the themed cream. Individual dialogs can still override via their own
 // panelClass with a more specific selector.
 .mat-mdc-dialog-surface {
-  background: var(--mat-sys-surface-container-lowest);
+  background: var(--mat-sys-surface-container-lowest) !important;
 }
 
 // Job form dialog: full-page surface. The panel fills the viewport, drops its
@@ -166,7 +166,7 @@ body {
     flex-direction: column;
     border-radius: 0;
     overflow: hidden;
-    background: var(--mat-sys-surface);
+    background: var(--mat-sys-surface-container-lowest);
   }
 
   .mat-mdc-dialog-container {
