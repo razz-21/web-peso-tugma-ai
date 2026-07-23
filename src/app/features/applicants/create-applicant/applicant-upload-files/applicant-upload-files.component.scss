@@ -144,3 +144,63 @@
 .upload__item-remove {
   flex: 0 0 auto;
 }
+
+.upload__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.upload__review {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 40%, var(--mat-sys-outline-variant));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+}
+
+.upload__review-icon {
+  flex: 0 0 auto;
+  color: var(--mat-sys-primary);
+}
+
+.upload__review-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.upload__review-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.upload__review-text {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.upload__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upload__chip {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  font-size: 0.75rem;
+  font-weight: 500;
+}

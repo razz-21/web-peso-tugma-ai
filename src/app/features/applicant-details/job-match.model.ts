@@ -1,4 +1,5 @@
 import {
+  RECOMMENDED_JOB_STATUS_LABEL,
   RecommendationScores,
   RecommendedJob,
   RecommendedJobStatus,
@@ -60,10 +61,19 @@ export interface JobMatchCompany {
   readonly avatar: string | null;
 }
 
+/** Officer who referred/assessed the recommendation. */
+export interface JobMatchAssessor {
+  readonly id: string;
+  readonly name: string;
+  readonly avatar: string | null;
+}
+
 /** A single AI-ranked job recommendation shown in the Recommended jobs list. */
 export interface JobMatch {
   /** Recommendation record id (used for relevance updates + tracking). */
   readonly recommendationId: string;
+  /** The recommended job's id, for navigating to its detail page. */
+  readonly jobId: string | null;
   /** Final MatchScore 0–100. */
   readonly score: number;
   /** Ring color, derived from the score band. */
@@ -93,6 +103,10 @@ export interface JobMatch {
   readonly isRelevant: boolean;
   /** Referral lifecycle status; null until the applicant is referred to this job. */
   readonly status: RecommendedJobStatus | null;
+  /** Human-readable status label; null when not yet referred. */
+  readonly statusLabel: string | null;
+  /** Officer who referred/assessed this recommendation; null when unresolved. */
+  readonly referredBy: JobMatchAssessor | null;
   /** When this recommendation was created (ISO string), for the referral timeline. */
   readonly createdAt: string;
   /** A relevance update is in flight for this recommendation. */
@@ -127,6 +141,7 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
   const salaryText = salary === null ? null : `₱${salary.toLocaleString('en-US')}/mo`;
   return {
     recommendationId: recommendation.id,
+    jobId: recommendation.job?.id ?? null,
     score: recommendation.score,
     color: scoreColor(recommendation.score),
     title: recommendation.job?.title ?? 'Job',
@@ -147,6 +162,8 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
     ),
     isRelevant: recommendation.is_relevant,
     status: recommendation.status,
+    statusLabel: recommendation.status ? RECOMMENDED_JOB_STATUS_LABEL[recommendation.status] : null,
+    referredBy: recommendation.assessor,
     createdAt: recommendation.created_at,
     updating,
     // Surface the dimensions that scored well as quick chips.

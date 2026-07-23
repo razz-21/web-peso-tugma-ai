@@ -7,26 +7,34 @@
     (dragover)="onDragOver($event)"
     (dragleave)="onDragLeave($event)"
     (drop)="onDrop($event)"
-    aria-label="Upload CSV files. Drag and drop files here, or activate to browse."
+    aria-label="Upload a PDF resume. Drag and drop a file here, or activate to browse."
   >
     <mat-icon class="upload__icon" aria-hidden="true">cloud_upload</mat-icon>
     <p class="upload__prompt">
-      <span class="upload__prompt-strong">Drag &amp; drop CSV files here</span>
+      <span class="upload__prompt-strong">Drag &amp; drop a PDF resume here</span>
       <span class="upload__prompt-muted">or click to browse</span>
     </p>
-    <p class="upload__hint">Only .csv files are accepted.</p>
+    <p class="upload__hint">
+      PDF only, up to 10&nbsp;MB. We&rsquo;ll prefill the next steps from it.
+    </p>
   </button>
 
   <input
     #fileInput
     type="file"
     class="upload__input"
-    accept=".csv,text/csv"
-    multiple
+    accept="application/pdf,.pdf"
     tabindex="-1"
     aria-hidden="true"
     (change)="onFileChange($event)"
   />
+
+  @if (extracting()) {
+    <p class="upload__status" role="status">
+      <mat-progress-spinner mode="indeterminate" [diameter]="18" />
+      <span>Reading the resume&hellip;</span>
+    </p>
+  }
 
   @if (errorMessage(); as msg) {
     <p class="upload__error" role="alert">
@@ -35,26 +43,42 @@
     </p>
   }
 
-  @if (hasFiles()) {
-    <ul class="upload__list" aria-label="Selected CSV files">
-      @for (file of files(); track file.name + file.size) {
-        <li class="upload__item">
-          <mat-icon class="upload__item-icon" aria-hidden="true">description</mat-icon>
-          <span class="upload__item-info">
-            <span class="upload__item-name">{{ file.name }}</span>
-            <span class="upload__item-size">{{ formatSize(file.size) }}</span>
-          </span>
-          <button
-            type="button"
-            mat-icon-button
-            class="upload__item-remove"
-            (click)="remove($index)"
-            [attr.aria-label]="'Remove ' + file.name"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </li>
-      }
+  @if (resumeFile(); as file) {
+    <ul class="upload__list" aria-label="Selected resume">
+      <li class="upload__item">
+        <mat-icon class="upload__item-icon" aria-hidden="true">picture_as_pdf</mat-icon>
+        <span class="upload__item-info">
+          <span class="upload__item-name">{{ file.name }}</span>
+          <span class="upload__item-size">{{ formatSize(file.size) }}</span>
+        </span>
+        <button
+          type="button"
+          mat-icon-button
+          class="upload__item-remove"
+          (click)="removeFile()"
+          aria-label="Remove resume"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </li>
     </ul>
+  }
+
+  @if (extracted()) {
+    <div class="upload__review" role="status">
+      <mat-icon class="upload__review-icon" aria-hidden="true">fact_check</mat-icon>
+      <div class="upload__review-body">
+        <p class="upload__review-title">We prefilled what we could read from the resume.</p>
+        <p class="upload__review-text">
+          Please review and correct every step before submitting &mdash; some fields may be missing
+          or incorrect.
+        </p>
+        <ul class="upload__chips" aria-label="Fields prefilled from the resume">
+          @for (label of prefilledLabels(); track label) {
+            <li class="upload__chip">{{ label }}</li>
+          }
+        </ul>
+      </div>
+    </div>
   }
 </div>

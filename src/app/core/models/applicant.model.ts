@@ -107,6 +107,40 @@ export const ApplicantSchema = z.object({
 
 export const ApplicantGetSchema = ApplicantSchema;
 
+/** Provenance of the text extracted from an uploaded resume. */
+export const ResumeExtractionMetaSchema = z.object({
+  method: z.string(),
+  ocr_used: z.boolean(),
+  pages: z.number().int(),
+  char_count: z.number().int(),
+});
+
+/**
+ * Response of POST /applicants/extract — best-effort fields parsed from a resume
+ * PDF. Every field is optional; `email_address` is a plain string (not `email`)
+ * because extraction is imperfect and a malformed value should surface for the
+ * officer to correct rather than fail validation.
+ */
+export const ResumeExtractionSchema = z.object({
+  firstname: z.string().nullable().optional(),
+  middlename: z.string().nullable().optional(),
+  lastname: z.string().nullable().optional(),
+  suffix: z.string().nullable().optional(),
+  date_of_birth: z.string().nullable().optional(),
+  sex: SexSchema.nullable().optional(),
+  email_address: z.string().nullable().optional(),
+  primary_mobile_number: z.string().nullable().optional(),
+  present_address: AddressSchema.nullable().optional(),
+  educational_background: EducationalBackgroundSchema.nullable().optional(),
+  work_experience: z.array(WorkExperienceSchema).default([]),
+  trainings: z.array(TrainingSchema).default([]),
+  eligibility: z.array(EligibilitySchema).default([]),
+  technical_skills: z.array(z.string()).default([]),
+  preferred_occupation_industry: z.array(OccupationIndustrySchema).default([]),
+  raw_text: z.string().default(''),
+  meta: ResumeExtractionMetaSchema,
+});
+
 /** Payload for POST /applicants — server generates id/audit fields. */
 export const ApplicantPostSchema = z.object({
   firstname: z.string().min(1).max(NAME_MAX),
@@ -160,6 +194,7 @@ export type Eligibility = z.infer<typeof EligibilitySchema>;
 export type WorkExperience = z.infer<typeof WorkExperienceSchema>;
 export type Applicant = z.infer<typeof ApplicantSchema>;
 export type ApplicantGet = z.infer<typeof ApplicantGetSchema>;
+export type ResumeExtraction = z.infer<typeof ResumeExtractionSchema>;
 export type ApplicantPost = z.infer<typeof ApplicantPostSchema>;
 export type ApplicantPatch = z.infer<typeof ApplicantPatchSchema>;
 export type ApplicantList = z.infer<typeof ApplicantListSchema>;

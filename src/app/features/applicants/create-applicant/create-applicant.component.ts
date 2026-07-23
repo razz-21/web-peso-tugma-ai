@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Events, injectDispatch } from '@ngrx/signals/events';
+import { ApplicantsService } from '../../../core/services/applicants.service';
 import { ApplicantsStore } from '../../../stores/applicants/applicants.store';
 import { applicantsEvents } from '../../../stores/applicants/applicants.events';
 import { CreateApplicantHeaderComponent } from './create-applicant-header.component';
@@ -52,6 +54,8 @@ export class CreateApplicantComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly events = inject(Events);
   private readonly dispatch = injectDispatch(applicantsEvents);
+  private readonly applicantsService = inject(ApplicantsService);
+  private readonly snackBar = inject(MatSnackBar);
   protected readonly draft = inject(CreateApplicantDraftStore);
   protected readonly applicantsStore = inject(ApplicantsStore);
 
@@ -68,11 +72,25 @@ export class CreateApplicantComponent {
   protected readonly submitting = this.applicantsStore.createApplicantLoading;
 
   constructor() {
-    // Close the dialog once the applicant is created.
+    // Once the applicant is created, upload the staged resume file (best-effort —
+    // the applicant already exists, so a file failure only shows a warning), then
+    // close the dialog.
     this.events
       .on(applicantsEvents.createApplicantSuccess)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.dialogRef.close());
+      .subscribe((event) => {
+        const file = this.draft.resumeFile();
+        if (file) {
+          void this.applicantsService.uploadFile(event.payload.id, file).catch(() => {
+            this.snackBar.open(
+              "Applicant created, but the resume file couldn't be saved.",
+              'Close',
+              { duration: 4000 },
+            );
+          });
+        }
+        this.dialogRef.close();
+      });
   }
 
   protected goTo(index: number): void {

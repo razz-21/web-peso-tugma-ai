@@ -30,10 +30,11 @@ export interface WizardStep {
 export const WIZARD_STEPS: readonly WizardStep[] = [
   {
     key: 'upload',
-    label: 'Upload Files',
+    label: 'Upload Resume',
     category: 'FILES',
-    title: 'Upload Files',
-    subtitle: 'Attach a resume or supporting documents to prefill later steps.',
+    title: 'Upload Resume',
+    subtitle:
+      "Upload a PDF resume to prefill the next steps — you'll review each field before submitting.",
     optional: true,
   },
   {

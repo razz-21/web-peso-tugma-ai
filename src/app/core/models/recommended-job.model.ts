@@ -26,6 +26,13 @@ export const RecommendedJobCompanySchema = z.object({
   avatar: z.string().nullable(),
 });
 
+/** Assessor summary — the officer who referred/assessed (resolves `assessed_by`). */
+export const RecommendedJobUserSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  avatar: z.string().nullable(),
+});
+
 /** Lightweight job summary embedded in a recommendation read response. */
 export const RecommendedJobJobSchema = z.object({
   id: z.uuid(),
@@ -60,6 +67,8 @@ export const RecommendedJobSchema = z.object({
   embedded_job: z.array(z.number()).default([]),
   key_matched: z.array(z.string()),
   job: RecommendedJobJobSchema.nullable(),
+  // Resolved assessor ({ id, name, avatar }); null when the user is missing.
+  assessor: RecommendedJobUserSchema.nullable().default(null),
   date_registered: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -88,6 +97,7 @@ export const RECOMMENDED_JOB_STATUS_LABEL: Record<RecommendedJobStatus, string> 
 
 export type RecommendationScores = z.infer<typeof RecommendationScoresSchema>;
 export type RecommendedJobCompany = z.infer<typeof RecommendedJobCompanySchema>;
+export type RecommendedJobUser = z.infer<typeof RecommendedJobUserSchema>;
 export type RecommendedJobJob = z.infer<typeof RecommendedJobJobSchema>;
 export type RecommendedJob = z.infer<typeof RecommendedJobSchema>;
 export type RecommendedJobList = z.infer<typeof RecommendedJobListSchema>;

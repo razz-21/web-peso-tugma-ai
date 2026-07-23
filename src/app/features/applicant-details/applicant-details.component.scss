@@ -87,6 +87,32 @@
     box-sizing: border-box;
   }
 
+  // --- Tabs (Jobs / Information) -------------------------------------------
+
+  &__tabs {
+    // Space the tab label's icon from its text.
+    ::ng-deep .mdc-tab__text-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    // Let the sticky rail inside the Information panel resolve against the
+    // page scroll container: Material's tab body defaults to clipping overflow,
+    // which would rescope (and break) `position: sticky`.
+    ::ng-deep .mat-mdc-tab-body-wrapper,
+    ::ng-deep .mat-mdc-tab-body-content {
+      overflow: visible;
+    }
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
   &__card {
     border-radius: 1.25rem;
     box-sizing: border-box;
@@ -799,11 +825,63 @@
     gap: 0.4rem;
   }
 
+  &__match-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
   &__match-title {
     margin: 0;
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--mat-sys-on-surface);
+  }
+
+  // Referral-status pill on an already-referred recommendation.
+  &__match-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__match-status-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &__match-status--referred {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &__match-status--interview_scheduled {
+    background: color-mix(in srgb, #3f7d88 22%, var(--mat-sys-surface));
+    color: #1f4a52;
+  }
+
+  &__match-status--hired {
+    background: color-mix(in srgb, #4d6a24 24%, var(--mat-sys-surface));
+    color: #33471a;
+  }
+
+  &__match-status--withdrawn {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__match-status--not_hired {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
   }
 
   &__match-meta {

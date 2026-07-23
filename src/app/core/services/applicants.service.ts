@@ -10,6 +10,8 @@ import {
   ApplicantPatch,
   ApplicantPost,
   ListApplicantsParams,
+  ResumeExtraction,
+  ResumeExtractionSchema,
 } from '../models/applicant.model';
 
 @Injectable({ providedIn: 'root' })
@@ -54,5 +56,22 @@ export class ApplicantsService {
 
   async delete(id: string): Promise<void> {
     await firstValueFrom(this.http.delete<void>(`${this.baseUrl}/${id}`));
+  }
+
+  /** Parse a resume PDF into best-effort fields to prefill the create form. */
+  async extract(file: File): Promise<ResumeExtraction> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const body = await firstValueFrom(
+      this.http.post<ResumeExtraction>(`${this.baseUrl}/extract`, formData),
+    );
+    return ResumeExtractionSchema.parse(body);
+  }
+
+  /** Persist an uploaded resume file against an existing applicant. */
+  async uploadFile(id: string, file: File): Promise<void> {
+    const formData = new FormData();
+    formData.append('file', file);
+    await firstValueFrom(this.http.post<unknown>(`${this.baseUrl}/${id}/files`, formData));
   }
 }

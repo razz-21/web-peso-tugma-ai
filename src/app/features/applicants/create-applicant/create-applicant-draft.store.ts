@@ -1,6 +1,6 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 import { disabled, email, form, maxLength, pattern, required } from '@angular/forms/signals';
-import { ApplicantPost } from '../../../core/models/applicant.model';
+import { ApplicantPost, ResumeExtraction } from '../../../core/models/applicant.model';
 import {
   ApplicantDraft,
   DraftEligibility,
@@ -13,8 +13,25 @@ import {
   EMPTY_WORK_EXPERIENCE,
   INITIAL_DRAFT,
   draftToPayload,
+  parseIsoDate,
 } from './applicant-draft.model';
 import { WizardStepKey } from './wizard-steps';
+
+/** Draft fields the resume parser can prefill; drives the "review" flagging. */
+type PrefillKey =
+  | 'firstname'
+  | 'middlename'
+  | 'lastname'
+  | 'suffix'
+  | 'sex'
+  | 'date_of_birth'
+  | 'email_address'
+  | 'primary_mobile_number'
+  | 'educational_background'
+  | 'technical_skills'
+  | 'work_experience'
+  | 'trainings'
+  | 'eligibility';
 
 const NAME_MAX = 100;
 const MOBILE_PATTERN = /^[0-9+()\-\s]{7,20}$/;
@@ -82,8 +99,11 @@ export class CreateApplicantDraftStore {
   /** When true, the permanent address mirrors the present address and is locked. */
   readonly sameAsPresent = signal(false);
 
-  /** CSV files staged on the Upload step, retained across step navigation. */
-  readonly uploadedFiles = signal<readonly File[]>([]);
+  /** Resume PDF staged on the Upload step, uploaded after the applicant is created. */
+  readonly resumeFile = signal<File | null>(null);
+
+  /** Draft fields that were prefilled from the resume — the officer should review these. */
+  readonly prefilledFields = signal<ReadonlySet<PrefillKey>>(new Set());
 
   private readonly data = signal<ApplicantDraft>(structuredClone(INITIAL_DRAFT));
 
@@ -147,36 +167,123 @@ export class CreateApplicantDraftStore {
     this.data.set(structuredClone(draft));
   }
 
-  // --- Uploaded files ------------------------------------------------------
+  // --- Resume upload + extraction ------------------------------------------
+
+  /** Stage the resume PDF (uploaded after the applicant is created). */
+  setResumeFile(file: File): void {
+    this.resumeFile.set(file);
+  }
+
+  /** Clear the staged resume and any prefill flags. */
+  clearResume(): void {
+    this.resumeFile.set(null);
+    this.prefilledFields.set(new Set());
+  }
 
   /**
-   * Stages CSV files, skipping non-CSV files and duplicates (matched by name and
-   * size). Returns how many were added and how many were rejected as non-CSV.
+   * Merge parsed resume fields into the draft, filling **only empty fields** so
+   * anything the officer already typed is never overwritten. Records which
+   * fields were prefilled so the UI can flag them for review.
    */
-  addFiles(incoming: readonly File[]): { added: number; rejected: number } {
-    const csv = incoming.filter((file) => this.isCsv(file));
-    const rejected = incoming.length - csv.length;
-    const current = this.uploadedFiles();
-    const fresh = csv.filter(
-      (file) =>
-        !current.some((existing) => existing.name === file.name && existing.size === file.size),
-    );
-    if (fresh.length > 0) {
-      this.uploadedFiles.set([...current, ...fresh]);
+  applyExtraction(extraction: ResumeExtraction): void {
+    const draft = structuredClone(this.data());
+    const filled = new Set<PrefillKey>();
+
+    const fillString = (
+      key:
+        | 'firstname'
+        | 'middlename'
+        | 'lastname'
+        | 'suffix'
+        | 'email_address'
+        | 'primary_mobile_number',
+      value: string | null | undefined,
+    ): void => {
+      if (value && draft[key].trim().length === 0) {
+        draft[key] = value;
+        filled.add(key);
+      }
+    };
+
+    fillString('firstname', extraction.firstname);
+    fillString('middlename', extraction.middlename);
+    fillString('lastname', extraction.lastname);
+    fillString('suffix', extraction.suffix);
+    fillString('email_address', extraction.email_address);
+    fillString('primary_mobile_number', extraction.primary_mobile_number);
+
+    if (extraction.sex && draft.sex === '') {
+      draft.sex = extraction.sex;
+      filled.add('sex');
     }
-    return { added: fresh.length, rejected };
-  }
+    if (extraction.date_of_birth && draft.date_of_birth === null) {
+      const parsed = parseIsoDate(extraction.date_of_birth);
+      if (parsed) {
+        draft.date_of_birth = parsed;
+        filled.add('date_of_birth');
+      }
+    }
 
-  removeFile(index: number): void {
-    this.uploadedFiles.update((files) => files.filter((_, i) => i !== index));
-  }
+    const source = extraction.educational_background;
+    if (source) {
+      const education = draft.educational_background;
+      let touched = false;
+      const keys = [
+        'highest_education_level',
+        'year_graduated',
+        'last_attended',
+        'school_university',
+        'course_program',
+      ] as const;
+      for (const key of keys) {
+        const value = source[key];
+        if (value && education[key].trim().length === 0) {
+          education[key] = value;
+          touched = true;
+        }
+      }
+      if (touched) {
+        filled.add('educational_background');
+      }
+    }
 
-  private isCsv(file: File): boolean {
-    return (
-      file.type === 'text/csv' ||
-      file.type === 'application/vnd.ms-excel' ||
-      file.name.toLowerCase().endsWith('.csv')
-    );
+    if (extraction.technical_skills.length > 0 && draft.technical_skills.length === 0) {
+      draft.technical_skills = [...extraction.technical_skills];
+      filled.add('technical_skills');
+    }
+    if (extraction.work_experience.length > 0 && draft.work_experience.length === 0) {
+      draft.work_experience = extraction.work_experience.map((item) => ({
+        company: item.company ?? '',
+        address: item.address ?? '',
+        position: item.position ?? '',
+        start_date: parseIsoDate(item.start_date),
+        end_date: parseIsoDate(item.end_date),
+        status_of_appointment: item.status_of_appointment ?? '',
+      }));
+      filled.add('work_experience');
+    }
+    if (extraction.trainings.length > 0 && draft.trainings.length === 0) {
+      draft.trainings = extraction.trainings.map((item) => ({
+        training_title: item.training_title ?? '',
+        duration_start: parseIsoDate(item.duration_start),
+        duration_end: parseIsoDate(item.duration_end),
+        institution: item.institution ?? '',
+        certificate_received: item.certificate_received ?? '',
+        completed: item.completed ?? false,
+      }));
+      filled.add('trainings');
+    }
+    if (extraction.eligibility.length > 0 && draft.eligibility.length === 0) {
+      draft.eligibility = extraction.eligibility.map((item) => ({
+        title: item.title ?? '',
+        license_number: item.license_number ?? '',
+        expiry_date: parseIsoDate(item.expiry_date),
+      }));
+      filled.add('eligibility');
+    }
+
+    this.data.set(draft);
+    this.prefilledFields.set(filled);
   }
 
   /** Marks the step's fields touched and returns whether they are all valid. */

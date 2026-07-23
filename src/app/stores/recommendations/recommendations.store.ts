@@ -169,11 +169,13 @@ export const RecommendationsStore = signalStore(
         .pipe(
           tap(({ payload }) =>
             snackBar.open(
-              payload.status
-                ? `Status updated to ${RECOMMENDED_JOB_STATUS_LABEL[payload.status]}`
-                : 'Referral status cleared',
+              payload.status === 'referred'
+                ? 'Job successfully referred to applicant'
+                : payload.status
+                  ? `Status updated to ${RECOMMENDED_JOB_STATUS_LABEL[payload.status]}`
+                  : 'Referral status cleared',
               'Close',
-              { duration: 2000 },
+              { duration: 3000 },
             ),
           ),
         ),

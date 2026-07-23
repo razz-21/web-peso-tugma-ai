@@ -97,516 +97,574 @@
           </dl>
         </article>
 
-        <!-- Referred job card (only once the applicant has an active referral) -->
-        @if (referral(); as referral) {
-          <app-assigned-job
-            class="applicant-details__card"
-            [referral]="referral"
-            [previous]="previousReferrals()"
-            (statusChange)="onSetStatus(referral, $event)"
-          />
-        }
-
-        <!-- Recommended jobs card -->
-        <article
-          class="applicant-details__card applicant-details__recommend"
-          [attr.aria-busy]="generating()"
+        <mat-tab-group
+          class="applicant-details__tabs"
+          mat-stretch-tabs="false"
+          animationDuration="0ms"
         >
-          <div class="applicant-details__recommend-head">
-            <div class="applicant-details__recommend-heading">
-              <h2 class="applicant-details__recommend-title">
-                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-                Recommended jobs
-              </h2>
-              <p class="applicant-details__recommend-subtitle">
-                Matched job openings based on this applicant's preferences, educational background,
-                skills, and location.
-              </p>
-            </div>
-            <button
-              matButton="filled"
-              type="button"
-              class="applicant-details__generate"
-              [disabled]="generating()"
-              (click)="onGenerate()"
-            >
-              <mat-icon>auto_awesome</mat-icon>
-              Generate recommendations
-            </button>
-          </div>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon aria-hidden="true">work</mat-icon>
+              Jobs
+            </ng-template>
 
-          <div class="applicant-details__recommend-body">
-            @if (generating()) {
-              <div class="applicant-details__generating" role="status" aria-live="polite">
-                <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
-                <p>Generating matches...</p>
-              </div>
-            }
+            <div class="applicant-details__panel">
+              <!-- Referred jobs card -->
+              <app-referred-jobs
+                class="applicant-details__card"
+                [referrals]="referrals()"
+                (statusChange)="onReferralStatus($event)"
+                (compare)="onViewComparison($event)"
+                (viewJob)="onViewJob($event)"
+                (newReferral)="onNewReferral()"
+              />
 
-            @if (recommendations().length === 0) {
-              <div class="applicant-details__empty">
-                <span class="applicant-details__empty-icon" aria-hidden="true">
-                  <mat-icon>auto_awesome</mat-icon>
-                </span>
-                <h3 class="applicant-details__empty-title">No recommendations yet</h3>
-                <p class="applicant-details__empty-text">
-                  Generate five job matches ranked by fit. Each match is scored on preferred
-                  occupation, educational background, skills, location, and semantic similarity.
-                </p>
-                <button matButton="tonal" type="button" (click)="onGenerate()">
-                  <mat-icon>auto_awesome</mat-icon>
-                  Generate 5 matches
-                </button>
-              </div>
-            } @else {
-              <ol class="applicant-details__matches">
-                @for (match of recommendations(); track match.recommendationId; let i = $index) {
-                  <li
-                    class="applicant-details__match"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-label]="'View match details for ' + match.title"
-                    (click)="selectMatch(match); matchDrawer.open()"
-                    (keydown.enter)="selectMatch(match); matchDrawer.open()"
+              <!-- Recommended jobs card -->
+              <article
+                id="recommend"
+                class="applicant-details__card applicant-details__recommend"
+                [attr.aria-busy]="generating()"
+              >
+                <div class="applicant-details__recommend-head">
+                  <div class="applicant-details__recommend-heading">
+                    <h2 class="applicant-details__recommend-title">
+                      <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+                      Recommended jobs
+                    </h2>
+                    <p class="applicant-details__recommend-subtitle">
+                      Matched job openings based on this applicant's preferences, educational
+                      background, skills, and location.
+                    </p>
+                  </div>
+                  <button
+                    matButton="filled"
+                    type="button"
+                    class="applicant-details__generate"
+                    [disabled]="generating()"
+                    (click)="onGenerate()"
                   >
-                    <span class="applicant-details__match-rank">{{ i + 1 }}</span>
-                    <div
-                      class="applicant-details__ring"
-                      [style.--score]="match.score"
-                      [style.--ring-color]="match.color"
-                    >
-                      <span class="applicant-details__ring-value">{{ match.score }}%</span>
+                    <mat-icon>auto_awesome</mat-icon>
+                    Generate recommendations
+                  </button>
+                </div>
+
+                <div class="applicant-details__recommend-body">
+                  @if (generating()) {
+                    <div class="applicant-details__generating" role="status" aria-live="polite">
+                      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+                      <p>Generating matches...</p>
                     </div>
-                    <div class="applicant-details__match-body">
-                      <h3 class="applicant-details__match-title">{{ match.title }}</h3>
-                      <p class="applicant-details__match-meta">
-                        @for (segment of match.metaSegments; track $index; let first = $first) {
-                          @if (!first) {
-                            <span class="applicant-details__dot" aria-hidden="true">·</span>
-                          }
-                          <span>{{ segment }}</span>
-                        }
-                        @if (match.isRelevant) {
-                          <span class="applicant-details__relevant-chip">
-                            <mat-icon aria-hidden="true">check_circle</mat-icon>
-                            Relevant
+                  }
+
+                  @if (recommendations().length === 0) {
+                    <div class="applicant-details__empty">
+                      <span class="applicant-details__empty-icon" aria-hidden="true">
+                        <mat-icon>auto_awesome</mat-icon>
+                      </span>
+                      <h3 class="applicant-details__empty-title">No recommendations yet</h3>
+                      <p class="applicant-details__empty-text">
+                        Generate five job matches ranked by fit. Each match is scored on preferred
+                        occupation, educational background, skills, location, and semantic
+                        similarity.
+                      </p>
+                      <button matButton="tonal" type="button" (click)="onGenerate()">
+                        <mat-icon>auto_awesome</mat-icon>
+                        Generate 5 matches
+                      </button>
+                    </div>
+                  } @else {
+                    <ol class="applicant-details__matches">
+                      @for (
+                        match of recommendations();
+                        track match.recommendationId;
+                        let i = $index
+                      ) {
+                        <li
+                          class="applicant-details__match"
+                          role="button"
+                          tabindex="0"
+                          [attr.aria-label]="'View match details for ' + match.title"
+                          (click)="selectMatch(match); matchDrawer.open()"
+                          (keydown.enter)="selectMatch(match); matchDrawer.open()"
+                        >
+                          <span class="applicant-details__match-rank">{{ i + 1 }}</span>
+                          <div
+                            class="applicant-details__ring"
+                            [style.--score]="match.score"
+                            [style.--ring-color]="match.color"
+                          >
+                            <span class="applicant-details__ring-value">{{ match.score }}%</span>
+                          </div>
+                          <div class="applicant-details__match-body">
+                            <div class="applicant-details__match-heading">
+                              <h3 class="applicant-details__match-title">{{ match.title }}</h3>
+                              @if (match.statusLabel; as statusLabel) {
+                                <span
+                                  class="applicant-details__match-status"
+                                  [class]="'applicant-details__match-status--' + match.status"
+                                >
+                                  <span
+                                    class="applicant-details__match-status-dot"
+                                    aria-hidden="true"
+                                  ></span>
+                                  {{ statusLabel }}
+                                </span>
+                              }
+                            </div>
+                            <p class="applicant-details__match-meta">
+                              @for (
+                                segment of match.metaSegments;
+                                track $index;
+                                let first = $first
+                              ) {
+                                @if (!first) {
+                                  <span class="applicant-details__dot" aria-hidden="true">·</span>
+                                }
+                                <span>{{ segment }}</span>
+                              }
+                              @if (match.isRelevant) {
+                                <span class="applicant-details__relevant-chip">
+                                  <mat-icon aria-hidden="true">check_circle</mat-icon>
+                                  Relevant
+                                </span>
+                              }
+                            </p>
+                            <div class="applicant-details__match-tags">
+                              @for (tag of match.tags; track tag.label) {
+                                <span class="applicant-details__match-tag">
+                                  <mat-icon aria-hidden="true">{{ tag.icon }}</mat-icon>
+                                  {{ tag.label }}
+                                </span>
+                              }
+                            </div>
+                          </div>
+                          <mat-icon class="applicant-details__match-chevron" aria-hidden="true">
+                            chevron_right
+                          </mat-icon>
+                        </li>
+                      }
+                    </ol>
+                  }
+                </div>
+
+                @if (recommendations().length > 0) {
+                  <div class="applicant-details__recommend-footer">
+                    <span class="applicant-details__recommend-note">
+                      <mat-icon aria-hidden="true">info</mat-icon>
+                      Generated · {{ generatedAt() | date: 'MMM d, y' }} ·
+                      {{ generatedAt() | date: 'h:mm a' }} · Review before referring
+                    </span>
+                  </div>
+                }
+              </article>
+            </div>
+          </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon aria-hidden="true">badge</mat-icon>
+              Information
+            </ng-template>
+
+            <div class="applicant-details__panel">
+              <!-- Detail sections + sticky rail -->
+              <div class="applicant-details__grid">
+                <article class="applicant-details__card applicant-details__detail">
+                  <!-- Personal information -->
+                  <section id="personal" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">person</mat-icon>
+                        Personal information
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('personal', 'Personal information')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    <div class="applicant-details__fields">
+                      <app-detail-field label="First name" [value]="applicant.firstname" />
+                      <app-detail-field label="Middle name" [value]="applicant.middlename" />
+                      <app-detail-field label="Last name" [value]="applicant.lastname" />
+                      <app-detail-field label="Suffix" [value]="applicant.suffix" />
+                      <app-detail-field label="Date of birth" [value]="dobLabel()" />
+                      <app-detail-field label="Sex" [value]="applicant.sex" />
+                      <app-detail-field label="Civil status" [value]="applicant.civil_status" />
+                      <app-detail-field label="Citizenship" [value]="applicant.citizenship" />
+                      <app-detail-field label="Height" [value]="heightLabel()" />
+                      <app-detail-field label="Weight" [value]="weightLabel()" />
+                    </div>
+                  </section>
+
+                  <hr class="applicant-details__section-divider" />
+
+                  <!-- Contact -->
+                  <section id="contact" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">call</mat-icon>
+                        Contact
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('contact', 'Contact')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    <div class="applicant-details__fields">
+                      <div class="applicant-details__field applicant-details__field--wide">
+                        <span class="detail-field__label">Email address</span>
+                        @if (applicant.email_address) {
+                          <a
+                            class="applicant-details__email"
+                            [href]="'mailto:' + applicant.email_address"
+                          >
+                            {{ applicant.email_address }}
+                          </a>
+                        } @else {
+                          <span class="detail-field__chip">
+                            <mat-icon aria-hidden="true">error_outline</mat-icon>
+                            Not indicated
                           </span>
                         }
-                      </p>
-                      <div class="applicant-details__match-tags">
-                        @for (tag of match.tags; track tag.label) {
-                          <span class="applicant-details__match-tag">
-                            <mat-icon aria-hidden="true">{{ tag.icon }}</mat-icon>
-                            {{ tag.label }}
+                      </div>
+                      <app-detail-field
+                        label="Primary mobile number"
+                        [value]="applicant.primary_mobile_number"
+                      />
+                      <app-detail-field
+                        label="Secondary mobile number"
+                        [value]="applicant.secondary_mobile_number"
+                      />
+                    </div>
+                  </section>
+
+                  <hr class="applicant-details__section-divider" />
+
+                  <!-- Address -->
+                  <section id="address" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">location_on</mat-icon>
+                        Address
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('address', 'Address')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    <div class="applicant-details__addresses">
+                      <div class="applicant-details__address">
+                        <span class="applicant-details__address-label">Present address</span>
+                        @if (presentAddressLines().length > 0) {
+                          <address class="applicant-details__address-body">
+                            @for (line of presentAddressLines(); track $index) {
+                              <span>{{ line }}</span>
+                            }
+                          </address>
+                        } @else {
+                          <span class="detail-field__chip">
+                            <mat-icon aria-hidden="true">error_outline</mat-icon>
+                            Not indicated
+                          </span>
+                        }
+                      </div>
+                      <div class="applicant-details__address">
+                        <div class="applicant-details__address-head">
+                          <span class="applicant-details__address-label">Permanent address</span>
+                          @if (permanentSameAsPresent()) {
+                            <span class="applicant-details__same">Same as present</span>
+                          }
+                        </div>
+                        @if (permanentAddressLines().length > 0) {
+                          <address class="applicant-details__address-body">
+                            @for (line of permanentAddressLines(); track $index) {
+                              <span>{{ line }}</span>
+                            }
+                          </address>
+                        } @else {
+                          <span class="detail-field__chip">
+                            <mat-icon aria-hidden="true">error_outline</mat-icon>
+                            Not indicated
                           </span>
                         }
                       </div>
                     </div>
-                    <mat-icon class="applicant-details__match-chevron" aria-hidden="true">
-                      chevron_right
-                    </mat-icon>
-                  </li>
-                }
-              </ol>
-            }
-          </div>
+                  </section>
 
-          @if (recommendations().length > 0) {
-            <div class="applicant-details__recommend-footer">
-              <span class="applicant-details__recommend-note">
-                <mat-icon aria-hidden="true">info</mat-icon>
-                Generated · {{ generatedAt() | date: 'MMM d, y' }} ·
-                {{ generatedAt() | date: 'h:mm a' }} · Review before referring
-              </span>
-            </div>
-          }
-        </article>
+                  <hr class="applicant-details__section-divider" />
 
-        <!-- Detail sections + sticky rail -->
-        <div class="applicant-details__grid">
-          <article class="applicant-details__card applicant-details__detail">
-            <!-- Personal information -->
-            <section id="personal" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">person</mat-icon>
-                  Personal information
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('personal', 'Personal information')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              <div class="applicant-details__fields">
-                <app-detail-field label="First name" [value]="applicant.firstname" />
-                <app-detail-field label="Middle name" [value]="applicant.middlename" />
-                <app-detail-field label="Last name" [value]="applicant.lastname" />
-                <app-detail-field label="Suffix" [value]="applicant.suffix" />
-                <app-detail-field label="Date of birth" [value]="dobLabel()" />
-                <app-detail-field label="Sex" [value]="applicant.sex" />
-                <app-detail-field label="Civil status" [value]="applicant.civil_status" />
-                <app-detail-field label="Citizenship" [value]="applicant.citizenship" />
-                <app-detail-field label="Height" [value]="heightLabel()" />
-                <app-detail-field label="Weight" [value]="weightLabel()" />
-              </div>
-            </section>
-
-            <hr class="applicant-details__section-divider" />
-
-            <!-- Contact -->
-            <section id="contact" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">call</mat-icon>
-                  Contact
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('contact', 'Contact')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              <div class="applicant-details__fields">
-                <div class="applicant-details__field applicant-details__field--wide">
-                  <span class="detail-field__label">Email address</span>
-                  @if (applicant.email_address) {
-                    <a
-                      class="applicant-details__email"
-                      [href]="'mailto:' + applicant.email_address"
-                    >
-                      {{ applicant.email_address }}
-                    </a>
-                  } @else {
-                    <span class="detail-field__chip">
-                      <mat-icon aria-hidden="true">error_outline</mat-icon>
-                      Not indicated
-                    </span>
-                  }
-                </div>
-                <app-detail-field
-                  label="Primary mobile number"
-                  [value]="applicant.primary_mobile_number"
-                />
-                <app-detail-field
-                  label="Secondary mobile number"
-                  [value]="applicant.secondary_mobile_number"
-                />
-              </div>
-            </section>
-
-            <hr class="applicant-details__section-divider" />
-
-            <!-- Address -->
-            <section id="address" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">location_on</mat-icon>
-                  Address
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('address', 'Address')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              <div class="applicant-details__addresses">
-                <div class="applicant-details__address">
-                  <span class="applicant-details__address-label">Present address</span>
-                  @if (presentAddressLines().length > 0) {
-                    <address class="applicant-details__address-body">
-                      @for (line of presentAddressLines(); track $index) {
-                        <span>{{ line }}</span>
-                      }
-                    </address>
-                  } @else {
-                    <span class="detail-field__chip">
-                      <mat-icon aria-hidden="true">error_outline</mat-icon>
-                      Not indicated
-                    </span>
-                  }
-                </div>
-                <div class="applicant-details__address">
-                  <div class="applicant-details__address-head">
-                    <span class="applicant-details__address-label">Permanent address</span>
-                    @if (permanentSameAsPresent()) {
-                      <span class="applicant-details__same">Same as present</span>
+                  <!-- Educational background -->
+                  <section id="education" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">school</mat-icon>
+                        Educational background
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('education', 'Educational background')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    @if (applicant.educational_background; as edu) {
+                      <div class="applicant-details__fields">
+                        <app-detail-field
+                          label="Highest education level"
+                          [value]="edu.highest_education_level"
+                        />
+                        <app-detail-field
+                          label="School / University"
+                          [value]="edu.school_university"
+                        />
+                        <app-detail-field label="Course / Program" [value]="edu.course_program" />
+                        <app-detail-field label="Year graduated" [value]="edu.year_graduated" />
+                        <app-detail-field label="Last attended" [value]="edu.last_attended" />
+                        <app-detail-field
+                          label="Currently in school"
+                          [value]="edu.current_in_school ? 'Yes' : 'No'"
+                        />
+                      </div>
+                    } @else {
+                      <p class="applicant-details__muted">No educational background provided.</p>
                     }
-                  </div>
-                  @if (permanentAddressLines().length > 0) {
-                    <address class="applicant-details__address-body">
-                      @for (line of permanentAddressLines(); track $index) {
-                        <span>{{ line }}</span>
+                  </section>
+
+                  <hr class="applicant-details__section-divider" />
+
+                  <!-- Skills & training -->
+                  <section id="skills" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">edit</mat-icon>
+                        Skills &amp; training
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('skills', 'Skills & training')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    <div class="applicant-details__subsection">
+                      <span class="applicant-details__sub-label">Technical skills</span>
+                      @if (applicant.technical_skills.length > 0) {
+                        <div class="applicant-details__chips">
+                          @for (skill of applicant.technical_skills; track skill) {
+                            <span class="applicant-details__chip">{{ skill }}</span>
+                          }
+                        </div>
+                      } @else {
+                        <p class="applicant-details__muted">No skills added.</p>
                       }
-                    </address>
-                  } @else {
-                    <span class="detail-field__chip">
-                      <mat-icon aria-hidden="true">error_outline</mat-icon>
-                      Not indicated
-                    </span>
-                  }
-                </div>
-              </div>
-            </section>
+                    </div>
+                    <div class="applicant-details__subsection">
+                      <span class="applicant-details__sub-label">Trainings</span>
+                      @if (applicant.trainings.length > 0) {
+                        <ul class="applicant-details__list">
+                          @for (training of applicant.trainings; track $index) {
+                            <li class="applicant-details__list-item">
+                              <span class="applicant-details__item-title">
+                                {{ training.training_title || 'Untitled training' }}
+                              </span>
+                              @if (training.institution) {
+                                <span class="applicant-details__item-sub">{{
+                                  training.institution
+                                }}</span>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      } @else {
+                        <p class="applicant-details__muted">No trainings added.</p>
+                      }
+                    </div>
+                  </section>
 
-            <hr class="applicant-details__section-divider" />
+                  <hr class="applicant-details__section-divider" />
 
-            <!-- Educational background -->
-            <section id="education" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">school</mat-icon>
-                  Educational background
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('education', 'Educational background')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              @if (applicant.educational_background; as edu) {
-                <div class="applicant-details__fields">
-                  <app-detail-field
-                    label="Highest education level"
-                    [value]="edu.highest_education_level"
-                  />
-                  <app-detail-field label="School / University" [value]="edu.school_university" />
-                  <app-detail-field label="Course / Program" [value]="edu.course_program" />
-                  <app-detail-field label="Year graduated" [value]="edu.year_graduated" />
-                  <app-detail-field label="Last attended" [value]="edu.last_attended" />
-                  <app-detail-field
-                    label="Currently in school"
-                    [value]="edu.current_in_school ? 'Yes' : 'No'"
-                  />
-                </div>
-              } @else {
-                <p class="applicant-details__muted">No educational background provided.</p>
-              }
-            </section>
-
-            <hr class="applicant-details__section-divider" />
-
-            <!-- Skills & training -->
-            <section id="skills" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">edit</mat-icon>
-                  Skills &amp; training
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('skills', 'Skills & training')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              <div class="applicant-details__subsection">
-                <span class="applicant-details__sub-label">Technical skills</span>
-                @if (applicant.technical_skills.length > 0) {
-                  <div class="applicant-details__chips">
-                    @for (skill of applicant.technical_skills; track skill) {
-                      <span class="applicant-details__chip">{{ skill }}</span>
-                    }
-                  </div>
-                } @else {
-                  <p class="applicant-details__muted">No skills added.</p>
-                }
-              </div>
-              <div class="applicant-details__subsection">
-                <span class="applicant-details__sub-label">Trainings</span>
-                @if (applicant.trainings.length > 0) {
-                  <ul class="applicant-details__list">
-                    @for (training of applicant.trainings; track $index) {
-                      <li class="applicant-details__list-item">
-                        <span class="applicant-details__item-title">
-                          {{ training.training_title || 'Untitled training' }}
-                        </span>
-                        @if (training.institution) {
-                          <span class="applicant-details__item-sub">{{
-                            training.institution
-                          }}</span>
+                  <!-- Work experience -->
+                  <section id="work" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">work</mat-icon>
+                        Work experience
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('work', 'Work experience')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    @if (applicant.work_experience.length > 0) {
+                      <ul class="applicant-details__list">
+                        @for (work of applicant.work_experience; track $index) {
+                          <li class="applicant-details__list-item">
+                            <span class="applicant-details__item-title">
+                              {{ work.position || 'Position' }}
+                            </span>
+                            <span class="applicant-details__item-sub">{{
+                              work.company || '—'
+                            }}</span>
+                            @if (work.status_of_appointment) {
+                              <span class="applicant-details__item-meta">
+                                {{ work.status_of_appointment }}
+                              </span>
+                            }
+                          </li>
                         }
-                      </li>
+                      </ul>
+                    } @else {
+                      <p class="applicant-details__muted">No work experience added.</p>
                     }
-                  </ul>
-                } @else {
-                  <p class="applicant-details__muted">No trainings added.</p>
-                }
-              </div>
-            </section>
+                  </section>
 
-            <hr class="applicant-details__section-divider" />
+                  <hr class="applicant-details__section-divider" />
 
-            <!-- Work experience -->
-            <section id="work" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">work</mat-icon>
-                  Work experience
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('work', 'Work experience')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              @if (applicant.work_experience.length > 0) {
-                <ul class="applicant-details__list">
-                  @for (work of applicant.work_experience; track $index) {
-                    <li class="applicant-details__list-item">
-                      <span class="applicant-details__item-title">
-                        {{ work.position || 'Position' }}
-                      </span>
-                      <span class="applicant-details__item-sub">{{ work.company || '—' }}</span>
-                      @if (work.status_of_appointment) {
-                        <span class="applicant-details__item-meta">
-                          {{ work.status_of_appointment }}
-                        </span>
+                  <!-- Job preferences -->
+                  <section id="preferences" #section class="applicant-details__section">
+                    <header class="applicant-details__section-head">
+                      <h2 class="applicant-details__section-title">
+                        <mat-icon aria-hidden="true">star</mat-icon>
+                        Job preferences
+                      </h2>
+                      <button
+                        matButton
+                        type="button"
+                        class="applicant-details__edit"
+                        (click)="onEditSection('preferences', 'Job preferences')"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                      </button>
+                    </header>
+                    <div class="applicant-details__fields">
+                      <app-detail-field
+                        label="Employment status"
+                        [value]="applicant.employment_status"
+                      />
+                      <app-detail-field
+                        label="Salary expectation"
+                        [value]="salaryLabel() === '—' ? null : salaryLabel()"
+                      />
+                    </div>
+                    <div class="applicant-details__subsection">
+                      <span class="applicant-details__sub-label">Preferred occupations</span>
+                      @if (applicant.preferred_occupation_industry.length > 0) {
+                        <ul class="applicant-details__list">
+                          @for (pref of applicant.preferred_occupation_industry; track $index) {
+                            <li class="applicant-details__list-item">
+                              <span class="applicant-details__item-title">{{
+                                pref.occupation || '—'
+                              }}</span>
+                              @if (pref.industry) {
+                                <span class="applicant-details__item-sub">{{ pref.industry }}</span>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      } @else {
+                        <p class="applicant-details__muted">No preferred occupations added.</p>
                       }
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="applicant-details__muted">No work experience added.</p>
-              }
-            </section>
+                    </div>
+                    <div class="applicant-details__subsection">
+                      <span class="applicant-details__sub-label">Preferred work locations</span>
+                      @if (applicant.preferred_work_location.length > 0) {
+                        <div class="applicant-details__chips">
+                          @for (location of applicant.preferred_work_location; track location) {
+                            <span class="applicant-details__chip">{{ location }}</span>
+                          }
+                        </div>
+                      } @else {
+                        <p class="applicant-details__muted">No preferred locations added.</p>
+                      }
+                    </div>
+                  </section>
+                </article>
 
-            <hr class="applicant-details__section-divider" />
+                <aside class="applicant-details__rail">
+                  <nav
+                    class="applicant-details__card applicant-details__nav"
+                    aria-label="Applicant sections"
+                  >
+                    <h2 class="applicant-details__rail-title">
+                      <mat-icon aria-hidden="true">list</mat-icon>
+                      Sections
+                    </h2>
+                    <ul class="applicant-details__nav-list">
+                      @for (section of sections; track section.id) {
+                        <li>
+                          <button
+                            type="button"
+                            class="applicant-details__nav-link"
+                            [class.applicant-details__nav-link--active]="
+                              activeSection() === section.id
+                            "
+                            [attr.aria-current]="activeSection() === section.id ? 'true' : null"
+                            (click)="scrollToSection(section.id)"
+                          >
+                            <mat-icon aria-hidden="true">{{ section.icon }}</mat-icon>
+                            {{ section.label }}
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                  </nav>
 
-            <!-- Job preferences -->
-            <section id="preferences" #section class="applicant-details__section">
-              <header class="applicant-details__section-head">
-                <h2 class="applicant-details__section-title">
-                  <mat-icon aria-hidden="true">star</mat-icon>
-                  Job preferences
-                </h2>
-                <button
-                  matButton
-                  type="button"
-                  class="applicant-details__edit"
-                  (click)="onEditSection('preferences', 'Job preferences')"
-                >
-                  <mat-icon>edit</mat-icon>
-                  Edit
-                </button>
-              </header>
-              <div class="applicant-details__fields">
-                <app-detail-field label="Employment status" [value]="applicant.employment_status" />
-                <app-detail-field
-                  label="Salary expectation"
-                  [value]="salaryLabel() === '—' ? null : salaryLabel()"
-                />
-              </div>
-              <div class="applicant-details__subsection">
-                <span class="applicant-details__sub-label">Preferred occupations</span>
-                @if (applicant.preferred_occupation_industry.length > 0) {
-                  <ul class="applicant-details__list">
-                    @for (pref of applicant.preferred_occupation_industry; track $index) {
-                      <li class="applicant-details__list-item">
-                        <span class="applicant-details__item-title">{{
-                          pref.occupation || '—'
-                        }}</span>
-                        @if (pref.industry) {
-                          <span class="applicant-details__item-sub">{{ pref.industry }}</span>
-                        }
-                      </li>
-                    }
-                  </ul>
-                } @else {
-                  <p class="applicant-details__muted">No preferred occupations added.</p>
-                }
-              </div>
-              <div class="applicant-details__subsection">
-                <span class="applicant-details__sub-label">Preferred work locations</span>
-                @if (applicant.preferred_work_location.length > 0) {
-                  <div class="applicant-details__chips">
-                    @for (location of applicant.preferred_work_location; track location) {
-                      <span class="applicant-details__chip">{{ location }}</span>
-                    }
+                  <div class="applicant-details__card applicant-details__overview">
+                    <h2 class="applicant-details__rail-title">
+                      <mat-icon aria-hidden="true">info</mat-icon>
+                      Overview
+                    </h2>
+                    <dl class="applicant-details__overview-list">
+                      <div class="applicant-details__overview-row">
+                        <dt><mat-icon aria-hidden="true">tag</mat-icon> Applicant ID</dt>
+                        <dd>#{{ applicantId() }}</dd>
+                      </div>
+                      <div class="applicant-details__overview-row">
+                        <dt><mat-icon aria-hidden="true">toggle_on</mat-icon> Status</dt>
+                        <dd>Active</dd>
+                      </div>
+                      <div class="applicant-details__overview-row">
+                        <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Registered</dt>
+                        <dd>{{ applicant.created_at | date: 'MMM d, y' }}</dd>
+                      </div>
+                      <div class="applicant-details__overview-row">
+                        <dt><mat-icon aria-hidden="true">schedule</mat-icon> Updated</dt>
+                        <dd>{{ applicant.updated_at | date: 'MMM d, y' }}</dd>
+                      </div>
+                    </dl>
                   </div>
-                } @else {
-                  <p class="applicant-details__muted">No preferred locations added.</p>
-                }
+                </aside>
               </div>
-            </section>
-          </article>
-
-          <aside class="applicant-details__rail">
-            <nav
-              class="applicant-details__card applicant-details__nav"
-              aria-label="Applicant sections"
-            >
-              <h2 class="applicant-details__rail-title">
-                <mat-icon aria-hidden="true">list</mat-icon>
-                Sections
-              </h2>
-              <ul class="applicant-details__nav-list">
-                @for (section of sections; track section.id) {
-                  <li>
-                    <button
-                      type="button"
-                      class="applicant-details__nav-link"
-                      [class.applicant-details__nav-link--active]="activeSection() === section.id"
-                      [attr.aria-current]="activeSection() === section.id ? 'true' : null"
-                      (click)="scrollToSection(section.id)"
-                    >
-                      <mat-icon aria-hidden="true">{{ section.icon }}</mat-icon>
-                      {{ section.label }}
-                    </button>
-                  </li>
-                }
-              </ul>
-            </nav>
-
-            <div class="applicant-details__card applicant-details__overview">
-              <h2 class="applicant-details__rail-title">
-                <mat-icon aria-hidden="true">info</mat-icon>
-                Overview
-              </h2>
-              <dl class="applicant-details__overview-list">
-                <div class="applicant-details__overview-row">
-                  <dt><mat-icon aria-hidden="true">tag</mat-icon> Applicant ID</dt>
-                  <dd>#{{ applicantId() }}</dd>
-                </div>
-                <div class="applicant-details__overview-row">
-                  <dt><mat-icon aria-hidden="true">toggle_on</mat-icon> Status</dt>
-                  <dd>Active</dd>
-                </div>
-                <div class="applicant-details__overview-row">
-                  <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Registered</dt>
-                  <dd>{{ applicant.created_at | date: 'MMM d, y' }}</dd>
-                </div>
-                <div class="applicant-details__overview-row">
-                  <dt><mat-icon aria-hidden="true">schedule</mat-icon> Updated</dt>
-                  <dd>{{ applicant.updated_at | date: 'MMM d, y' }}</dd>
-                </div>
-              </dl>
             </div>
-          </aside>
-        </div>
+          </mat-tab>
+        </mat-tab-group>
       </div>
     }
   </mat-drawer-content>

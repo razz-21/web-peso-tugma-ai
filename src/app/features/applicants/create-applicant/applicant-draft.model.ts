@@ -139,6 +139,15 @@ const clean = (value: string): string | undefined => {
   return trimmed.length > 0 ? trimmed : undefined;
 };
 
+/** Parse an ISO-ish date string into a `Date`, or null when absent/unparseable. */
+export const parseIsoDate = (value: string | null | undefined): Date | null => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 /** Format a datepicker value as a local `yyyy-MM-dd` string, or undefined when unset. */
 export const toDateString = (value: Date | null): string | undefined => {
   if (!value || Number.isNaN(value.getTime())) {

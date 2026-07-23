@@ -1,0 +1,470 @@
+:host {
+  display: block;
+  border-radius: 1.25rem;
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.referred-jobs {
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // --- Empty state ---------------------------------------------------------
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 3rem 1.75rem;
+  }
+
+  &__empty-icon {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  &__empty-title {
+    margin: 0.25rem 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__empty-text {
+    max-width: 34rem;
+    margin: 0 0 0.5rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__item {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    // The open row is tinted to read as the active accordion panel.
+    &--open {
+      background: var(--mat-sys-surface-container-lowest);
+    }
+  }
+
+  // --- Accordion summary (row header) --------------------------------------
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1.25rem 1.75rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+      outline-offset: -2px;
+    }
+  }
+
+  &__summary-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  &__summary-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__job-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__latest {
+    padding: 0.15rem 0.55rem;
+    border-radius: 0.4rem;
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__summary-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.95rem;
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  &__match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    line-height: 1.15;
+  }
+
+  &__match-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+  }
+
+  &__match-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Status pill ---------------------------------------------------------
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &__status--referred {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &__status--interview {
+    background: color-mix(in srgb, #3f7d88 22%, var(--mat-sys-surface));
+    color: #1f4a52;
+  }
+
+  &__status--hired {
+    background: color-mix(in srgb, #4d6a24 24%, var(--mat-sys-surface));
+    color: #33471a;
+  }
+
+  &__status--withdrawn {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__status--not-hired {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-on-error-container);
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Expanded panel ------------------------------------------------------
+
+  &__panel {
+    padding: 0 1.75rem 1.5rem;
+  }
+
+  &__job {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, var(--mat-sys-surface));
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+
+    &:hover {
+      border-color: var(--mat-sys-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mat-sys-primary);
+      outline-offset: 2px;
+    }
+
+    mat-icon {
+      flex-shrink: 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__job-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__job-name {
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.95rem;
+  }
+
+  &__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    margin: 1.25rem 0 0;
+  }
+
+  &__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    dt {
+      font-size: 0.9rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__score {
+    color: var(--mat-sys-primary) !important;
+  }
+
+  &__divider {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  // --- Status timeline -----------------------------------------------------
+
+  &__stepper {
+    display: flex;
+    margin: 0.5rem 0 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__step {
+    position: relative;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+
+    // Connector line to the next step, centered on the dot.
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: calc(0.875rem - 1px);
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--mat-sys-outline-variant);
+      z-index: 0;
+    }
+
+    &--line-green:not(:last-child)::after {
+      background: var(--mat-sys-primary);
+    }
+
+    &--line-red:not(:last-child)::after {
+      background: var(--mat-sys-error);
+    }
+
+    &--failed &-label {
+      color: var(--mat-sys-error);
+    }
+  }
+
+  &__step-dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--mat-sys-surface-container-lowest);
+    border: 2px solid var(--mat-sys-outline);
+    box-sizing: border-box;
+
+    mat-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      font-size: 1.05rem;
+    }
+
+    .referred-jobs__step--current & {
+      background: var(--mat-sys-primary-container);
+      border-color: var(--mat-sys-primary);
+    }
+
+    .referred-jobs__step--done & {
+      background: var(--mat-sys-primary);
+      border-color: var(--mat-sys-primary);
+      color: var(--mat-sys-on-primary);
+    }
+
+    .referred-jobs__step--failed & {
+      background: var(--mat-sys-error);
+      border-color: var(--mat-sys-error);
+      color: var(--mat-sys-on-error);
+    }
+
+    .referred-jobs__step--withdrawn & {
+      background: var(--mat-sys-surface-container-highest);
+      border-color: var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__step-core {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--mat-sys-primary);
+  }
+
+  &__step-label {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__step-sub {
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Actions -------------------------------------------------------------
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 640px) {
+    &__head,
+    &__summary,
+    &__panel {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    &__match,
+    &__chevron {
+      display: none;
+    }
+
+    &__facts {
+      gap: 1.5rem;
+    }
+  }
+}
