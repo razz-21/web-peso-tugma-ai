@@ -2,170 +2,20 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ApplicantGet } from '../../../core/models/applicant.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
-import { JobMatch } from '../job-match.model';
+import {
+  ComparisonDialogData,
+  ComparisonSummary,
+  EligibilityView,
+  RequirementRow,
+  RequirementStatus,
+  RequirementSummary,
+  RequirementView,
+} from '../types/comparison.type';
+import { BOTH_SEXES, ageRangeLabel, parseAgeRange } from '../utils/age.util';
+import { STATUS_LABEL, statusColor, statusFromScore } from '../utils/comparison.util';
+import { capitalize, joinList, norm } from '../utils/text.util';
 
-/** Data handed to the full-page comparison dialog. */
-export interface ComparisonDialogData {
-  readonly applicant: ApplicantGet;
-  readonly match: JobMatch;
-}
-
-type RequirementStatus = 'met' | 'partial' | 'unmet' | 'unknown';
-
-/** One requirement row (skills / experience / education / location). */
-interface RequirementView {
-  readonly key: string;
-  readonly label: string;
-  /** Lower-cased label, for the summary sentence. */
-  readonly lower: string;
-  readonly icon: string;
-  readonly status: RequirementStatus;
-  /** Header badge, e.g. "3 of 5 matched" or "Met". */
-  readonly badge: string;
-  readonly coverage: number;
-  readonly coverageColor: string;
-  readonly isSkills: boolean;
-  // Skills detail.
-  readonly matchedSkills: readonly string[];
-  readonly missingSkills: readonly string[];
-  readonly additionalSkills: readonly string[];
-  readonly note: string | null;
-  // Generic detail (experience / education / location).
-  readonly requiredItems: readonly string[];
-  readonly requiredText: string | null;
-  readonly applicantItems: readonly string[];
-  readonly applicantText: string | null;
-}
-
-interface ComparisonSummary {
-  readonly title: string;
-  readonly subtitle: string;
-  readonly metCount: number;
-  readonly partialCount: number;
-  readonly unmetCount: number;
-  readonly unknownCount: number;
-}
-
-/** Outcome of a single hard primary-requirement gate. */
-type RequirementState = 'pass' | 'fail' | 'na' | 'unknown';
-
-/** One primary-requirement gate row (vacancies / age / sex / civil status). */
-interface RequirementRow {
-  readonly key: string;
-  readonly label: string;
-  readonly icon: string;
-  readonly state: RequirementState;
-  readonly reason: string;
-}
-
-interface RequirementSummary {
-  readonly rows: readonly RequirementRow[];
-  readonly met: boolean;
-}
-
-/** Applicant-vs-job eligibility comparison (licenses / civil-service, ...). */
-interface EligibilityView {
-  /** Whether the job states an eligibility requirement at all. */
-  readonly hasRequirement: boolean;
-  /** The job's free-text requirement, when stated. */
-  readonly required: string | null;
-  /** Titles of the eligibilities the applicant holds. */
-  readonly applicantHeld: readonly string[];
-  /** pass = eligible, fail = not eligible, na = no requirement. */
-  readonly state: RequirementState;
-  /** Header pill text. */
-  readonly badge: string;
-  /** One-line explanation shown under the columns. */
-  readonly reason: string;
-}
-
-// "Female/Male" on either side means "no sex restriction" (mirrors the backend).
-const BOTH_SEXES = 'female/male';
-
-const AGE_RANGE_RE = /(\d{1,3})\s*(?:-|–|—|to)\s*(\d{1,3})/;
-const AGE_MIN_RES = [
-  /(\d{1,3})\s*(?:\+|and above|and older|or above|or older|and up)/,
-  /(?:at least|minimum|min|over|above|older than|from)\D{0,4}(\d{1,3})/,
-];
-const AGE_MAX_RES = [
-  /(\d{1,3})\s*(?:and below|and under|or below|or younger)/,
-  /(?:up to|at most|maximum|max|under|below|younger than|no more than)\D{0,4}(\d{1,3})/,
-];
-
-/** Parse a free-text age requirement into `[min, max]` bounds (mirrors the backend). */
-const parseAgeRange = (text: string): [number | null, number | null] => {
-  const lowered = text.trim().toLowerCase();
-  const range = AGE_RANGE_RE.exec(lowered);
-  if (range) {
-    const low = Number(range[1]);
-    const high = Number(range[2]);
-    return [Math.min(low, high), Math.max(low, high)];
-  }
-  for (const pattern of AGE_MIN_RES) {
-    const match = pattern.exec(lowered);
-    if (match) {
-      return [Number(match[1]), null];
-    }
-  }
-  for (const pattern of AGE_MAX_RES) {
-    const match = pattern.exec(lowered);
-    if (match) {
-      return [null, Number(match[1])];
-    }
-  }
-  return [null, null];
-};
-
-/** Human-readable label for parsed age bounds. */
-const ageRangeLabel = (low: number | null, high: number | null): string => {
-  if (low !== null && high !== null) {
-    return `${low}–${high}`;
-  }
-  if (low !== null) {
-    return `${low}+`;
-  }
-  return `up to ${high}`;
-};
-
-const MET_COLOR = '#4d6a24';
-const PARTIAL_COLOR = '#9a7b1e';
-const UNMET_COLOR = '#b3261e';
-const UNKNOWN_COLOR = '#7c857a';
-
-const norm = (value: string): string => value.trim().toLowerCase();
-
-const capitalize = (text: string): string =>
-  text.length === 0 ? text : text[0].toUpperCase() + text.slice(1);
-
-/** Join phrases with commas and a trailing "and": "a, b and c". */
-const joinList = (items: readonly string[]): string =>
-  items.length <= 1
-    ? (items[0] ?? '')
-    : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
-
-/** Status from a 0–100 coverage score, for non-skills requirements. */
-const statusFromScore = (score: number): RequirementStatus =>
-  score >= 80 ? 'met' : score >= 40 ? 'partial' : 'unmet';
-
-const statusColor = (status: RequirementStatus): string =>
-  status === 'met'
-    ? MET_COLOR
-    : status === 'partial'
-      ? PARTIAL_COLOR
-      : status === 'unmet'
-        ? UNMET_COLOR
-        : UNKNOWN_COLOR;
-
-const STATUS_LABEL: Record<RequirementStatus, string> = {
-  met: 'Met',
-  partial: 'Partial',
-  unmet: 'Not met',
-  unknown: 'No data',
-};
-
-/** Side-by-side applicant-vs-job requirement comparison, shown as a full-page dialog. */
 @Component({
   selector: 'app-comparison',
   imports: [MatButtonModule, MatIconModule, AvatarComponent],

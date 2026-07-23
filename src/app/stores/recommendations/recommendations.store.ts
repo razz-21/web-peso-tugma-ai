@@ -53,6 +53,14 @@ export const RecommendationsStore = signalStore(
       error: payload,
     })),
 
+    on(recommendationsEvents.referSuccess, ({ payload }, state) => ({
+      // Upsert by job so a manual referral replaces any existing recommendation
+      // for the same job, and surfaces at the top of the referred list.
+      items: [payload, ...state.items.filter((item) => item.job?.id !== payload.job?.id)],
+      error: null,
+    })),
+    on(recommendationsEvents.referFailed, ({ payload }) => ({ error: payload })),
+
     on(recommendationsEvents.setRelevance, ({ payload }, state) => ({
       updatingIds: [...state.updatingIds, payload.id],
       error: null,
@@ -107,6 +115,19 @@ export const RecommendationsStore = signalStore(
               error: (error: unknown) =>
                 recommendationsEvents.generateFailed(
                   errorMessage(error, 'Failed to generate recommendations.'),
+                ),
+            }),
+          ),
+        ),
+      ),
+      refer$: events.on(recommendationsEvents.refer).pipe(
+        mergeMap(({ payload }) =>
+          from(recommendationsService.refer(payload.applicantId, payload.jobId)).pipe(
+            mapResponse({
+              next: (recommendation) => recommendationsEvents.referSuccess(recommendation),
+              error: (error: unknown) =>
+                recommendationsEvents.referFailed(
+                  errorMessage(error, 'Failed to refer applicant.'),
                 ),
             }),
           ),
@@ -179,8 +200,19 @@ export const RecommendationsStore = signalStore(
             ),
           ),
         ),
+      referSuccess$: events.on(recommendationsEvents.referSuccess).pipe(
+        tap(({ payload }) =>
+          snackBar.open(`Referred applicant to ${payload.job?.title ?? 'the job'}`, 'Close', {
+            duration: 3000,
+          }),
+        ),
+      ),
       failures$: events
-        .on(recommendationsEvents.loadFailed, recommendationsEvents.generateFailed)
+        .on(
+          recommendationsEvents.loadFailed,
+          recommendationsEvents.generateFailed,
+          recommendationsEvents.referFailed,
+        )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
       relevanceFailure$: events
         .on(recommendationsEvents.setRelevanceFailed, recommendationsEvents.setStatusFailed)

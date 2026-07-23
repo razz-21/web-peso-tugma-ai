@@ -1,0 +1,731 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+// Score-band colors, mirrored from utils/job-match.util.ts.
+$green: #4d6a24;
+$amber: #9a7b1e;
+$error: #b3261e;
+
+.manual-referral {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--mat-sys-on-surface-variant);
+  background: #fff;
+
+  // --- Top bar -------------------------------------------------------------
+
+  &__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+    padding: 0.75rem 1.5rem;
+    // Cream header band, a warm complement to the white body.
+    background: var(--mat-sys-surface-container-lowest);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__heading {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__done {
+    flex-shrink: 0;
+  }
+
+  // --- Body layout ---------------------------------------------------------
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 500px 1fr;
+  }
+
+  // --- Left rail (cream canvas of white cards) -----------------------------
+
+  &__rail {
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-secondary-container);
+  }
+
+  &__card {
+    flex-shrink: 0;
+    padding: 1.35rem 1.5rem;
+    border-radius: 1.25rem;
+    background: #fff;
+  }
+
+  &__kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      font-size: 1.05rem;
+    }
+  }
+
+  &__person {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__person-body {
+    min-width: 0;
+  }
+
+  &__person-name {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__person-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  // --- Card headings -------------------------------------------------------
+
+  &__card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+
+    mat-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 1.25rem;
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__card-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__card-badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: color-mix(in srgb, #{$green} 16%, #fff);
+    color: #33481a;
+  }
+
+  // --- Quick stats grid ----------------------------------------------------
+
+  &__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.15rem 1.35rem;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    border-left: 1px solid var(--mat-sys-outline-variant);
+
+    &:nth-child(-n + 2) {
+      border-top: 0;
+    }
+
+    &:nth-child(odd) {
+      border-left: 0;
+    }
+  }
+
+  &__stat-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      font-size: 1.05rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--mat-sys-on-surface);
+    overflow-wrap: anywhere;
+
+    &--accent {
+      color: $green;
+    }
+  }
+
+  &__stat-sub {
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Field labels & lists ------------------------------------------------
+
+  &__field-label {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+
+    &--spaced {
+      margin-top: 1.25rem;
+    }
+  }
+
+  &__level {
+    display: inline-block;
+    padding: 0.55rem 0.95rem;
+    border-radius: 0.7rem;
+    font-size: 1rem;
+    font-weight: 700;
+    background: color-mix(in srgb, #e0a91b 42%, #fff);
+    color: #6b4e07;
+  }
+
+  &__timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__timeline-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: 0.9rem;
+    border-left: 3px solid color-mix(in srgb, #{$green} 45%, var(--mat-sys-outline-variant));
+  }
+
+  &__timeline-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 0.7rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: color-mix(in srgb, #{$green} 14%, #fff);
+    color: #33481a;
+
+    &--pin {
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface);
+
+      mat-icon {
+        width: 1.05rem;
+        height: 1.05rem;
+        font-size: 1.05rem;
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+  }
+
+  &__muted {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Main pane -----------------------------------------------------------
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__search {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+
+    mat-icon {
+      flex-shrink: 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--mat-sys-on-surface);
+    outline: none;
+
+    &::placeholder {
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 4rem 1rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 2.5rem;
+    }
+  }
+
+  // --- Job list ------------------------------------------------------------
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  &__job {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 1rem;
+    background: #fff;
+    overflow: hidden;
+
+    &--open {
+      border-color: color-mix(in srgb, #{$green} 45%, var(--mat-sys-outline-variant));
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  &__job-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  &__job-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__job-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: color-mix(in srgb, #{$green} 16%, #fff);
+    color: #33481a;
+
+    mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+      color: $green;
+    }
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Expanded panel ------------------------------------------------------
+
+  &__panel {
+    padding: 0 1.25rem 1.25rem;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__panel-divider {
+    height: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__criterion {
+    padding: 1.1rem 0 0.75rem;
+
+    &:first-of-type {
+      padding-top: 1.5rem;
+    }
+  }
+
+  &__criterion-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+
+    // The label already carries a bottom margin for standalone use; drop it
+    // when it sits inside a head row (alongside a badge).
+    .manual-referral__criterion-label {
+      margin-bottom: 0;
+    }
+  }
+
+  &__criterion-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 1.05rem;
+      height: 1.05rem;
+      font-size: 1.05rem;
+    }
+  }
+
+  &__criterion-text {
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+    }
+
+    &--met {
+      background: color-mix(in srgb, #{$green} 20%, #fff);
+      color: #33481a;
+    }
+
+    &--partial {
+      background: color-mix(in srgb, #e0a91b 32%, #fff);
+      color: #6b4e07;
+    }
+
+    &--unmet {
+      background: color-mix(in srgb, #{$error} 16%, #fff);
+      color: $error;
+    }
+  }
+
+  // --- Primary requirement gates -------------------------------------------
+
+  &__gates {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.85rem;
+    overflow: hidden;
+  }
+
+  &__gate {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+
+    & + & {
+      border-top: 1px solid var(--mat-sys-outline-variant);
+    }
+  }
+
+  &__gate-icon {
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 1.2rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__gate-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  &__gate-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__gate-reason {
+    font-size: 0.88rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__gate-pill {
+    flex-shrink: 0;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--pass {
+      background: color-mix(in srgb, #{$green} 20%, #fff);
+      color: #33481a;
+    }
+
+    &--fail {
+      background: color-mix(in srgb, #{$error} 16%, #fff);
+      color: $error;
+    }
+
+    &--na,
+    &--unknown {
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__eligibility-note {
+    margin: 0.6rem 0 0;
+    line-height: 1.5;
+  }
+
+  &__skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__skill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+    }
+
+    &--matched {
+      background: color-mix(in srgb, #{$green} 20%, #fff);
+      color: #33481a;
+    }
+
+    &--missing {
+      background: #fff;
+      border: 1px dashed color-mix(in srgb, #{$error} 55%, transparent);
+      color: $error;
+    }
+
+    &--neutral {
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__panel-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__refer {
+    --mdc-filled-button-container-color: #{$green};
+    --mdc-filled-button-label-text-color: #fff;
+  }
+
+  &__referred {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #33481a;
+
+    mat-icon {
+      width: 1.2rem;
+      height: 1.2rem;
+      font-size: 1.2rem;
+      color: $green;
+    }
+  }
+
+  // --- Responsive ----------------------------------------------------------
+
+  @media (max-width: 860px) {
+    &__body {
+      grid-template-columns: 1fr;
+    }
+
+    &__rail {
+      display: none;
+    }
+  }
+}

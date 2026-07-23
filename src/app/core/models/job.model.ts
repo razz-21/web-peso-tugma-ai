@@ -27,7 +27,9 @@ const JobFieldsSchema = z.object({
   minimum_education_attainment: z.array(z.string()),
   experience_required: z.string().nullable(),
   skills_required: z.array(z.string()),
-  no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
+  // Read-side allows 0: a job whose vacancies were all consumed by referrals
+  // legitimately reads as 0. The write schema re-tightens this to `min(1)`.
+  no_of_vacancies: z.number().int().min(0).max(JOB_VACANCIES_MAX),
   salary_per_month: z.number().int().nonnegative().nullable(),
   location: z.string().nullable(),
   age_range: z.string().nullable(),
@@ -47,8 +49,10 @@ export const JobSchema = JobFieldsSchema.extend({
 
 export const JobGetSchema = JobSchema;
 
-// Write payloads still send the `company_id` foreign key.
+// Write payloads still send the `company_id` foreign key. A new/edited posting
+// must have at least one opening, so re-tighten the read-relaxed vacancy bound.
 export const JobPostSchema = JobFieldsSchema.extend({
+  no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
   company_id: z.uuid(),
 });
 

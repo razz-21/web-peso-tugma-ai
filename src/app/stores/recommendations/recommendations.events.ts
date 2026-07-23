@@ -15,6 +15,11 @@ export const recommendationsEvents = eventGroup({
     generateSuccess: type<RecommendedJob[]>(),
     generateFailed: type<string>(),
 
+    // Manually refer the applicant to a specific job (from the manual-referral screen).
+    refer: type<{ applicantId: string; jobId: string }>(),
+    referSuccess: type<RecommendedJob>(),
+    referFailed: type<string>(),
+
     // Human-in-the-Loop relevance assessment for a single recommendation.
     setRelevance: type<{ id: string; isRelevant: boolean }>(),
     setRelevanceSuccess: type<RecommendedJob>(),

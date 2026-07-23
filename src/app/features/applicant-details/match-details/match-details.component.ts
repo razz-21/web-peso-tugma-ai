@@ -3,38 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
-import { RecommendationScores } from '../../../core/models/recommended-job.model';
-import { JobMatch, MAX_MATCH_SCORE } from '../job-match.model';
+import { JobMatch } from '../types/job-match.type';
+import { Assessment } from '../types/match-details.type';
+import { MAX_MATCH_SCORE } from '../utils/job-match.util';
+import { DIMENSION_PHRASE } from '../utils/match-details.util';
+import { capitalize, joinList } from '../utils/text.util';
 import { VectorComparisonComponent } from './vector-comparison/vector-comparison.component';
-
-/** Visual severity of the match assessment banner. */
-type AssessmentTone = 'positive' | 'caution' | 'critical';
-
-interface Assessment {
-  readonly tone: AssessmentTone;
-  /** Short band label, e.g. "Moderate match". */
-  readonly title: string;
-  /** One-line rationale derived from the strongest / weakest factors. */
-  readonly summary: string;
-}
-
-/** Human-readable phrase for each scoring dimension, used in the summary line. */
-const DIMENSION_PHRASE: Record<keyof RecommendationScores, string> = {
-  semantic_similarity: 'overall role fit',
-  skills: 'skills',
-  experience: 'experience',
-  educational_background: 'education',
-  location_preference: 'location',
-};
-
-const capitalize = (text: string): string =>
-  text.length === 0 ? text : text[0].toUpperCase() + text.slice(1);
-
-/** Join phrases with commas and a trailing "and": "a, b and c". */
-const joinList = (items: readonly string[]): string =>
-  items.length <= 1
-    ? (items[0] ?? '')
-    : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
 
 /**
  * Match-details panel: score-band banner, weighted score breakdown, running

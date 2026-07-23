@@ -20,9 +20,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Events, injectDispatch } from '@ngrx/signals/events';
-import { Address, ApplicantGet } from '../../core/models/applicant.model';
+import { ApplicantGet } from '../../core/models/applicant.model';
+import { JobGet } from '../../core/models/job.model';
 import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
@@ -37,24 +38,19 @@ import { applicantsEvents } from '../../stores/applicants/applicants.events';
 import { RecommendationsStore } from '../../stores/recommendations/recommendations.store';
 import { recommendationsEvents } from '../../stores/recommendations/recommendations.events';
 import { DetailFieldComponent } from './detail-field/detail-field.component';
-import {
-  ReferralStatusChange,
-  ReferredJobsComponent,
-} from './referred-jobs/referred-jobs.component';
+import { ReferredJobsComponent } from './referred-jobs/referred-jobs.component';
 import { MatchDetailsComponent } from './match-details/match-details.component';
-import { ComparisonComponent, ComparisonDialogData } from './comparison/comparison.component';
-import { JobMatch, toJobMatch } from './job-match.model';
-import {
-  ApplicantEditDialogComponent,
-  ApplicantEditDialogData,
-  EditSectionId,
-} from './applicant-edit-dialog/applicant-edit-dialog.component';
-
-interface SectionLink {
-  readonly id: string;
-  readonly label: string;
-  readonly icon: string;
-}
+import { ComparisonComponent } from './comparison/comparison.component';
+import { ManualReferralComponent } from './manual-referral/manual-referral.component';
+import { ApplicantEditDialogComponent } from './applicant-edit-dialog/applicant-edit-dialog.component';
+import { JobMatch } from './types/job-match.type';
+import { SectionLink } from './types/applicant-details.type';
+import { ComparisonDialogData } from './types/comparison.type';
+import { ManualReferralDialogData } from './types/manual-referral.type';
+import { ReferralStatusChange } from './types/referred-jobs.type';
+import { ApplicantEditDialogData, EditSectionId } from './types/applicant-edit-dialog.type';
+import { toJobMatch } from './utils/job-match.util';
+import { addressLines, sameAddress } from './utils/address.util';
 
 const SECTIONS: readonly SectionLink[] = [
   { id: 'personal', label: 'Personal information', icon: 'person' },
@@ -108,6 +104,11 @@ export class ApplicantDetailsComponent implements OnInit {
   /** Recommendation id of an in-flight drawer referral (null when none pending). */
   private readonly pendingReferralId = signal<string | null>(null);
 
+  /** Open manual-referral dialog, closed once its referral succeeds. */
+  private manualReferralRef: MatDialogRef<ManualReferralComponent> | null = null;
+  /** True while a manual referral is in flight, so its success closes the dialog. */
+  private readonly pendingManualReferral = signal(false);
+
   protected readonly applicant = this.store.applicant;
 
   /** AI recommendations for this applicant, ranked by MatchScore (desc). */
@@ -127,13 +128,15 @@ export class ApplicantDetailsComponent implements OnInit {
   protected readonly skeletonRows = [0, 1, 2] as const;
 
   /**
-   * Every recommendation the officer has referred (status set), most-recent
-   * first, for the Referred jobs accordion. Empty until someone is referred.
+   * Every recommendation the officer has referred (status set), most-recently
+   * referred first, for the Referred jobs accordion. Sorted by `updatedAt` so a
+   * freshly referred job (whether newly created or an advanced recommendation)
+   * jumps to the top. Empty until someone is referred.
    */
   protected readonly referrals = computed<readonly JobMatch[]>(() =>
     this.recommendations()
       .filter((match) => match.status !== null)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
   );
 
   /** When the current recommendations were generated, shown in the card footer. */
@@ -301,6 +304,19 @@ export class ApplicantDetailsComponent implements OnInit {
           this.matchDrawer()?.close();
         }
       });
+
+    // Close the manual-referral dialog once the referral it started persists
+    // (either a freshly created referral or an advanced recommendation).
+    this.events
+      .on(recommendationsEvents.referSuccess, recommendationsEvents.setStatusSuccess)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        if (this.pendingManualReferral()) {
+          this.pendingManualReferral.set(false);
+          this.manualReferralRef?.close();
+          this.manualReferralRef = null;
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -376,9 +392,89 @@ export class ApplicantDetailsComponent implements OnInit {
     }
   }
 
-  /** "New referral" jumps to the Recommended jobs card to pick a job to refer. */
+  /** Job ids the applicant is already referred to, for the manual-referral screen. */
+  protected readonly referredJobIds = computed<ReadonlySet<string>>(
+    () =>
+      new Set(
+        this.recommendations()
+          .filter((match) => match.status !== null && match.jobId)
+          .map((match) => match.jobId as string),
+      ),
+  );
+
+  /** "Manual referral" opens the full-page screening dialog to pick a job to refer. */
   protected onNewReferral(): void {
-    document.getElementById('recommend')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const applicant = this.applicant();
+    if (!applicant) {
+      return;
+    }
+    this.pendingManualReferral.set(false);
+    this.manualReferralRef = this.dialog.open<ManualReferralComponent, ManualReferralDialogData>(
+      ManualReferralComponent,
+      {
+        panelClass: 'manual-referral-dialog',
+        width: '100vw',
+        maxWidth: '100vw',
+        height: '100vh',
+        maxHeight: '100vh',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        ariaLabel: 'Manual referral',
+        data: {
+          applicant,
+          referredJobIds: this.referredJobIds,
+          onRefer: (job) => this.onReferJob(job),
+        },
+      },
+    );
+    this.manualReferralRef.afterClosed().subscribe(() => {
+      this.manualReferralRef = null;
+      this.pendingManualReferral.set(false);
+    });
+  }
+
+  /** Confirm, then manually refer the applicant to the chosen workspace job. */
+  private onReferJob(job: JobGet): void {
+    const applicant = this.applicant();
+    if (!applicant) {
+      return;
+    }
+    if (this.referredJobIds().has(job.id)) {
+      this.snackBar.open('Applicant is already referred to this job.', 'Close', { duration: 3000 });
+      return;
+    }
+    const data: ConfirmDialogData = {
+      title: 'Refer applicant?',
+      message: `Are you sure you want to refer <strong>${this.fullName()}</strong> to <strong>${job.title}</strong>?`,
+      confirmLabel: 'Refer',
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+        // Reuse an existing (e.g. AI-generated) recommendation for this job so we
+        // advance it to 'referred' rather than creating a duplicate; otherwise
+        // create a fresh manual referral.
+        this.pendingManualReferral.set(true);
+        const existing = this.recommendations().find((match) => match.jobId === job.id);
+        if (existing) {
+          this.recommendationsDispatch.setStatus({
+            id: existing.recommendationId,
+            status: 'referred',
+          });
+        } else {
+          this.recommendationsDispatch.refer({ applicantId: applicant.id, jobId: job.id });
+        }
+      });
   }
 
   protected onViewComparison(match: JobMatch): void {
@@ -470,18 +566,3 @@ export class ApplicantDetailsComponent implements OnInit {
       });
   }
 }
-
-const addressLines = (address: Address | null): string[] => {
-  if (!address) {
-    return [];
-  }
-  return [address.house_no_street, address.baranggay, address.municipality_city, address.province]
-    .map((part) => part?.trim())
-    .filter((part): part is string => Boolean(part));
-};
-
-const sameAddress = (a: Address, b: Address): boolean =>
-  (a.house_no_street ?? '') === (b.house_no_street ?? '') &&
-  (a.baranggay ?? '') === (b.baranggay ?? '') &&
-  (a.municipality_city ?? '') === (b.municipality_city ?? '') &&
-  (a.province ?? '') === (b.province ?? '');

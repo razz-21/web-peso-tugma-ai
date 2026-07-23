@@ -34,6 +34,22 @@ export class RecommendationsService {
     return RecommendedJobListSchema.parse(body).items;
   }
 
+  /**
+   * Manually refer an applicant to a specific job by creating a recommendation
+   * record already marked 'referred' (no AI scoring — this is a manual match).
+   * The assessor defaults to the authenticated officer on the server.
+   */
+  async refer(applicantId: string, jobId: string): Promise<RecommendedJob> {
+    const body = await firstValueFrom(
+      this.http.post<RecommendedJob>(this.baseUrl, {
+        applicant_id: applicantId,
+        job_id: jobId,
+        status: 'referred',
+      }),
+    );
+    return RecommendedJobSchema.parse(body);
+  }
+
   /** Human-in-the-Loop: flag a recommendation as relevant / not relevant. */
   async setRelevance(id: string, isRelevant: boolean): Promise<RecommendedJob> {
     const body = await firstValueFrom(
