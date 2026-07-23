@@ -26,6 +26,7 @@ import { Address, ApplicantGet } from '../../core/models/applicant.model';
 import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
+import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -76,6 +77,7 @@ const SECTIONS: readonly SectionLink[] = [
     MatSidenavModule,
     MatTabsModule,
     AvatarComponent,
+    SkeletonComponent,
     DetailFieldComponent,
     ReferredJobsComponent,
     MatchDetailsComponent,
@@ -117,6 +119,12 @@ export class ApplicantDetailsComponent implements OnInit {
   });
 
   protected readonly generating = computed(() => this.recommendationsStore.generating());
+
+  /** True during the initial recommendations fetch, before any items arrive. */
+  protected readonly loadingRecommendations = computed(() => this.recommendationsStore.loading());
+
+  /** Placeholder rows rendered while recommendations/referrals load. */
+  protected readonly skeletonRows = [0, 1, 2] as const;
 
   /**
    * Every recommendation the officer has referred (status set), most-recent

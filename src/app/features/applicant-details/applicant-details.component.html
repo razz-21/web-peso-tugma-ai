@@ -112,6 +112,7 @@
               <!-- Referred jobs card -->
               <app-referred-jobs
                 class="applicant-details__card"
+                [loading]="loadingRecommendations()"
                 [referrals]="referrals()"
                 (statusChange)="onReferralStatus($event)"
                 (compare)="onViewComparison($event)"
@@ -149,101 +150,123 @@
                 </div>
 
                 <div class="applicant-details__recommend-body">
-                  @if (generating()) {
-                    <div class="applicant-details__generating" role="status" aria-live="polite">
-                      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
-                      <p>Generating matches...</p>
-                    </div>
-                  }
-
-                  @if (recommendations().length === 0) {
-                    <div class="applicant-details__empty">
-                      <span class="applicant-details__empty-icon" aria-hidden="true">
-                        <mat-icon>auto_awesome</mat-icon>
-                      </span>
-                      <h3 class="applicant-details__empty-title">No recommendations yet</h3>
-                      <p class="applicant-details__empty-text">
-                        Generate five job matches ranked by fit. Each match is scored on preferred
-                        occupation, educational background, skills, location, and semantic
-                        similarity.
-                      </p>
-                      <button matButton="tonal" type="button" (click)="onGenerate()">
-                        <mat-icon>auto_awesome</mat-icon>
-                        Generate 5 matches
-                      </button>
-                    </div>
-                  } @else {
-                    <ol class="applicant-details__matches">
-                      @for (
-                        match of recommendations();
-                        track match.recommendationId;
-                        let i = $index
-                      ) {
-                        <li
-                          class="applicant-details__match"
-                          role="button"
-                          tabindex="0"
-                          [attr.aria-label]="'View match details for ' + match.title"
-                          (click)="selectMatch(match); matchDrawer.open()"
-                          (keydown.enter)="selectMatch(match); matchDrawer.open()"
-                        >
-                          <span class="applicant-details__match-rank">{{ i + 1 }}</span>
-                          <div
-                            class="applicant-details__ring"
-                            [style.--score]="match.score"
-                            [style.--ring-color]="match.color"
-                          >
-                            <span class="applicant-details__ring-value">{{ match.score }}%</span>
-                          </div>
+                  @if (loadingRecommendations()) {
+                    <ol class="applicant-details__matches" aria-hidden="true">
+                      @for (row of skeletonRows; track row) {
+                        <li class="applicant-details__match applicant-details__match--skeleton">
+                          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
                           <div class="applicant-details__match-body">
-                            <div class="applicant-details__match-heading">
-                              <h3 class="applicant-details__match-title">{{ match.title }}</h3>
-                              @if (match.statusLabel; as statusLabel) {
-                                <span
-                                  class="applicant-details__match-status"
-                                  [class]="'applicant-details__match-status--' + match.status"
-                                >
-                                  <span
-                                    class="applicant-details__match-status-dot"
-                                    aria-hidden="true"
-                                  ></span>
-                                  {{ statusLabel }}
-                                </span>
-                              }
-                            </div>
-                            <p class="applicant-details__match-meta">
-                              @for (
-                                segment of match.metaSegments;
-                                track $index;
-                                let first = $first
-                              ) {
-                                @if (!first) {
-                                  <span class="applicant-details__dot" aria-hidden="true">·</span>
-                                }
-                                <span>{{ segment }}</span>
-                              }
-                              @if (match.isRelevant) {
-                                <span class="applicant-details__relevant-chip">
-                                  <mat-icon aria-hidden="true">check_circle</mat-icon>
-                                  Relevant
-                                </span>
-                              }
-                            </p>
+                            <app-skeleton variant="text" width="55%" height="1.1rem" />
+                            <app-skeleton variant="text" width="38%" />
                             <div class="applicant-details__match-tags">
-                              @for (tag of match.tags; track tag.label) {
-                                <span class="applicant-details__match-tag">
-                                  <mat-icon aria-hidden="true">{{ tag.icon }}</mat-icon>
-                                  {{ tag.label }}
-                                </span>
-                              }
+                              <app-skeleton width="4.5rem" height="1.5rem" radius="999px" />
+                              <app-skeleton width="5.5rem" height="1.5rem" radius="999px" />
                             </div>
                           </div>
-                          <mat-icon class="applicant-details__match-chevron" aria-hidden="true">
-                            chevron_right
-                          </mat-icon>
                         </li>
                       }
                     </ol>
+                  } @else {
+                    @if (generating()) {
+                      <div class="applicant-details__generating" role="status" aria-live="polite">
+                        <mat-progress-spinner
+                          mode="indeterminate"
+                          diameter="40"
+                          aria-hidden="true"
+                        />
+                        <p>Generating matches...</p>
+                      </div>
+                    }
+
+                    @if (recommendations().length === 0) {
+                      <div class="applicant-details__empty">
+                        <span class="applicant-details__empty-icon" aria-hidden="true">
+                          <mat-icon>auto_awesome</mat-icon>
+                        </span>
+                        <h3 class="applicant-details__empty-title">No recommendations yet</h3>
+                        <p class="applicant-details__empty-text">
+                          Generate five job matches ranked by fit. Each match is scored on preferred
+                          occupation, educational background, skills, location, and semantic
+                          similarity.
+                        </p>
+                        <button matButton="tonal" type="button" (click)="onGenerate()">
+                          <mat-icon>auto_awesome</mat-icon>
+                          Generate 5 matches
+                        </button>
+                      </div>
+                    } @else {
+                      <ol class="applicant-details__matches">
+                        @for (
+                          match of recommendations();
+                          track match.recommendationId;
+                          let i = $index
+                        ) {
+                          <li
+                            class="applicant-details__match"
+                            role="button"
+                            tabindex="0"
+                            [attr.aria-label]="'View match details for ' + match.title"
+                            (click)="selectMatch(match); matchDrawer.open()"
+                            (keydown.enter)="selectMatch(match); matchDrawer.open()"
+                          >
+                            <span class="applicant-details__match-rank">{{ i + 1 }}</span>
+                            <div
+                              class="applicant-details__ring"
+                              [style.--score]="match.score"
+                              [style.--ring-color]="match.color"
+                            >
+                              <span class="applicant-details__ring-value">{{ match.score }}%</span>
+                            </div>
+                            <div class="applicant-details__match-body">
+                              <div class="applicant-details__match-heading">
+                                <h3 class="applicant-details__match-title">{{ match.title }}</h3>
+                                @if (match.statusLabel; as statusLabel) {
+                                  <span
+                                    class="applicant-details__match-status"
+                                    [class]="'applicant-details__match-status--' + match.status"
+                                  >
+                                    <span
+                                      class="applicant-details__match-status-dot"
+                                      aria-hidden="true"
+                                    ></span>
+                                    {{ statusLabel }}
+                                  </span>
+                                }
+                              </div>
+                              <p class="applicant-details__match-meta">
+                                @for (
+                                  segment of match.metaSegments;
+                                  track $index;
+                                  let first = $first
+                                ) {
+                                  @if (!first) {
+                                    <span class="applicant-details__dot" aria-hidden="true">·</span>
+                                  }
+                                  <span>{{ segment }}</span>
+                                }
+                                @if (match.isRelevant) {
+                                  <span class="applicant-details__relevant-chip">
+                                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                                    Relevant
+                                  </span>
+                                }
+                              </p>
+                              <div class="applicant-details__match-tags">
+                                @for (tag of match.tags; track tag.label) {
+                                  <span class="applicant-details__match-tag">
+                                    <mat-icon aria-hidden="true">{{ tag.icon }}</mat-icon>
+                                    {{ tag.label }}
+                                  </span>
+                                }
+                              </div>
+                            </div>
+                            <mat-icon class="applicant-details__match-chevron" aria-hidden="true">
+                              chevron_right
+                            </mat-icon>
+                          </li>
+                        }
+                      </ol>
+                    }
                   }
                 </div>
 

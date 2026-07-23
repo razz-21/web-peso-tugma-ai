@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { SkeletonComponent } from '../../../core/components/skeleton/skeleton.component';
 import {
   RECOMMENDED_JOB_STATUS_LABEL,
   RecommendedJobStatus,
@@ -130,7 +131,7 @@ const buildSteps = (status: RecommendedJobStatus, referredShort: string): StepNo
  */
 @Component({
   selector: 'app-referred-jobs',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, AvatarComponent],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, AvatarComponent, SkeletonComponent],
   templateUrl: './referred-jobs.component.html',
   styleUrl: './referred-jobs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -138,6 +139,11 @@ const buildSteps = (status: RecommendedJobStatus, referredShort: string): StepNo
 export class ReferredJobsComponent {
   /** All referrals for the applicant, most-recent first. */
   readonly referrals = input<readonly JobMatch[]>([]);
+  /** Shows placeholder rows during the initial referrals fetch. */
+  readonly loading = input<boolean>(false);
+
+  /** Placeholder rows rendered while referrals load. */
+  protected readonly skeletonRows = [0, 1] as const;
 
   readonly statusChange = output<ReferralStatusChange>();
   readonly compare = output<JobMatch>();

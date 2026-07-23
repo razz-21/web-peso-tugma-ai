@@ -774,6 +774,14 @@
     &:hover {
       background: color-mix(in srgb, var(--mat-sys-primary) 11%, var(--mat-sys-surface));
     }
+
+    &--skeleton {
+      cursor: default;
+
+      &:hover {
+        background: var(--row-bg);
+      }
+    }
   }
 
   &__match-rank {

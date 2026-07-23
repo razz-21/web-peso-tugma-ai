@@ -10,7 +10,22 @@
   </button>
 </div>
 
-@if (rows().length === 0) {
+@if (loading()) {
+  <ul class="referred-jobs__list" aria-hidden="true">
+    @for (row of skeletonRows; track row) {
+      <li class="referred-jobs__item">
+        <div class="referred-jobs__summary referred-jobs__summary--skeleton">
+          <app-skeleton variant="circle" width="48px" height="48px" />
+          <span class="referred-jobs__summary-body">
+            <app-skeleton variant="text" width="45%" height="1.1rem" />
+            <app-skeleton variant="text" width="65%" />
+          </span>
+          <app-skeleton width="3rem" height="1.75rem" radius="999px" />
+        </div>
+      </li>
+    }
+  </ul>
+} @else if (rows().length === 0) {
   <div class="referred-jobs__empty">
     <span class="referred-jobs__empty-icon" aria-hidden="true">
       <mat-icon>work_outline</mat-icon>
