@@ -158,15 +158,22 @@
       <mat-icon>compare_arrows</mat-icon>
       View comparison
     </button>
+    @let referBtn = this.referButton();
     <button
       matButton="filled"
       type="button"
       class="match-details__refer"
-      [disabled]="match.status !== null"
+      [disabled]="referBtn.disabled"
       (click)="refer.emit()"
     >
-      <mat-icon>{{ match.status !== null ? 'check' : 'send' }}</mat-icon>
-      {{ match.status !== null ? 'Already referred' : 'Refer applicant' }}
+      <mat-icon>{{ referBtn.icon }}</mat-icon>
+      {{ referBtn.label }}
     </button>
+    @if (referBtn.notice; as notice) {
+      <p class="match-details__refer-note" role="note">
+        <mat-icon aria-hidden="true">block</mat-icon>
+        <span>{{ notice }}</span>
+      </p>
+    }
   </footer>
 </div>

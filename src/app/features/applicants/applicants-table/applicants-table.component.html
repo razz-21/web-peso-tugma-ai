@@ -76,9 +76,10 @@
       <p class="app-table__status-text">Loading applicants...</p>
     </div>
   } @else if (applicants().length === 0) {
-    <div class="app-table__status">
-      <mat-icon class="app-table__status-icon" aria-hidden="true">group</mat-icon>
-      <p class="app-table__status-text">No applicants</p>
-    </div>
+    <app-empty-state
+      icon="group"
+      title="No applicants yet"
+      text="Registered applicants will appear here once they're added to your workspace."
+    />
   }
 </div>

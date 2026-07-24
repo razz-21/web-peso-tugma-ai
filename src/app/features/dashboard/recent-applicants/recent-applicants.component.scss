@@ -64,5 +64,13 @@
       background: #ffdf9e;
       color: #8a5a06;
     }
+    &--withdrawn {
+      background: #e4e7de;
+      color: #5b6152;
+    }
+    &--not_hired {
+      background: #f5d9d9;
+      color: #9b3131;
+    }
   }
 }

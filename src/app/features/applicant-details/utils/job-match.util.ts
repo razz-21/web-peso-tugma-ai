@@ -63,6 +63,8 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
     location,
     salary,
     vacancies: recommendation.job?.no_of_vacancies ?? null,
+    // A missing job (or a non-active one) can't be referred to.
+    active: recommendation.job?.status === 'active',
     skillsRequired: recommendation.job?.skills_required ?? [],
     experienceRequired: recommendation.job?.experience_required ?? null,
     educationRequired: recommendation.job?.minimum_education_attainment ?? [],

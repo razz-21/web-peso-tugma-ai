@@ -415,13 +415,19 @@
                             matButton="filled"
                             type="button"
                             class="manual-referral__refer"
-                            [disabled]="!job.primaryMet"
+                            [disabled]="!job.active || !job.primaryMet"
                             (click)="refer(job.job)"
                           >
                             <mat-icon>send</mat-icon>
                             Refer to this job
                           </button>
-                          @if (!job.primaryMet && job.blockedReason) {
+                          @if (!job.active) {
+                            <span class="manual-referral__refer-blocked" role="note">
+                              <mat-icon aria-hidden="true">block</mat-icon>
+                              This job is no longer active, so the applicant can’t be referred to
+                              it.
+                            </span>
+                          } @else if (!job.primaryMet && job.blockedReason) {
                             <span class="manual-referral__refer-blocked" role="note">
                               <mat-icon aria-hidden="true">info</mat-icon>
                               {{ job.blockedReason }}

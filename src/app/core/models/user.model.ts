@@ -4,6 +4,8 @@ export const UserRoleSchema = z.enum(['super_admin', 'admin', 'officer']);
 
 export const USER_ROLES = UserRoleSchema.options;
 
+export const USER_ROLES_WITHOUT_SUPER_ADMIN = USER_ROLES.filter((role) => role !== 'super_admin');
+
 export const UserStatusSchema = z.enum(['active', 'inactive']);
 
 export const USER_STATUSES = UserStatusSchema.options;

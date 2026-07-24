@@ -115,21 +115,23 @@
       <p class="app-table__status-text">Loading jobs...</p>
     </div>
   } @else if (filteredJobs().length === 0) {
-    <div class="app-table__status">
-      <mat-icon class="app-table__status-icon" aria-hidden="true">work_off</mat-icon>
-      @if (search().trim()) {
-        <p class="app-table__status-text">No jobs match "{{ search().trim() }}"</p>
-        <p class="company-jobs__empty-hint">Try a different search term.</p>
-      } @else {
-        <p class="app-table__status-text">This company has no jobs yet</p>
-        <p class="company-jobs__empty-hint">
-          Create a job to start listing openings for this company.
-        </p>
+    @if (search().trim()) {
+      <app-empty-state
+        icon="work_off"
+        [title]="noMatchTitle()"
+        text="Try a different search term."
+      />
+    } @else {
+      <app-empty-state
+        icon="work_off"
+        title="This company has no jobs yet"
+        text="Create a job to start listing openings for this company."
+      >
         <button mat-flat-button type="button" class="company-jobs__create" (click)="onCreate()">
           <mat-icon>add</mat-icon>
           Create job
         </button>
-      }
-    </div>
+      </app-empty-state>
+    }
   }
 </div>

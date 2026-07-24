@@ -338,6 +338,7 @@ export class ManualReferralComponent {
       seed: job.company?.id ?? job.id,
       headerSegments,
       referred,
+      active: job.status === 'active',
       skillsRequired: job.skills_required,
       experienceText,
       educationText,

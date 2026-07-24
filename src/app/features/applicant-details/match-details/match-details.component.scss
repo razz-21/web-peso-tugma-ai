@@ -373,6 +373,7 @@
   &__footer {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.75rem;
     flex-shrink: 0;
     padding: 1rem 1.5rem;
@@ -386,6 +387,30 @@
 
   &__refer {
     flex: 1 1 auto;
+  }
+
+  // Full-width note under the action row explaining why Refer is disabled
+  // (e.g. the job is no longer active).
+  &__refer-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex-basis: 100%;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 0.85rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--mat-sys-error) 16%, var(--mat-sys-surface));
+    color: var(--mat-sys-on-error-container);
+
+    mat-icon {
+      flex-shrink: 0;
+      font-size: 1.15rem;
+      width: 1.15rem;
+      height: 1.15rem;
+    }
   }
 
   @media (max-width: 560px) {

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApplicantGet } from '../../../core/models/applicant.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import { ApplicantsStore } from '../../../stores/applicants/applicants.store';
 
 interface ApplicantRow {
@@ -24,6 +25,7 @@ interface ApplicantRow {
     MatIconModule,
     MatProgressSpinnerModule,
     AvatarComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './applicants-table.component.html',
   styleUrl: './applicants-table.component.scss',

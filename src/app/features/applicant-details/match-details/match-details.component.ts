@@ -43,6 +43,32 @@ export class MatchDetailsComponent {
   protected readonly maxScore = MAX_MATCH_SCORE;
 
   /**
+   * Refer-button state. The applicant can only be referred to a job that is both
+   * unreferred and still active — a closed job is not open for referrals, so the
+   * button is disabled and its label/notice explain why.
+   */
+  protected readonly referButton = computed<{
+    disabled: boolean;
+    icon: string;
+    label: string;
+    notice: string | null;
+  }>(() => {
+    const match = this.match();
+    if (match.status !== null) {
+      return { disabled: true, icon: 'check', label: 'Already referred', notice: null };
+    }
+    if (!match.active) {
+      return {
+        disabled: true,
+        icon: 'block',
+        label: 'Job no longer active',
+        notice: 'This job is no longer active, so the applicant can’t be referred to it.',
+      };
+    }
+    return { disabled: false, icon: 'send', label: 'Refer applicant', notice: null };
+  });
+
+  /**
    * Ineligibility notice shown under Assessment. Null when the applicant meets
    * the job's eligibility requirement (or the job states none), so the message
    * only appears when there is a real eligibility gap.

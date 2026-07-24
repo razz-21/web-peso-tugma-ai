@@ -436,6 +436,12 @@ export class ApplicantDetailsComponent implements OnInit {
       this.snackBar.open('Applicant is already referred to this job.', 'Close', { duration: 3000 });
       return;
     }
+    if (job.status !== 'active') {
+      this.snackBar.open('This job is no longer active and cannot take referrals.', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
     const data: ConfirmDialogData = {
       title: 'Refer applicant?',
       message: `Are you sure you want to refer <strong>${this.fullName()}</strong> to <strong>${job.title}</strong>?`,
@@ -489,6 +495,14 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferApplicant(match: JobMatch): void {
+    // A closed job can't take referrals — the drawer button is already disabled
+    // for it, but guard here too in case the handler is reached another way.
+    if (!match.active) {
+      this.snackBar.open('This job is no longer active and cannot take referrals.', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
     // Always confirm before referring. An ineligible applicant gets a stronger,
     // destructive warning that surfaces why they failed the job's requirement.
     const data: ConfirmDialogData = match.eligible

@@ -54,6 +54,9 @@ export interface JobMatch {
   readonly salary: number | null;
   /** Number of open seats on the job posting. */
   readonly vacancies: number | null;
+  /** Whether the recommended job is still active (open for referrals). A closed
+   * job can't be referred to, so the refer action is disabled for it. */
+  readonly active: boolean;
   /** Job requirement fields, for the applicant-vs-job comparison view. */
   readonly skillsRequired: readonly string[];
   readonly experienceRequired: string | null;

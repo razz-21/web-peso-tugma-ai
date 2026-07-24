@@ -98,9 +98,10 @@
       <p class="app-table__status-text">Loading companies...</p>
     </div>
   } @else if (companies().length === 0) {
-    <div class="app-table__status">
-      <mat-icon class="app-table__status-icon" aria-hidden="true">apartment</mat-icon>
-      <p class="app-table__status-text">No companies</p>
-    </div>
+    <app-empty-state
+      icon="apartment"
+      title="No companies yet"
+      text="Companies you add will appear here."
+    />
   }
 </div>

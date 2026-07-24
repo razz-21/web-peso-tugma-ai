@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import { CompaniesStore } from '../../../stores/companies/companies.store';
 
 interface CompanyRow {
@@ -22,6 +23,7 @@ interface CompanyRow {
     MatIconModule,
     MatProgressSpinnerModule,
     AvatarComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './companies-table.component.html',
   styleUrl: './companies-table.component.scss',

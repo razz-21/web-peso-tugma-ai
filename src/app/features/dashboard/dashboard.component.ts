@@ -1,9 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { injectDispatch } from '@ngrx/signals/events';
+import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
+import { DashboardRangeParams } from '../../core/models/dashboard.model';
+import { DashboardStore } from '../../stores/dashboard/dashboard.store';
+import { dashboardEvents } from '../../stores/dashboard/dashboard.events';
 import { PlacementsChartComponent } from './placements-chart/placements-chart.component';
 import { MatchingFunnelComponent } from './matching-funnel/matching-funnel.component';
-import { SeekersStatusComponent } from './seekers-status/seekers-status.component';
-import { InDemandOccupationsComponent } from './in-demand-occupations/in-demand-occupations.component';
 import { RecentApplicantsComponent } from './recent-applicants/recent-applicants.component';
 import { TopHiringCompaniesComponent } from './top-hiring-companies/top-hiring-companies.component';
 import {
@@ -29,14 +39,29 @@ interface Kpi {
   delta: KpiDelta;
 }
 
+const formatNumber = (value: number): string => value.toLocaleString('en-US');
+
+/** Growth badge for the trend cards; `null` change_pct has no baseline to show. */
+const percentDelta = (changePct: number | null): KpiDelta =>
+  changePct === null
+    ? { text: '—', trend: 'neutral' }
+    : { text: `${changePct}%`, trend: changePct >= 0 ? 'up' : 'neutral' };
+
+/** Format a Date as a local `YYYY-MM-DD` (avoids the UTC shift of toISOString). */
+const toIsoDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 @Component({
   selector: 'app-dashboard',
   imports: [
     MatIconModule,
+    SkeletonComponent,
     PlacementsChartComponent,
     MatchingFunnelComponent,
-    SeekersStatusComponent,
-    InDemandOccupationsComponent,
     RecentApplicantsComponent,
     TopHiringCompaniesComponent,
     DateRangeFilterComponent,
@@ -45,8 +70,11 @@ interface Kpi {
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
-  // TODO: replace the hard-coded name/metrics with data from the auth + stats stores.
+export class DashboardComponent implements OnInit {
+  protected readonly store = inject(DashboardStore);
+  private readonly dispatch = injectDispatch(dashboardEvents);
+
+  // TODO: replace the hard-coded name with the authenticated user (auth store).
   protected readonly userName = signal('Ernesto');
 
   protected readonly greeting = computed(() => {
@@ -60,42 +88,72 @@ export class DashboardComponent {
     new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
   );
 
-  protected readonly kpis = signal<Kpi[]>([
-    {
-      icon: 'person',
-      tone: 'green',
-      value: '1,284',
-      label: 'Registered job seekers',
-      delta: { text: '8.2%', trend: 'up' },
-    },
-    {
-      icon: 'work',
-      tone: 'teal',
-      value: '96',
-      label: 'Active job listings',
-      delta: { text: '5 new', trend: 'up' },
-    },
-    {
-      icon: 'list',
-      tone: 'grey',
-      value: '412',
-      label: 'Open vacancies',
-      delta: { text: 'across 96 listings', trend: 'neutral' },
-    },
-    {
-      icon: 'task_alt',
-      tone: 'amber',
-      value: '187',
-      label: 'Placements (hired)',
-      delta: { text: '12%', trend: 'up' },
-    },
-  ]);
+  /** KPI cards derived from the summary; `null` until the first load resolves. */
+  protected readonly kpis = computed<Kpi[] | null>(() => {
+    const summary = this.store.summary();
+    if (!summary) return null;
+    return [
+      {
+        icon: 'person',
+        tone: 'green',
+        value: formatNumber(summary.registered_job_seekers.value),
+        label: 'Registered job seekers',
+        delta: percentDelta(summary.registered_job_seekers.change_pct),
+      },
+      {
+        icon: 'work',
+        tone: 'teal',
+        value: formatNumber(summary.active_job_listings.value),
+        label: 'Active job listings',
+        delta: {
+          text: `${summary.active_job_listings.new} new`,
+          trend: summary.active_job_listings.new > 0 ? 'up' : 'neutral',
+        },
+      },
+      {
+        icon: 'list',
+        tone: 'grey',
+        value: formatNumber(summary.open_vacancies.value),
+        label: 'Open vacancies',
+        delta: {
+          text: `across ${formatNumber(summary.open_vacancies.listings)} listings`,
+          trend: 'neutral',
+        },
+      },
+      {
+        icon: 'task_alt',
+        tone: 'amber',
+        value: formatNumber(summary.placements.value),
+        label: 'Placements (hired)',
+        delta: percentDelta(summary.placements.change_pct),
+      },
+    ];
+  });
 
-  /** Currently selected filter range; defaults to the current month. */
-  protected readonly selectedRange = signal<DashboardDateRange | null>(null);
+  /** Placeholder rows while content loads (drive skeleton `@for` loops). */
+  protected readonly kpiPlaceholders = [0, 1, 2, 3];
+  protected readonly listPlaceholders = [0, 1, 2, 3, 4];
+
+  protected readonly matchesLabel = computed(() => {
+    const funnel = this.store.funnel();
+    return funnel ? `${formatNumber(funnel.matches_generated)} AI matches generated` : '';
+  });
+
+  protected readonly placementRateLabel = computed(() => {
+    const funnel = this.store.funnel();
+    return funnel ? `${funnel.placement_rate}%` : '';
+  });
+
+  public ngOnInit(): void {
+    // Initial load uses the backend's default window (trailing 30 days).
+    this.dispatch.load(undefined);
+  }
 
   protected onRangeChange(range: DashboardDateRange): void {
-    // TODO: refetch the dashboard metrics for `range` once the stats store is wired.
-    this.selectedRange.set(range);
+    const params: DashboardRangeParams = {
+      start_date: toIsoDate(range.start),
+      end_date: toIsoDate(range.end),
+    };
+    this.dispatch.load(params);
   }
 }

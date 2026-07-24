@@ -95,9 +95,10 @@
       <p class="app-table__status-text">Loading workspaces...</p>
     </div>
   } @else if (rows().length === 0) {
-    <div class="app-table__status">
-      <mat-icon class="app-table__status-icon" aria-hidden="true">workspaces</mat-icon>
-      <p class="app-table__status-text">No workspaces</p>
-    </div>
+    <app-empty-state
+      icon="workspaces"
+      title="No workspaces yet"
+      text="Workspaces you create will appear here."
+    />
   }
 </div>

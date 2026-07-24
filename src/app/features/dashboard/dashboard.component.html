@@ -10,20 +10,31 @@
   </header>
 
   <div class="dashboard__kpis">
-    @for (kpi of kpis(); track kpi.label) {
-      <article class="kpi-card">
-        <span class="kpi-card__icon" [class]="'kpi-card__icon--' + kpi.tone">
-          <mat-icon aria-hidden="true">{{ kpi.icon }}</mat-icon>
-        </span>
-        <p class="kpi-card__value">{{ kpi.value }}</p>
-        <p class="kpi-card__label">{{ kpi.label }}</p>
-        <span class="kpi-card__delta" [class.kpi-card__delta--up]="kpi.delta.trend === 'up'">
-          @if (kpi.delta.trend === 'up') {
-            <mat-icon class="kpi-card__delta-icon" aria-hidden="true">north_east</mat-icon>
-          }
-          {{ kpi.delta.text }}
-        </span>
-      </article>
+    @if (kpis(); as kpis) {
+      @for (kpi of kpis; track kpi.label) {
+        <article class="kpi-card">
+          <span class="kpi-card__icon" [class]="'kpi-card__icon--' + kpi.tone">
+            <mat-icon aria-hidden="true">{{ kpi.icon }}</mat-icon>
+          </span>
+          <p class="kpi-card__value">{{ kpi.value }}</p>
+          <p class="kpi-card__label">{{ kpi.label }}</p>
+          <span class="kpi-card__delta" [class.kpi-card__delta--up]="kpi.delta.trend === 'up'">
+            @if (kpi.delta.trend === 'up') {
+              <mat-icon class="kpi-card__delta-icon" aria-hidden="true">north_east</mat-icon>
+            }
+            {{ kpi.delta.text }}
+          </span>
+        </article>
+      }
+    } @else {
+      @for (placeholder of kpiPlaceholders; track placeholder) {
+        <article class="kpi-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="55%" height="2rem" />
+          <app-skeleton variant="text" width="75%" />
+          <app-skeleton width="5rem" height="1.5rem" radius="999px" />
+        </article>
+      }
     }
   </div>
 
@@ -39,43 +50,37 @@
           <mat-icon aria-hidden="true">chevron_right</mat-icon>
         </a>
       </header>
-      <app-placements-chart />
+      @if (store.loading()) {
+        <app-skeleton height="20rem" radius="0.75rem" />
+      } @else if (store.placements(); as placements) {
+        <app-placements-chart [months]="placements.months" />
+      }
     </article>
 
     <article class="chart-card">
       <header class="chart-card__header">
         <div class="chart-card__heading">
           <h2 class="chart-card__title">Matching funnel</h2>
-          <p class="chart-card__subtitle">2,940 AI matches generated</p>
+          @if (store.loading()) {
+            <app-skeleton variant="text" width="12rem" />
+          } @else {
+            <p class="chart-card__subtitle">{{ matchesLabel() }}</p>
+          }
         </div>
       </header>
-      <app-matching-funnel />
+      @if (store.loading()) {
+        <app-skeleton height="18rem" radius="0.75rem" />
+      } @else if (store.funnel(); as funnel) {
+        <app-matching-funnel [stages]="funnel.stages" />
+      }
       <div class="chart-card__footer">
         <span class="chart-card__footer-label">Placement rate</span>
-        <span class="chart-card__footer-value">36.5%</span>
+        @if (store.loading()) {
+          <app-skeleton variant="text" width="4rem" height="1.75rem" />
+        } @else {
+          <span class="chart-card__footer-value">{{ placementRateLabel() }}</span>
+        }
       </div>
-    </article>
-  </div>
-
-  <div class="dashboard__charts dashboard__charts--even">
-    <article class="chart-card">
-      <header class="chart-card__header">
-        <div class="chart-card__heading">
-          <h2 class="chart-card__title">Job seekers by status</h2>
-          <p class="chart-card__subtitle">1,284 total</p>
-        </div>
-      </header>
-      <app-seekers-status />
-    </article>
-
-    <article class="chart-card">
-      <header class="chart-card__header">
-        <div class="chart-card__heading">
-          <h2 class="chart-card__title">In-demand occupations</h2>
-          <p class="chart-card__subtitle">Open vacancies by field</p>
-        </div>
-      </header>
-      <app-in-demand-occupations />
     </article>
   </div>
 
@@ -90,7 +95,20 @@
           <mat-icon aria-hidden="true">chevron_right</mat-icon>
         </a>
       </header>
-      <app-recent-applicants />
+      @if (store.loading()) {
+        @for (placeholder of listPlaceholders; track placeholder) {
+          <div class="skeleton-row">
+            <app-skeleton variant="circle" width="44px" height="44px" />
+            <div class="skeleton-row__body">
+              <app-skeleton variant="text" width="45%" />
+              <app-skeleton variant="text" width="70%" />
+            </div>
+            <app-skeleton width="4.5rem" height="1.5rem" radius="999px" />
+          </div>
+        }
+      } @else if (store.activity(); as activity) {
+        <app-recent-applicants [applicants]="activity.recent_applicants" />
+      }
     </article>
 
     <article class="chart-card">
@@ -100,7 +118,20 @@
           <p class="chart-card__subtitle">By placements this month</p>
         </div>
       </header>
-      <app-top-hiring-companies />
+      @if (store.loading()) {
+        @for (placeholder of listPlaceholders; track placeholder) {
+          <div class="skeleton-row">
+            <app-skeleton variant="circle" width="44px" height="44px" />
+            <div class="skeleton-row__body">
+              <app-skeleton variant="text" width="55%" />
+              <app-skeleton variant="text" width="35%" />
+            </div>
+            <app-skeleton width="2.5rem" height="1.75rem" radius="0.5rem" />
+          </div>
+        }
+      } @else if (store.activity(); as activity) {
+        <app-top-hiring-companies [companies]="activity.top_hiring_companies.items" />
+      }
     </article>
   </div>
 </section>

@@ -138,6 +138,18 @@
 
         <div class="job-details__card job-details__section">
           <h3 class="job-details__section-title">
+            <mat-icon aria-hidden="true">menu_book</mat-icon>
+            Course / Program
+          </h3>
+          @if (job.course_program) {
+            <p class="job-details__body">{{ job.course_program }}</p>
+          } @else {
+            <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+        </div>
+
+        <div class="job-details__card job-details__section">
+          <h3 class="job-details__section-title">
             <mat-icon aria-hidden="true">work_history</mat-icon>
             Experience required
           </h3>

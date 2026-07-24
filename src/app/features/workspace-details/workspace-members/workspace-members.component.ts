@@ -25,6 +25,7 @@ import { usersEvents } from '../../../stores/users/users.events';
 import { MeStore } from '../../../stores/me/me.store';
 import { WorkspaceGet } from '../../../core/models/workspace.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -50,6 +51,7 @@ const MEMBERS_LIMIT = 100;
     MatIconModule,
     MatProgressSpinnerModule,
     AvatarComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './workspace-members.component.html',
   styleUrl: './workspace-members.component.scss',

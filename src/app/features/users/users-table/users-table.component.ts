@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { STATUS_LABELS, User, UserGet, UserRole } from '../../../core/models/user.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import { UsersStore } from '../../../stores/users/users.store';
 
 interface UserRow {
@@ -29,6 +30,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
     MatIconModule,
     MatProgressSpinnerModule,
     AvatarComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './users-table.component.html',
   styleUrl: './users-table.component.scss',

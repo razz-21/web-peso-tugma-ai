@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WORKSPACE_STATUS_LABELS, WorkspaceGet } from '../../../core/models/workspace.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import { WorkspacesStore } from '../../../stores/workspaces/workspaces.store';
 
 interface WorkspaceRow {
@@ -22,6 +23,7 @@ interface WorkspaceRow {
     MatIconModule,
     MatProgressSpinnerModule,
     AvatarComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './workspaces-table.component.html',
   styleUrl: './workspaces-table.component.scss',

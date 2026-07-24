@@ -713,6 +713,7 @@ $error: #b3261e;
   &__actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.75rem;
   }
 
@@ -725,9 +726,12 @@ $error: #b3261e;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
     font-size: 0.85rem;
     font-weight: 600;
     color: #9a3b2f;
+    background: #fdecea;
 
     mat-icon {
       width: 1.1rem;

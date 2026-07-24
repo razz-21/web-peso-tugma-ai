@@ -101,9 +101,10 @@
       <p class="app-table__status-text">Loading jobs...</p>
     </div>
   } @else if (jobs().length === 0) {
-    <div class="app-table__status">
-      <mat-icon class="app-table__status-icon" aria-hidden="true">work</mat-icon>
-      <p class="app-table__status-text">No jobs</p>
-    </div>
+    <app-empty-state
+      icon="work"
+      title="No job listings yet"
+      text="Job openings you post will appear here."
+    />
   }
 </div>

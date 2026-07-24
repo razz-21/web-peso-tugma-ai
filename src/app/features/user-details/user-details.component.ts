@@ -30,10 +30,9 @@ import { injectDispatch } from '@ngrx/signals/events';
 import {
   ROLE_LABELS,
   STATUS_LABELS,
-  USER_ROLES,
+  USER_ROLES_WITHOUT_SUPER_ADMIN,
   USER_STATUSES,
   UserRole,
-  UserStatus,
 } from '../../core/models/user.model';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import {
@@ -81,7 +80,7 @@ export class UserDetailsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly roleOptions = USER_ROLES.map((role) => ({
+  protected readonly roleOptions = USER_ROLES_WITHOUT_SUPER_ADMIN.map((role) => ({
     value: role,
     label: ROLE_LABELS[role],
   }));

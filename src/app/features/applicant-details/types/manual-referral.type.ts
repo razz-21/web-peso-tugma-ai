@@ -48,6 +48,9 @@ export interface JobCard {
   readonly headerSegments: readonly string[];
   /** True once the applicant has been referred to this job. */
   readonly referred: boolean;
+  /** Whether the job is still active (open for referrals). A closed job can't
+   * be referred to, so its "Refer to this job" button is disabled. */
+  readonly active: boolean;
 
   // Job requirement details.
   readonly skillsRequired: readonly string[];

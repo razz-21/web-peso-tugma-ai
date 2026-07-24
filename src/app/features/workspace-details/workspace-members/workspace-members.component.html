@@ -89,10 +89,11 @@
         <p class="app-table__status-text">Loading members...</p>
       </div>
     } @else if (members().length === 0) {
-      <div class="app-table__status">
-        <mat-icon class="app-table__status-icon" aria-hidden="true">group_off</mat-icon>
-        <p class="app-table__status-text">No members</p>
-      </div>
+      <app-empty-state
+        icon="group_off"
+        title="No members yet"
+        text="Invite people to this workspace to see them here."
+      />
     }
   </div>
 </section>

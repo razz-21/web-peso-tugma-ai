@@ -23,6 +23,7 @@ import { JobGet } from '../../../core/models/job.model';
 import { CompanyDetailsStore } from '../../../stores/company-details/company-details.store';
 import { companyDetailsEvents } from '../../../stores/company-details/company-details.events';
 import { JobFormComponent, JobFormData } from '../../job-listings/job-form/job-form.component';
+import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -39,6 +40,7 @@ import {
     MatInputModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    EmptyStateComponent,
   ],
   templateUrl: './company-jobs.component.html',
   styleUrl: './company-jobs.component.scss',
@@ -73,6 +75,9 @@ export class CompanyJobsComponent {
     }
     return jobs.filter((job) => job.title.toLowerCase().includes(query));
   });
+
+  /** Empty-state title when a search yields no matches. */
+  protected readonly noMatchTitle = computed(() => `No jobs match "${this.search().trim()}"`);
 
   protected readonly displayedColumns = [
     'title',

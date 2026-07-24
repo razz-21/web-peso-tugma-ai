@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ChartConfiguration, ChartData, Plugin } from 'chart.js';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { FunnelStage } from '../../../core/models/dashboard.model';
+import { useSystemChartFont } from '../chart-font';
 
-const STAGES = ['Referred', 'Interviewed', 'Hired'];
-const VALUES = [512, 318, 187];
-const COLORS = ['#3f5a1f', '#2c5a57', '#b0860f'];
-const TOTAL = VALUES[0];
+/** Bar color per funnel stage; unknown keys fall back to a neutral grey. */
+const STAGE_COLORS: Record<string, string> = {
+  referred: '#3f5a1f',
+  interviewed: '#2c5a57',
+  hired: '#b0860f',
+  withdrawn: '#8a8f86',
+  not_hired: '#b45454',
+};
+const FALLBACK_COLOR = '#8a8f86';
 
 /** Renders `<count> (<pct>%)` immediately to the right of each bar's tip. */
 const funnelLabelsPlugin: Plugin<'bar'> = {
@@ -13,14 +20,16 @@ const funnelLabelsPlugin: Plugin<'bar'> = {
   afterDatasetsDraw(chart) {
     const { ctx } = chart;
     const meta = chart.getDatasetMeta(0);
+    const values = (chart.data.datasets[0]?.data ?? []) as number[];
+    const base = values[0] || 0;
     ctx.save();
-    ctx.font = '600 13px Roboto, "Helvetica Neue", sans-serif';
+    ctx.font = `600 13px ${Chart.defaults.font.family}`;
     ctx.fillStyle = '#1f2723';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     meta.data.forEach((bar, index) => {
-      const value = VALUES[index];
-      const pct = Math.round((value / TOTAL) * 100);
+      const value = values[index] ?? 0;
+      const pct = base > 0 ? Math.round((value / base) * 100) : 0;
       ctx.fillText(`${value} (${pct}%)`, bar.x + 10, bar.y);
     });
     ctx.restore();
@@ -34,40 +43,53 @@ const funnelLabelsPlugin: Plugin<'bar'> = {
     <canvas
       baseChart
       type="bar"
-      [data]="data"
-      [options]="options"
+      [data]="data()"
+      [options]="options()"
       [plugins]="plugins"
       role="img"
-      aria-label="Matching funnel: 512 referred (100%), 318 interviewed (62%), 187 hired (37%)."
+      [attr.aria-label]="ariaLabel()"
     ></canvas>
   </div>`,
   styles: `
     .matching-funnel {
       position: relative;
-      height: 12rem;
+      height: 18rem;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchingFunnelComponent {
+  /** Ordered funnel stages (Referred first) from the dashboard API. */
+  readonly stages = input.required<FunnelStage[]>();
+
+  constructor() {
+    // Axis ticks and the value-label plugin both read the system font.
+    useSystemChartFont();
+  }
+
   protected readonly plugins = [funnelLabelsPlugin];
 
-  protected readonly data: ChartData<'bar'> = {
-    labels: STAGES,
-    datasets: [
-      {
-        data: VALUES,
-        backgroundColor: COLORS,
-        borderRadius: 6,
-        borderSkipped: false,
-        maxBarThickness: 34,
-        categoryPercentage: 0.7,
-        barPercentage: 0.9,
-      },
-    ],
-  };
+  private readonly base = computed(() => this.stages()[0]?.count ?? 0);
 
-  protected readonly options: ChartConfiguration<'bar'>['options'] = {
+  protected readonly data = computed<ChartData<'bar'>>(() => {
+    const stages = this.stages();
+    return {
+      labels: stages.map((stage) => stage.label),
+      datasets: [
+        {
+          data: stages.map((stage) => stage.count),
+          backgroundColor: stages.map((stage) => STAGE_COLORS[stage.key] ?? FALLBACK_COLOR),
+          borderRadius: 6,
+          borderSkipped: false,
+          maxBarThickness: 34,
+          categoryPercentage: 0.7,
+          barPercentage: 0.9,
+        },
+      ],
+    };
+  });
+
+  protected readonly options = computed<ChartConfiguration<'bar'>['options']>(() => ({
     indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
@@ -80,7 +102,7 @@ export class MatchingFunnelComponent {
     scales: {
       x: {
         display: false,
-        max: TOTAL,
+        max: this.base() || undefined,
         grid: { display: false },
       },
       y: {
@@ -89,5 +111,14 @@ export class MatchingFunnelComponent {
         ticks: { color: '#3c4a3a', font: { size: 14 } },
       },
     },
-  };
+  }));
+
+  protected readonly ariaLabel = computed(() => {
+    const base = this.base();
+    const parts = this.stages().map((stage) => {
+      const pct = base > 0 ? Math.round((stage.count / base) * 100) : 0;
+      return `${stage.count} ${stage.label.toLowerCase()} (${pct}%)`;
+    });
+    return `Matching funnel: ${parts.join(', ')}.`;
+  });
 }
