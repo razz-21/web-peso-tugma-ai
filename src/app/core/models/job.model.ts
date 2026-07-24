@@ -25,6 +25,7 @@ const JobFieldsSchema = z.object({
   title: z.string().min(1).max(JOB_TITLE_MAX),
   description: z.string().nullable(),
   minimum_education_attainment: z.array(z.string()),
+  course_program: z.string().nullable(),
   experience_required: z.string().nullable(),
   skills_required: z.array(z.string()),
   // Read-side allows 0: a job whose vacancies were all consumed by referrals

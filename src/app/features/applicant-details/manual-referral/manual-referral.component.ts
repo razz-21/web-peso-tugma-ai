@@ -300,10 +300,15 @@ export class ManualReferralComponent {
 
     // --- Job requirement details ------------------------------------------
     const experienceText = job.experience_required?.trim() || 'No experience required';
+    // Education requirement covers the minimum attainment level(s) plus the
+    // preferred course of study, mirroring the backend's combined education score.
+    const educationParts = [...job.minimum_education_attainment];
+    const courseRequired = job.course_program?.trim();
+    if (courseRequired) {
+      educationParts.push(courseRequired);
+    }
     const educationText =
-      job.minimum_education_attainment.length > 0
-        ? job.minimum_education_attainment.join(', ')
-        : 'No minimum education';
+      educationParts.length > 0 ? educationParts.join(', ') : 'No minimum education';
     const location = job.location?.trim() ?? '';
     const locationText = location.length > 0 ? location : 'No location specified';
 

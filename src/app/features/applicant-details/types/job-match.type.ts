@@ -58,6 +58,8 @@ export interface JobMatch {
   readonly skillsRequired: readonly string[];
   readonly experienceRequired: string | null;
   readonly educationRequired: readonly string[];
+  /** Job's preferred course/program of study, for the education comparison. */
+  readonly courseRequired: string | null;
   /** Hard primary-requirement constraints, for the comparison view's requirements card. */
   readonly ageRange: string | null;
   readonly requiredSex: string | null;
@@ -68,8 +70,8 @@ export interface JobMatch {
   readonly eligible: boolean;
   /** Preformatted meta line: company · location · salary. */
   readonly metaSegments: readonly string[];
-  /** Human-in-the-Loop relevance flag. */
-  readonly isRelevant: boolean;
+  /** Human-in-the-Loop relevance flag; null until an officer assesses it. */
+  readonly isRelevant: boolean | null;
   /** Referral lifecycle status; null until the applicant is referred to this job. */
   readonly status: RecommendedJobStatus | null;
   /** Human-readable status label; null when not yet referred. */

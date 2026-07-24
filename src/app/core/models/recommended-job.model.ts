@@ -44,6 +44,7 @@ export const RecommendedJobJobSchema = z.object({
   skills_required: z.array(z.string()).default([]),
   experience_required: z.string().nullable().default(null),
   minimum_education_attainment: z.array(z.string()).default([]),
+  course_program: z.string().nullable().default(null),
   age_range: z.string().nullable().default(null),
   sex: z.string().nullable().default(null),
   civil_status: z.array(z.string()).default([]),
@@ -59,7 +60,9 @@ export const RecommendedJobSchema = z.object({
   scores: RecommendationScoresSchema,
   score: z.number().int(),
   eligible: z.boolean().default(true),
-  is_relevant: z.boolean(),
+  // Tri-state relevance feedback: null until an officer assesses the
+  // recommendation, then true (relevant) / false (not relevant).
+  is_relevant: z.boolean().nullable(),
   // Nullable: a fresh recommendation is unassessed until an officer refers the
   // applicant (which sets 'referred') and advances the referral lifecycle.
   status: RecommendedJobStatusSchema.nullable(),

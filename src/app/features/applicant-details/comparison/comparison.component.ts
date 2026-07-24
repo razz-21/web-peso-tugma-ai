@@ -90,8 +90,17 @@ export class ComparisonComponent {
     const applicantSkills = this.applicant.technical_skills;
     const applicantSet = new Set(applicantSkills.map(norm));
     const requiredSet = new Set(required.map(norm));
-    const matchedSkills = required.filter((skill) => applicantSet.has(norm(skill)));
-    const missingSkills = required.filter((skill) => !applicantSet.has(norm(skill)));
+    // Matched/missing follow the backend's MiniLM semantic skills match
+    // (surfaced via keyMatched), so a related applicant skill — e.g. "JS" for a
+    // "JavaScript" requirement — counts as covered, consistent with the stored
+    // skills score. Falls back to an exact-token overlap when no key-matched
+    // skills are present (e.g. a recommendation generated before this change).
+    const matchedSet = new Set(this.match.keyMatched.map(norm));
+    const matchedSkills = required.filter(
+      (skill) => matchedSet.has(norm(skill)) || applicantSet.has(norm(skill)),
+    );
+    const matchedNorms = new Set(matchedSkills.map(norm));
+    const missingSkills = required.filter((skill) => !matchedNorms.has(norm(skill)));
     const additionalSkills = applicantSkills.filter((skill) => !requiredSet.has(norm(skill)));
     // Only classify when both the job and the applicant list skills.
     const skillsHasData = required.length > 0 && applicantSkills.length > 0;
@@ -136,20 +145,16 @@ export class ComparisonComponent {
     };
 
     // --- Experience --------------------------------------------------------
-    // A qualitative requirement (e.g. "Graduate of a Business related course")
-    // is matched against the applicant's degree/course as well as their work
-    // history, mirroring the backend's qualitative experience vector — so a
-    // relevant program counts as evidence even with no job on file.
+    // Experience compares the job's `experience_required` against the
+    // applicant's work history (roles), mirroring the backend's work-only
+    // qualitative experience vector. Course of study is scored under Education.
     const experienceScore = breakdown.get('experience')?.value ?? 0;
     const experienceRequired = this.match.experienceRequired?.trim() ?? '';
     const workPositions = this.applicant.work_experience
       .map((work) => work.position?.trim())
       .filter((position): position is string => Boolean(position));
-    const courseProgram = this.applicant.educational_background?.course_program?.trim() || null;
-    const experienceItems = courseProgram ? [...workPositions, courseProgram] : workPositions;
     const experienceHasData =
-      experienceRequired.length > 0 &&
-      (this.applicant.work_experience.length > 0 || courseProgram !== null);
+      experienceRequired.length > 0 && this.applicant.work_experience.length > 0;
     const experienceStatus: RequirementStatus = experienceHasData
       ? statusFromScore(experienceScore)
       : 'unknown';
@@ -169,16 +174,29 @@ export class ComparisonComponent {
       note: null,
       requiredItems: [],
       requiredText: this.match.experienceRequired ?? 'No specific experience required',
-      applicantItems: experienceItems,
-      applicantText:
-        experienceItems.length === 0 ? 'No work experience or related course on file' : null,
+      applicantItems: workPositions,
+      applicantText: workPositions.length === 0 ? 'No work experience on file' : null,
     };
 
     // --- Education ---------------------------------------------------------
+    // Education compares the job's minimum attainment *and* preferred course of
+    // study against the applicant's highest level and course, matching the
+    // backend's combined level + course education score.
     const educationScore = breakdown.get('educational_background')?.value ?? 0;
-    const applicantEducation =
+    const courseRequired = this.match.courseRequired?.trim() || null;
+    const educationRequiredItems = [
+      ...this.match.educationRequired,
+      ...(courseRequired ? [courseRequired] : []),
+    ];
+    const applicantLevel =
       this.applicant.educational_background?.highest_education_level?.trim() || null;
-    const educationHasData = this.match.educationRequired.length > 0 && applicantEducation !== null;
+    const applicantCourse = this.applicant.educational_background?.course_program?.trim() || null;
+    const applicantEducationItems = [
+      ...(applicantLevel ? [applicantLevel] : []),
+      ...(applicantCourse ? [applicantCourse] : []),
+    ];
+    const educationHasData =
+      educationRequiredItems.length > 0 && applicantEducationItems.length > 0;
     const educationStatus: RequirementStatus = educationHasData
       ? statusFromScore(educationScore)
       : 'unknown';
@@ -196,10 +214,10 @@ export class ComparisonComponent {
       missingSkills: [],
       additionalSkills: [],
       note: null,
-      requiredItems: this.match.educationRequired,
-      requiredText: this.match.educationRequired.length === 0 ? 'No minimum education' : null,
-      applicantItems: applicantEducation ? [applicantEducation] : [],
-      applicantText: applicantEducation ? null : 'Not indicated',
+      requiredItems: educationRequiredItems,
+      requiredText: educationRequiredItems.length === 0 ? 'No minimum education' : null,
+      applicantItems: applicantEducationItems,
+      applicantText: applicantEducationItems.length === 0 ? 'Not indicated' : null,
     };
 
     // --- Location ----------------------------------------------------------

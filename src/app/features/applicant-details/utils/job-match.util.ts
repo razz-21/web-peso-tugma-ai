@@ -66,6 +66,7 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
     skillsRequired: recommendation.job?.skills_required ?? [],
     experienceRequired: recommendation.job?.experience_required ?? null,
     educationRequired: recommendation.job?.minimum_education_attainment ?? [],
+    courseRequired: recommendation.job?.course_program ?? null,
     ageRange: recommendation.job?.age_range ?? null,
     requiredSex: recommendation.job?.sex ?? null,
     civilStatusAllowed: recommendation.job?.civil_status ?? [],
@@ -81,9 +82,12 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
     createdAt: recommendation.created_at,
     updatedAt: recommendation.updated_at,
     updating,
-    // Surface the dimensions that scored well as quick chips.
+    // Surface the dimensions that scored well as quick chips. Semantic
+    // similarity is always shown — it's the highest-weighted, headline AI
+    // signal, so hiding it just because it dipped below the 50% cutoff (while
+    // lesser dimensions show) reads as missing data.
     tags: breakdown
-      .filter((dimension) => dimension.value >= 50)
+      .filter((dimension) => dimension.key === 'semantic_similarity' || dimension.value >= 50)
       .map((dimension) => ({
         icon: dimension.icon,
         label: `${dimension.label} ${dimension.value}%`,
