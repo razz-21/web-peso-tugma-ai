@@ -33,7 +33,9 @@ export const UserGetSchema = UserSchema.omit({ password: true, workspace_id: tru
   workspace: WorkspaceRefSchema.nullable().default(null),
 });
 
-export const UserPostSchema = UserSchema;
+// `workspace_id` is derived on the backend from the authenticated user's
+// workspace, so create payloads must not send it.
+export const UserPostSchema = UserSchema.omit({ workspace_id: true });
 
 export const UserPatchSchema = UserSchema.omit({ id: true, created_at: true }).partial();
 

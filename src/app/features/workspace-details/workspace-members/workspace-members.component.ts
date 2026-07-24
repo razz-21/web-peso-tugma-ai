@@ -22,6 +22,7 @@ import { ROLE_LABELS, STATUS_LABELS, UserGet } from '../../../core/models/user.m
 import { UsersService } from '../../../core/services/users.service';
 import { UsersStore } from '../../../stores/users/users.store';
 import { usersEvents } from '../../../stores/users/users.events';
+import { MeStore } from '../../../stores/me/me.store';
 import { WorkspaceGet } from '../../../core/models/workspace.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import {
@@ -58,6 +59,7 @@ export class WorkspaceMembersComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly usersService = inject(UsersService);
   private readonly usersStore = inject(UsersStore);
+  private readonly meStore = inject(MeStore);
   private readonly dispatch = injectDispatch(usersEvents);
   private readonly events = inject(Events);
   private readonly destroyRef = inject(DestroyRef);
@@ -68,7 +70,17 @@ export class WorkspaceMembersComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly removing = computed(() => this.usersStore.removeMemberLoading());
 
-  protected readonly displayedColumns = ['name', 'role', 'status', 'joined', 'actions'] as const;
+  // Officers can view members but may not invite or remove them (both modify a
+  // user record); super admins and admins can.
+  protected readonly canManageMembers = computed(() => this.meStore.user()?.role !== 'officer');
+
+  // The Actions column (remove) is only meaningful for roles that can manage
+  // members — officers get a read-only table.
+  protected readonly displayedColumns = computed(() =>
+    this.canManageMembers()
+      ? ['name', 'role', 'status', 'joined', 'actions']
+      : ['name', 'role', 'status', 'joined'],
+  );
 
   protected roleLabel(member: UserGet): string {
     return ROLE_LABELS[member.role];
@@ -83,6 +95,9 @@ export class WorkspaceMembersComponent implements OnInit {
   }
 
   protected openInvite(): void {
+    if (!this.canManageMembers()) {
+      return;
+    }
     this.dialog
       .open<InviteMembersDialogComponent, InviteMembersDialogData, UserGet[]>(
         InviteMembersDialogComponent,
@@ -105,7 +120,7 @@ export class WorkspaceMembersComponent implements OnInit {
   }
 
   protected onRemove(member: UserGet): void {
-    if (this.removing()) {
+    if (!this.canManageMembers() || this.removing()) {
       return;
     }
 

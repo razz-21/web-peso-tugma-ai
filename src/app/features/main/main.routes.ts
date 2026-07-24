@@ -1,5 +1,10 @@
 import { Routes } from '@angular/router';
 import { MainComponent } from './main.component';
+import {
+  workspaceDetailsGuard,
+  workspaceListGuard,
+} from '../../core/guards/workspace-access.guard';
+import { roleGuard } from '../../core/guards/role.guard';
 
 export const mainRoutes: Routes = [
   {
@@ -48,20 +53,24 @@ export const mainRoutes: Routes = [
       },
       {
         path: 'user-management',
+        canActivate: [roleGuard('super_admin', 'admin')],
         loadComponent: () => import('../users/users.component').then((m) => m.UsersComponent),
       },
       {
         path: 'user-management/:id',
+        canActivate: [roleGuard('super_admin', 'admin')],
         loadComponent: () =>
           import('../user-details/user-details.component').then((m) => m.UserDetailsComponent),
       },
       {
         path: 'workspaces',
+        canActivate: [workspaceListGuard],
         loadComponent: () =>
           import('../workspaces/workspaces.component').then((m) => m.WorkspacesComponent),
       },
       {
         path: 'workspaces/:id',
+        canActivate: [workspaceDetailsGuard],
         loadComponent: () =>
           import('../workspace-details/workspace-details.component').then(
             (m) => m.WorkspaceDetailsComponent,

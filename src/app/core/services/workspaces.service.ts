@@ -10,6 +10,8 @@ import {
   WorkspaceListSchema,
   WorkspacePatch,
   WorkspacePost,
+  WorkspaceStatistics,
+  WorkspaceStatisticsSchema,
 } from '../models/workspace.model';
 
 @Injectable({ providedIn: 'root' })
@@ -55,5 +57,12 @@ export class WorkspacesService {
   async delete(id: string): Promise<boolean> {
     const body = await firstValueFrom(this.http.delete<boolean>(`${this.baseUrl}/${id}`));
     return body;
+  }
+
+  async statistics(id: string): Promise<WorkspaceStatistics> {
+    const body = await firstValueFrom(
+      this.http.get<WorkspaceStatistics>(`${this.baseUrl}/${id}/statistics`),
+    );
+    return WorkspaceStatisticsSchema.parse(body);
   }
 }

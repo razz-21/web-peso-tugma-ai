@@ -1,0 +1,94 @@
+.workspace-statistics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__lead {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 1rem;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.85rem;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  &__label {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__value {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__status-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2.5rem;
+  }
+
+  &__status-text {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}

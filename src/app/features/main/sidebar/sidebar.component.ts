@@ -46,16 +46,32 @@ export class SidebarComponent {
   private readonly dispatch = injectDispatch(meEvents);
 
   protected readonly routes = APP_ROUTES;
-  protected readonly navItems: readonly NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', link: APP_ROUTES.dashboard },
-    { label: 'Companies', icon: 'apartment', link: APP_ROUTES.companies },
-    { label: 'Job Listings', icon: 'work', link: APP_ROUTES.jobListings },
-    { label: 'Applicants', icon: 'group', link: APP_ROUTES.applicants },
-    { label: 'User Management', icon: 'groups', link: APP_ROUTES.userManagement },
-    { label: 'Workspaces', icon: 'computer_arrow_up', link: APP_ROUTES.workspaces },
-  ];
-
   protected readonly user = this.store.user;
+
+  // Super admins browse the full workspace list; admins/officers are scoped to
+  // their own workspace, so their link points straight to its details page.
+  protected readonly navItems = computed<readonly NavItem[]>(() => {
+    const user = this.user();
+    const workspaceId = user?.workspace?.id;
+    const workspacesLink =
+      user?.role !== 'super_admin' && workspaceId
+        ? `${APP_ROUTES.workspaces}/${workspaceId}`
+        : APP_ROUTES.workspaces;
+
+    // Officers cannot access User Management; hide the entry for them.
+    const canManageUsers = user?.role === 'super_admin' || user?.role === 'admin';
+
+    return [
+      { label: 'Dashboard', icon: 'dashboard', link: APP_ROUTES.dashboard },
+      { label: 'Companies', icon: 'apartment', link: APP_ROUTES.companies },
+      { label: 'Job Listings', icon: 'work', link: APP_ROUTES.jobListings },
+      { label: 'Applicants', icon: 'group', link: APP_ROUTES.applicants },
+      ...(canManageUsers
+        ? [{ label: 'User Management', icon: 'groups', link: APP_ROUTES.userManagement }]
+        : []),
+      { label: 'Workspaces', icon: 'computer_arrow_up', link: workspacesLink },
+    ];
+  });
   protected readonly initials = computed(() => initialsOf(this.user()?.fullname ?? ''));
   protected readonly roleLabel = computed(() => {
     const role = this.user()?.role;

@@ -6,15 +6,17 @@
         People who can access this workspace and act on its applicants and jobs.
       </p>
     </div>
-    <button
-      matButton="filled"
-      type="button"
-      class="workspace-members__invite"
-      (click)="openInvite()"
-    >
-      <mat-icon>person_add</mat-icon>
-      Invite member
-    </button>
+    @if (canManageMembers()) {
+      <button
+        matButton="filled"
+        type="button"
+        class="workspace-members__invite"
+        (click)="openInvite()"
+      >
+        <mat-icon>person_add</mat-icon>
+        Invite member
+      </button>
+    }
   </header>
 
   <div class="app-table">
@@ -77,8 +79,8 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let member; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr mat-row *matRowDef="let member; columns: displayedColumns()"></tr>
     </table>
 
     @if (loading()) {

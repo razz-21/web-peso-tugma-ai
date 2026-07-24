@@ -82,6 +82,16 @@ export interface ListWorkspacesParams {
   q?: string;
 }
 
+/** Aggregate counts of the resources scoped to a single workspace. */
+export const WorkspaceStatisticsSchema = z.object({
+  total_applicants: z.number().int().nonnegative(),
+  total_jobs: z.number().int().nonnegative(),
+  total_companies: z.number().int().nonnegative(),
+  total_recommended_jobs: z.number().int().nonnegative(),
+});
+
+export type WorkspaceStatistics = z.infer<typeof WorkspaceStatisticsSchema>;
+
 export type WorkspaceStatus = z.infer<typeof WorkspaceStatusSchema>;
 export type Workspace = z.infer<typeof WorkspaceSchema>;
 export type WorkspaceGet = z.infer<typeof WorkspaceGetSchema>;

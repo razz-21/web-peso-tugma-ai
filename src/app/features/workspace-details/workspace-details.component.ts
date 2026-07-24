@@ -21,6 +21,7 @@ import { WorkspaceFormComponent } from '../workspaces/workspace-form/workspace-f
 import { WorkspaceOverviewComponent } from './workspace-overview/workspace-overview.component';
 import { MatchScoringComponent } from './match-scoring/match-scoring.component';
 import { WorkspaceMembersComponent } from './workspace-members/workspace-members.component';
+import { WorkspaceStatisticsComponent } from './workspace-statistics/workspace-statistics.component';
 
 @Component({
   selector: 'app-workspace-details',
@@ -34,6 +35,7 @@ import { WorkspaceMembersComponent } from './workspace-members/workspace-members
     WorkspaceOverviewComponent,
     MatchScoringComponent,
     WorkspaceMembersComponent,
+    WorkspaceStatisticsComponent,
   ],
   templateUrl: './workspace-details.component.html',
   styleUrl: './workspace-details.component.scss',

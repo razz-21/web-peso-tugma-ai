@@ -135,7 +135,6 @@ export class UserFormComponent {
         status: value.status,
         password: value.password,
         avatar: null,
-        workspace_id: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

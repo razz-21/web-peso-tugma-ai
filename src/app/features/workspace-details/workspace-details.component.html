@@ -83,6 +83,19 @@
           </div>
         </ng-template>
       </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon aria-hidden="true">insights</mat-icon>
+          Statistics
+        </ng-template>
+        <!-- Lazily instantiated so statistics load only when the tab is opened. -->
+        <ng-template matTabContent>
+          <div class="workspace-details__panel">
+            <app-workspace-statistics [workspace]="workspace" />
+          </div>
+        </ng-template>
+      </mat-tab>
     </mat-tab-group>
   }
 </section>

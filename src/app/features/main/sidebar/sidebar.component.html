@@ -15,7 +15,7 @@
   </header>
 
   <mat-nav-list class="sidebar__nav">
-    @for (item of navItems; track item.link) {
+    @for (item of navItems(); track item.link) {
       <a
         mat-list-item
         [routerLink]="item.link"
