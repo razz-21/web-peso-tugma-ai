@@ -59,6 +59,11 @@ export interface JobCard {
   // Primary requirements (hard gates).
   readonly primaryMet: boolean;
   readonly gates: readonly GateRow[];
+  /**
+   * Why the referral is blocked, when a hard gate fails (else null). Shown
+   * beside the disabled "Refer to this job" button.
+   */
+  readonly blockedReason: string | null;
 
   // Eligibility (licenses / civil-service, ...).
   readonly eligibility: EligibilityView;

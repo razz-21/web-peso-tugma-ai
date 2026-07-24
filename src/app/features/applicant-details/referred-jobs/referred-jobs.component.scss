@@ -259,59 +259,28 @@
 
   // --- Expanded panel ------------------------------------------------------
 
+  // Grid wrapper that animates open/closed by transitioning its single row
+  // track between 0fr and 1fr, so the panel slides to its natural height
+  // without hard-coding a max-height.
+  &__panel-anim {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  &__panel-anim--enter {
+    animation: referred-jobs-accordion-expand 220ms ease;
+  }
+
+  &__panel-anim--leave {
+    animation: referred-jobs-accordion-collapse 200ms ease;
+  }
+
   &__panel {
+    // min-height:0 + overflow:hidden let the panel be clipped as the grid track
+    // collapses to 0fr, instead of overflowing the row.
+    min-height: 0;
+    overflow: hidden;
     padding: 0 1.75rem 1.5rem;
-  }
-
-  &__job {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    padding: 1rem 1.25rem;
-    border-radius: 1rem;
-    border: 1px solid var(--mat-sys-outline-variant);
-    background: color-mix(in srgb, var(--mat-sys-primary) 12%, var(--mat-sys-surface));
-    text-align: left;
-    cursor: pointer;
-    color: inherit;
-    font: inherit;
-
-    &:hover {
-      border-color: var(--mat-sys-primary);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--mat-sys-primary);
-      outline-offset: 2px;
-    }
-
-    mat-icon {
-      flex-shrink: 0;
-      color: var(--mat-sys-on-surface-variant);
-    }
-  }
-
-  &__job-body {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  &__job-name {
-    font-weight: 700;
-    color: var(--mat-sys-on-surface);
-  }
-
-  &__job-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 0.95rem;
   }
 
   &__facts {
@@ -474,5 +443,39 @@
     &__facts {
       gap: 1.5rem;
     }
+  }
+}
+
+// Accordion open/close: animate the grid row track (and fade) so the panel
+// grows to / shrinks from its natural height.
+@keyframes referred-jobs-accordion-expand {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+@keyframes referred-jobs-accordion-collapse {
+  from {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+// Honor users who opt out of motion: show/hide instantly.
+@media (prefers-reduced-motion: reduce) {
+  .referred-jobs__panel-anim--enter,
+  .referred-jobs__panel-anim--leave {
+    animation: none;
   }
 }

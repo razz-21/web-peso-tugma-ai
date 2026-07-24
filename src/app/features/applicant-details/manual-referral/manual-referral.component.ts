@@ -261,21 +261,15 @@ export class ManualReferralComponent {
     return this.rawJobs().map((job) => this.toCard(job, referred.has(job.id)));
   });
 
-  /** The expanded card's id; defaults to the first job. */
+  /** The expanded card's id; null means every card is collapsed. */
   protected readonly openId = signal<string | null>(null);
 
-  protected readonly firstId = computed(() => this.jobs()[0]?.id ?? null);
-
   protected isOpen(id: string): boolean {
-    const open = this.openId();
-    return open === null ? id === this.firstId() : open === id;
+    return this.openId() === id;
   }
 
   protected toggle(id: string): void {
-    this.openId.update((current) => {
-      const effective = current === null ? this.firstId() : current;
-      return effective === id ? '' : id;
-    });
+    this.openId.update((current) => (current === id ? null : id));
   }
 
   protected onSearch(value: string): void {
@@ -320,7 +314,16 @@ export class ManualReferralComponent {
       this.sexGate(job.sex),
       this.civilStatusGate(job.civil_status),
     ];
-    const primaryMet = gates.every((gate) => gate.state !== 'fail');
+    const failedGates = gates.filter((gate) => gate.state === 'fail');
+    const primaryMet = failedGates.length === 0;
+    // Spell out which hard gate(s) block the referral, so the disabled button
+    // can explain itself (e.g. "Doesn't meet the vacancies and age range
+    // requirements").
+    const blockedReason = primaryMet
+      ? null
+      : `Doesn't meet the ${joinList(
+          failedGates.map((gate) => gate.label.toLowerCase()),
+        )} requirement${failedGates.length === 1 ? '' : 's'}`;
 
     return {
       id: job.id,
@@ -337,6 +340,7 @@ export class ManualReferralComponent {
       salaryText: salaryText ?? 'Salary not specified',
       primaryMet,
       gates,
+      blockedReason,
       eligibility: this.eligibilityView(job.eligibility),
     };
   }

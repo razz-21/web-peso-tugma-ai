@@ -474,7 +474,27 @@ $error: #b3261e;
 
   // --- Expanded panel ------------------------------------------------------
 
+  // Grid wrapper that animates open/closed by transitioning its single row
+  // track between 0fr and 1fr, so the panel slides to its natural height
+  // without hard-coding a max-height.
+  &__panel-anim {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  &__panel-anim--enter {
+    animation: mr-accordion-expand 220ms ease;
+  }
+
+  &__panel-anim--leave {
+    animation: mr-accordion-collapse 200ms ease;
+  }
+
   &__panel {
+    // min-height:0 + overflow:hidden let the panel be clipped as the grid track
+    // collapses to 0fr, instead of overflowing the row.
+    min-height: 0;
+    overflow: hidden;
     padding: 0 1.25rem 1.25rem;
     border-top: 1px solid var(--mat-sys-outline-variant);
   }
@@ -701,6 +721,22 @@ $error: #b3261e;
     --mdc-filled-button-label-text-color: #fff;
   }
 
+  &__refer-blocked {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #9a3b2f;
+
+    mat-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+      font-size: 1.1rem;
+      color: #c0392b;
+    }
+  }
+
   &__referred {
     display: inline-flex;
     align-items: center;
@@ -727,5 +763,39 @@ $error: #b3261e;
     &__rail {
       display: none;
     }
+  }
+}
+
+// Accordion open/close: animate the grid row track (and fade) so the panel
+// grows to / shrinks from its natural height.
+@keyframes mr-accordion-expand {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+@keyframes mr-accordion-collapse {
+  from {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+// Honor users who opt out of motion: show/hide instantly.
+@media (prefers-reduced-motion: reduce) {
+  .manual-referral__panel-anim--enter,
+  .manual-referral__panel-anim--leave {
+    animation: none;
   }
 }

@@ -82,83 +82,74 @@
         </button>
 
         @if (open) {
-          <div class="referred-jobs__panel">
-            <button type="button" class="referred-jobs__job" (click)="viewJob.emit(row.match)">
-              <span class="referred-jobs__job-body">
-                <span class="referred-jobs__job-name">{{ row.title }}</span>
-                <span class="referred-jobs__job-meta">
-                  @for (segment of row.jobSegments; track $index; let first = $first) {
-                    @if (!first) {
-                      <span class="referred-jobs__dot" aria-hidden="true">·</span>
-                    }
-                    <span>{{ segment }}</span>
-                  }
-                </span>
-              </span>
-              <mat-icon aria-hidden="true">chevron_right</mat-icon>
-            </button>
+          <div
+            class="referred-jobs__panel-anim"
+            animate.enter="referred-jobs__panel-anim--enter"
+            animate.leave="referred-jobs__panel-anim--leave"
+          >
+            <div class="referred-jobs__panel">
+              <dl class="referred-jobs__facts">
+                <div class="referred-jobs__fact">
+                  <dt>Referred on</dt>
+                  <dd>{{ row.referredOnLabel }}</dd>
+                </div>
+                <div class="referred-jobs__fact">
+                  <dt>Referred by</dt>
+                  <dd>{{ row.referredBy ?? '—' }}</dd>
+                </div>
+                <div class="referred-jobs__fact">
+                  <dt>Match score</dt>
+                  <dd class="referred-jobs__score">{{ row.score }}%</dd>
+                </div>
+              </dl>
 
-            <dl class="referred-jobs__facts">
-              <div class="referred-jobs__fact">
-                <dt>Referred on</dt>
-                <dd>{{ row.referredOnLabel }}</dd>
-              </div>
-              <div class="referred-jobs__fact">
-                <dt>Referred by</dt>
-                <dd>{{ row.referredBy ?? '—' }}</dd>
-              </div>
-              <div class="referred-jobs__fact">
-                <dt>Match score</dt>
-                <dd class="referred-jobs__score">{{ row.score }}%</dd>
-              </div>
-            </dl>
+              <hr class="referred-jobs__divider" />
 
-            <hr class="referred-jobs__divider" />
+              <ol class="referred-jobs__stepper">
+                @for (step of row.steps; track $index) {
+                  <li
+                    class="referred-jobs__step"
+                    [class.referred-jobs__step--done]="step.state === 'done'"
+                    [class.referred-jobs__step--current]="step.state === 'current'"
+                    [class.referred-jobs__step--failed]="step.state === 'failed'"
+                    [class.referred-jobs__step--withdrawn]="step.state === 'withdrawn'"
+                    [class.referred-jobs__step--line-green]="step.line === 'green'"
+                    [class.referred-jobs__step--line-red]="step.line === 'red'"
+                  >
+                    <span class="referred-jobs__step-dot">
+                      @if (step.state === 'done' || step.state === 'failed') {
+                        <mat-icon aria-hidden="true">check</mat-icon>
+                      } @else if (step.state === 'withdrawn') {
+                        <mat-icon aria-hidden="true">remove</mat-icon>
+                      } @else if (step.state === 'current') {
+                        <span class="referred-jobs__step-core"></span>
+                      }
+                    </span>
+                    <span class="referred-jobs__step-label">{{ step.label }}</span>
+                    <span class="referred-jobs__step-sub">{{ step.sub }}</span>
+                  </li>
+                }
+              </ol>
 
-            <ol class="referred-jobs__stepper">
-              @for (step of row.steps; track $index) {
-                <li
-                  class="referred-jobs__step"
-                  [class.referred-jobs__step--done]="step.state === 'done'"
-                  [class.referred-jobs__step--current]="step.state === 'current'"
-                  [class.referred-jobs__step--failed]="step.state === 'failed'"
-                  [class.referred-jobs__step--withdrawn]="step.state === 'withdrawn'"
-                  [class.referred-jobs__step--line-green]="step.line === 'green'"
-                  [class.referred-jobs__step--line-red]="step.line === 'red'"
+              <div class="referred-jobs__actions">
+                <button
+                  matButton="tonal"
+                  type="button"
+                  [matMenuTriggerFor]="statusMenu"
+                  [matMenuTriggerData]="{ match: row.match }"
                 >
-                  <span class="referred-jobs__step-dot">
-                    @if (step.state === 'done' || step.state === 'failed') {
-                      <mat-icon aria-hidden="true">check</mat-icon>
-                    } @else if (step.state === 'withdrawn') {
-                      <mat-icon aria-hidden="true">remove</mat-icon>
-                    } @else if (step.state === 'current') {
-                      <span class="referred-jobs__step-core"></span>
-                    }
-                  </span>
-                  <span class="referred-jobs__step-label">{{ step.label }}</span>
-                  <span class="referred-jobs__step-sub">{{ step.sub }}</span>
-                </li>
-              }
-            </ol>
-
-            <div class="referred-jobs__actions">
-              <button
-                matButton="tonal"
-                type="button"
-                [matMenuTriggerFor]="statusMenu"
-                [matMenuTriggerData]="{ match: row.match }"
-              >
-                <mat-icon>check_box</mat-icon>
-                Update status
-              </button>
-              <button matButton="outlined" type="button" (click)="compare.emit(row.match)">
-                <mat-icon>compare_arrows</mat-icon>
-                Compare
-              </button>
-              <button matButton="outlined" type="button" (click)="viewJob.emit(row.match)">
-                <mat-icon>open_in_new</mat-icon>
-                View job
-              </button>
+                  <mat-icon>check_box</mat-icon>
+                  Update status
+                </button>
+                <button matButton="outlined" type="button" (click)="compare.emit(row.match)">
+                  <mat-icon>compare_arrows</mat-icon>
+                  Compare
+                </button>
+                <button matButton="outlined" type="button" (click)="viewJob.emit(row.match)">
+                  <mat-icon>open_in_new</mat-icon>
+                  View job
+                </button>
+              </div>
             </div>
           </div>
         }

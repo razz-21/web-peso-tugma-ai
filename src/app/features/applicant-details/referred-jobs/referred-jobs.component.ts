@@ -88,9 +88,6 @@ export class ReferredJobsComponent {
     const headerSegments = [companyName, salaryText, `Referred ${referredOn}`].filter(
       (segment): segment is string => Boolean(segment),
     );
-    const jobSegments = [companyName, match.location, salaryText].filter(
-      (segment): segment is string => Boolean(segment),
-    );
 
     return {
       id: match.recommendationId,
@@ -100,7 +97,6 @@ export class ReferredJobsComponent {
       companyName,
       referredBy: match.referredBy?.name ?? null,
       headerSegments,
-      jobSegments,
       score: match.score,
       statusLabel: RECOMMENDED_JOB_STATUS_LABEL[status],
       statusTone: STATUS_TONE[status],

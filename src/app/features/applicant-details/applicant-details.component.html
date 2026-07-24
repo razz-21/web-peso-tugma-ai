@@ -56,23 +56,17 @@
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
-
-              <div class="applicant-details__actions">
-                <button matButton="tonal" type="button" (click)="onViewResume()">
-                  <mat-icon>description</mat-icon>
-                  View résumé
-                </button>
-                <button
-                  matButton="outlined"
-                  type="button"
-                  class="applicant-details__delete"
-                  (click)="onDelete(applicant)"
-                >
-                  <mat-icon>delete</mat-icon>
-                  Delete
-                </button>
-              </div>
             </div>
+
+            <button
+              mat-icon-button
+              type="button"
+              class="applicant-details__delete"
+              aria-label="Delete applicant"
+              (click)="onDelete(applicant)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
 
           <hr class="applicant-details__divider" />

@@ -254,168 +254,181 @@
               </button>
 
               @if (open) {
-                <div class="manual-referral__panel">
-                  <!-- Skills required -->
-                  <div class="manual-referral__criterion">
-                    <span class="manual-referral__criterion-label">
-                      <mat-icon aria-hidden="true">edit</mat-icon>
-                      Skills required
-                    </span>
-                    @if (job.skillsRequired.length > 0) {
-                      <div class="manual-referral__skill-chips">
-                        @for (skill of job.skillsRequired; track $index) {
-                          <span class="manual-referral__skill manual-referral__skill--neutral">
-                            {{ skill }}
-                          </span>
-                        }
-                      </div>
-                    } @else {
-                      <p class="manual-referral__criterion-text">No specific skills required.</p>
-                    }
-                  </div>
-
-                  <hr class="manual-referral__panel-divider" />
-
-                  <!-- Experience -->
-                  <div class="manual-referral__criterion">
-                    <span class="manual-referral__criterion-label">
-                      <mat-icon aria-hidden="true">work</mat-icon>
-                      Experience
-                    </span>
-                    <p class="manual-referral__criterion-text">{{ job.experienceText }}</p>
-                  </div>
-
-                  <hr class="manual-referral__panel-divider" />
-
-                  <!-- Education -->
-                  <div class="manual-referral__criterion">
-                    <span class="manual-referral__criterion-label">
-                      <mat-icon aria-hidden="true">school</mat-icon>
-                      Education
-                    </span>
-                    <p class="manual-referral__criterion-text">{{ job.educationText }}</p>
-                  </div>
-
-                  <hr class="manual-referral__panel-divider" />
-
-                  <!-- Location -->
-                  <div class="manual-referral__criterion">
-                    <span class="manual-referral__criterion-label">
-                      <mat-icon aria-hidden="true">location_on</mat-icon>
-                      Location
-                    </span>
-                    <p class="manual-referral__criterion-text">{{ job.locationText }}</p>
-                  </div>
-
-                  <hr class="manual-referral__panel-divider" />
-
-                  <!-- Salary -->
-                  <div class="manual-referral__criterion">
-                    <span class="manual-referral__criterion-label">
-                      <mat-icon aria-hidden="true">payments</mat-icon>
-                      Salary
-                    </span>
-                    <p class="manual-referral__criterion-text">{{ job.salaryText }}</p>
-                  </div>
-
-                  <hr class="manual-referral__panel-divider" />
-
-                  <!-- Primary requirements -->
-                  <div class="manual-referral__criterion">
-                    <div class="manual-referral__criterion-head">
-                      <span class="manual-referral__criterion-label">
-                        <mat-icon aria-hidden="true">verified_user</mat-icon>
-                        Primary requirements
-                      </span>
-                      <span
-                        class="manual-referral__badge"
-                        [class.manual-referral__badge--met]="job.primaryMet"
-                        [class.manual-referral__badge--unmet]="!job.primaryMet"
-                      >
-                        <mat-icon aria-hidden="true">
-                          {{ job.primaryMet ? 'check' : 'cancel' }}
-                        </mat-icon>
-                        {{ job.primaryMet ? 'Met' : 'Not met' }}
-                      </span>
-                    </div>
-                    <ul class="manual-referral__gates">
-                      @for (gate of job.gates; track gate.key) {
-                        <li class="manual-referral__gate">
-                          <mat-icon class="manual-referral__gate-icon" aria-hidden="true">
-                            {{ gate.icon }}
-                          </mat-icon>
-                          <span class="manual-referral__gate-body">
-                            <span class="manual-referral__gate-label">{{ gate.label }}</span>
-                            <span class="manual-referral__gate-reason">{{ gate.reason }}</span>
-                          </span>
-                          <span
-                            class="manual-referral__gate-pill manual-referral__gate-pill--{{
-                              gate.state
-                            }}"
-                          >
-                            {{ gate.stateLabel }}
-                          </span>
-                        </li>
-                      }
-                    </ul>
-                  </div>
-
-                  <!-- Eligibility (only when the job states a requirement) -->
-                  @if (job.eligibility.hasRequirement) {
-                    <hr class="manual-referral__panel-divider" />
+                <div
+                  class="manual-referral__panel-anim"
+                  animate.enter="manual-referral__panel-anim--enter"
+                  animate.leave="manual-referral__panel-anim--leave"
+                >
+                  <div class="manual-referral__panel">
+                    <!-- Skills required -->
                     <div class="manual-referral__criterion">
-                      <div class="manual-referral__criterion-head">
-                        <span class="manual-referral__criterion-label">
-                          <mat-icon aria-hidden="true">verified</mat-icon>
-                          Eligibility
-                        </span>
-                        <span
-                          class="manual-referral__badge"
-                          [class.manual-referral__badge--met]="job.eligibility.state === 'pass'"
-                          [class.manual-referral__badge--unmet]="job.eligibility.state === 'fail'"
-                        >
-                          <mat-icon aria-hidden="true">
-                            {{ job.eligibility.state === 'pass' ? 'check' : 'cancel' }}
-                          </mat-icon>
-                          {{ job.eligibility.badge }}
-                        </span>
-                      </div>
-                      <p class="manual-referral__criterion-text">
-                        Requires {{ job.eligibility.required }}
-                      </p>
-                      @if (job.eligibility.applicantHeld.length > 0) {
+                      <span class="manual-referral__criterion-label">
+                        <mat-icon aria-hidden="true">edit</mat-icon>
+                        Skills required
+                      </span>
+                      @if (job.skillsRequired.length > 0) {
                         <div class="manual-referral__skill-chips">
-                          @for (item of job.eligibility.applicantHeld; track $index) {
-                            <span class="manual-referral__skill manual-referral__skill--matched">
-                              {{ item }}
+                          @for (skill of job.skillsRequired; track $index) {
+                            <span class="manual-referral__skill manual-referral__skill--neutral">
+                              {{ skill }}
                             </span>
                           }
                         </div>
-                      }
-                      <p class="manual-referral__gate-reason manual-referral__eligibility-note">
-                        {{ job.eligibility.reason }}
-                      </p>
-                    </div>
-                  }
-
-                  <div class="manual-referral__panel-foot">
-                    <div class="manual-referral__actions">
-                      @if (job.referred) {
-                        <span class="manual-referral__referred">
-                          <mat-icon aria-hidden="true">check_circle</mat-icon>
-                          Referred
-                        </span>
                       } @else {
-                        <button
-                          matButton="filled"
-                          type="button"
-                          class="manual-referral__refer"
-                          (click)="refer(job.job)"
-                        >
-                          <mat-icon>send</mat-icon>
-                          Refer to this job
-                        </button>
+                        <p class="manual-referral__criterion-text">No specific skills required.</p>
                       }
+                    </div>
+
+                    <hr class="manual-referral__panel-divider" />
+
+                    <!-- Experience -->
+                    <div class="manual-referral__criterion">
+                      <span class="manual-referral__criterion-label">
+                        <mat-icon aria-hidden="true">work</mat-icon>
+                        Experience
+                      </span>
+                      <p class="manual-referral__criterion-text">{{ job.experienceText }}</p>
+                    </div>
+
+                    <hr class="manual-referral__panel-divider" />
+
+                    <!-- Education -->
+                    <div class="manual-referral__criterion">
+                      <span class="manual-referral__criterion-label">
+                        <mat-icon aria-hidden="true">school</mat-icon>
+                        Education
+                      </span>
+                      <p class="manual-referral__criterion-text">{{ job.educationText }}</p>
+                    </div>
+
+                    <hr class="manual-referral__panel-divider" />
+
+                    <!-- Location -->
+                    <div class="manual-referral__criterion">
+                      <span class="manual-referral__criterion-label">
+                        <mat-icon aria-hidden="true">location_on</mat-icon>
+                        Location
+                      </span>
+                      <p class="manual-referral__criterion-text">{{ job.locationText }}</p>
+                    </div>
+
+                    <hr class="manual-referral__panel-divider" />
+
+                    <!-- Salary -->
+                    <div class="manual-referral__criterion">
+                      <span class="manual-referral__criterion-label">
+                        <mat-icon aria-hidden="true">payments</mat-icon>
+                        Salary
+                      </span>
+                      <p class="manual-referral__criterion-text">{{ job.salaryText }}</p>
+                    </div>
+
+                    <hr class="manual-referral__panel-divider" />
+
+                    <!-- Primary requirements -->
+                    <div class="manual-referral__criterion">
+                      <div class="manual-referral__criterion-head">
+                        <span class="manual-referral__criterion-label">
+                          <mat-icon aria-hidden="true">verified_user</mat-icon>
+                          Primary requirements
+                        </span>
+                        <span
+                          class="manual-referral__badge"
+                          [class.manual-referral__badge--met]="job.primaryMet"
+                          [class.manual-referral__badge--unmet]="!job.primaryMet"
+                        >
+                          <mat-icon aria-hidden="true">
+                            {{ job.primaryMet ? 'check' : 'cancel' }}
+                          </mat-icon>
+                          {{ job.primaryMet ? 'Met' : 'Not met' }}
+                        </span>
+                      </div>
+                      <ul class="manual-referral__gates">
+                        @for (gate of job.gates; track gate.key) {
+                          <li class="manual-referral__gate">
+                            <mat-icon class="manual-referral__gate-icon" aria-hidden="true">
+                              {{ gate.icon }}
+                            </mat-icon>
+                            <span class="manual-referral__gate-body">
+                              <span class="manual-referral__gate-label">{{ gate.label }}</span>
+                              <span class="manual-referral__gate-reason">{{ gate.reason }}</span>
+                            </span>
+                            <span
+                              class="manual-referral__gate-pill manual-referral__gate-pill--{{
+                                gate.state
+                              }}"
+                            >
+                              {{ gate.stateLabel }}
+                            </span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+
+                    <!-- Eligibility (only when the job states a requirement) -->
+                    @if (job.eligibility.hasRequirement) {
+                      <hr class="manual-referral__panel-divider" />
+                      <div class="manual-referral__criterion">
+                        <div class="manual-referral__criterion-head">
+                          <span class="manual-referral__criterion-label">
+                            <mat-icon aria-hidden="true">verified</mat-icon>
+                            Eligibility
+                          </span>
+                          <span
+                            class="manual-referral__badge"
+                            [class.manual-referral__badge--met]="job.eligibility.state === 'pass'"
+                            [class.manual-referral__badge--unmet]="job.eligibility.state === 'fail'"
+                          >
+                            <mat-icon aria-hidden="true">
+                              {{ job.eligibility.state === 'pass' ? 'check' : 'cancel' }}
+                            </mat-icon>
+                            {{ job.eligibility.badge }}
+                          </span>
+                        </div>
+                        <p class="manual-referral__criterion-text">
+                          Requires {{ job.eligibility.required }}
+                        </p>
+                        @if (job.eligibility.applicantHeld.length > 0) {
+                          <div class="manual-referral__skill-chips">
+                            @for (item of job.eligibility.applicantHeld; track $index) {
+                              <span class="manual-referral__skill manual-referral__skill--matched">
+                                {{ item }}
+                              </span>
+                            }
+                          </div>
+                        }
+                        <p class="manual-referral__gate-reason manual-referral__eligibility-note">
+                          {{ job.eligibility.reason }}
+                        </p>
+                      </div>
+                    }
+
+                    <div class="manual-referral__panel-foot">
+                      <div class="manual-referral__actions">
+                        @if (job.referred) {
+                          <span class="manual-referral__referred">
+                            <mat-icon aria-hidden="true">check_circle</mat-icon>
+                            Referred
+                          </span>
+                        } @else {
+                          <button
+                            matButton="filled"
+                            type="button"
+                            class="manual-referral__refer"
+                            [disabled]="!job.primaryMet"
+                            (click)="refer(job.job)"
+                          >
+                            <mat-icon>send</mat-icon>
+                            Refer to this job
+                          </button>
+                          @if (!job.primaryMet && job.blockedReason) {
+                            <span class="manual-referral__refer-blocked" role="note">
+                              <mat-icon aria-hidden="true">info</mat-icon>
+                              {{ job.blockedReason }}
+                            </span>
+                          }
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>

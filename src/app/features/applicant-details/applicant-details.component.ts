@@ -351,13 +351,6 @@ export class ApplicantDetailsComponent implements OnInit {
     );
   }
 
-  protected onViewResume(): void {
-    // TODO: wire to the applicant's stored résumé once file persistence is available.
-    this.snackBar.open('No résumé is available for this applicant yet.', 'Close', {
-      duration: 3000,
-    });
-  }
-
   protected onGenerate(): void {
     const applicant = this.applicant();
     if (!applicant || this.generating()) {

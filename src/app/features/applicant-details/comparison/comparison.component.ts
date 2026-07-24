@@ -136,10 +136,20 @@ export class ComparisonComponent {
     };
 
     // --- Experience --------------------------------------------------------
+    // A qualitative requirement (e.g. "Graduate of a Business related course")
+    // is matched against the applicant's degree/course as well as their work
+    // history, mirroring the backend's qualitative experience vector — so a
+    // relevant program counts as evidence even with no job on file.
     const experienceScore = breakdown.get('experience')?.value ?? 0;
     const experienceRequired = this.match.experienceRequired?.trim() ?? '';
+    const workPositions = this.applicant.work_experience
+      .map((work) => work.position?.trim())
+      .filter((position): position is string => Boolean(position));
+    const courseProgram = this.applicant.educational_background?.course_program?.trim() || null;
+    const experienceItems = courseProgram ? [...workPositions, courseProgram] : workPositions;
     const experienceHasData =
-      experienceRequired.length > 0 && this.applicant.work_experience.length > 0;
+      experienceRequired.length > 0 &&
+      (this.applicant.work_experience.length > 0 || courseProgram !== null);
     const experienceStatus: RequirementStatus = experienceHasData
       ? statusFromScore(experienceScore)
       : 'unknown';
@@ -159,11 +169,9 @@ export class ComparisonComponent {
       note: null,
       requiredItems: [],
       requiredText: this.match.experienceRequired ?? 'No specific experience required',
-      applicantItems: this.applicant.work_experience
-        .map((work) => work.position?.trim())
-        .filter((position): position is string => Boolean(position)),
+      applicantItems: experienceItems,
       applicantText:
-        this.applicant.work_experience.length === 0 ? 'No work experience on file' : null,
+        experienceItems.length === 0 ? 'No work experience or related course on file' : null,
     };
 
     // --- Education ---------------------------------------------------------

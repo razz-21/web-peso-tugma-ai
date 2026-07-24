@@ -37,8 +37,6 @@ export interface ReferralRow {
   readonly referredBy: string | null;
   /** Header meta: company · salary · referred date. */
   readonly headerSegments: readonly string[];
-  /** Expanded job-card meta: company · location · salary. */
-  readonly jobSegments: readonly string[];
   readonly score: number;
   readonly statusLabel: string;
   /** Status pill tone class suffix (referred | interview | hired | ...). */
