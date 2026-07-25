@@ -1,0 +1,88 @@
+<section class="job-solicited">
+  <header class="job-solicited__header">
+    <div class="job-solicited__heading">
+      <a class="job-solicited__back" [routerLink]="reportsLink" aria-label="Back to reports">
+        <span class="job-solicited__icon">
+          <mat-icon aria-hidden="true">work</mat-icon>
+        </span>
+      </a>
+      <div class="job-solicited__titles">
+        <h1 class="job-solicited__title">Job Solicited</h1>
+        <p class="job-solicited__subtitle">Job vacancies solicited from partner establishments.</p>
+      </div>
+    </div>
+
+    <div class="job-solicited__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="job-solicited__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <span class="stat-card__icon" [class]="'stat-card__icon--' + card.tone">
+            <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
+          </span>
+          <p class="stat-card__label">{{ card.label }}</p>
+          <p class="stat-card__value" [class.stat-card__value--compact]="card.compact">
+            {{ card.value }}
+          </p>
+          @if (card.delta; as delta) {
+            <span class="stat-card__delta" [class.stat-card__delta--up]="delta.positive">
+              <mat-icon class="stat-card__delta-icon" aria-hidden="true">
+                {{ delta.positive ? 'arrow_drop_up' : 'arrow_drop_down' }}
+              </mat-icon>
+              {{ delta.text }}
+            </span>
+          } @else if (card.subtext) {
+            <span class="stat-card__subtext">{{ card.subtext }}</span>
+          }
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="60%" />
+          <app-skeleton variant="text" width="40%" height="2.25rem" />
+          <app-skeleton variant="text" width="50%" />
+        </article>
+      }
+    }
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Vacancies solicited per month</h2>
+      @if (loading() && !report()) {
+        <app-skeleton variant="text" width="9rem" />
+      } @else {
+        <p class="chart-card__subtitle">{{ chartRangeLabel() }}</p>
+      }
+    </header>
+    @if (report(); as report) {
+      <app-monthly-bar-chart
+        [points]="report.monthly"
+        ariaLabelPrefix="Vacancies solicited per month"
+      />
+    } @else {
+      <app-skeleton height="22rem" radius="0.75rem" />
+    }
+  </article>
+
+  @if (report(); as report) {
+    <app-report-table
+      title="Solicited vacancies"
+      [columns]="tableColumns"
+      [rows]="tableRows()"
+      [fileName]="tableFileName()"
+      emptyMessage="No vacancies solicited in this period."
+    />
+  } @else {
+    <app-skeleton height="20rem" radius="1rem" />
+  }
+</section>

@@ -1,0 +1,126 @@
+.reports {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 46rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__group-label {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.report-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  // Lightest surface (white in the light theme) so cards stand out from the
+  // tinted page background.
+  background: var(--mat-sys-surface-container-lowest);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 6%);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+    margin-bottom: 0.25rem;
+
+    mat-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    &--green {
+      background: #d7f0c0;
+      color: #4d7c1f;
+    }
+    &--teal {
+      background: #c5e8e6;
+      color: #146c68;
+    }
+    &--grey {
+      background: #e4e7de;
+      color: #5b6152;
+    }
+    &--amber {
+      background: #ffdf9e;
+      color: #b45309;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

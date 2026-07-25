@@ -77,6 +77,24 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'reports',
+        loadComponent: () => import('../reports/reports.component').then((m) => m.ReportsComponent),
+      },
+      {
+        path: 'reports/job-solicited',
+        loadComponent: () =>
+          import('../reports/job-solicited/job-solicited.component').then(
+            (m) => m.JobSolicitedComponent,
+          ),
+      },
+      {
+        path: 'reports/applicant-referred',
+        loadComponent: () =>
+          import('../reports/applicant-referred/applicant-referred.component').then(
+            (m) => m.ApplicantReferredComponent,
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () => import('../profile/profile.component').then((m) => m.ProfileComponent),
       },

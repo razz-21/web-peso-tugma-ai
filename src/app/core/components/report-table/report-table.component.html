@@ -1,0 +1,56 @@
+<div class="report-table">
+  <div class="report-table__toolbar">
+    @if (title()) {
+      <h2 class="report-table__title">{{ title() }}</h2>
+    }
+    <div class="report-table__actions">
+      <button matButton="outlined" type="button" [matMenuTriggerFor]="columnsMenu">
+        <mat-icon aria-hidden="true">view_column</mat-icon>
+        Columns
+      </button>
+      <button matButton="tonal" type="button" (click)="onExport()">
+        <mat-icon aria-hidden="true">download</mat-icon>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <div class="report-table__scroll">
+    <table class="report-table__table">
+      <thead>
+        <tr>
+          <th scope="col" class="report-table__index">#</th>
+          @for (column of visibleColumns(); track column.key) {
+            <th scope="col" [class.report-table__wrap]="column.wrap">{{ column.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track $index) {
+          <tr>
+            <td class="report-table__index">{{ $index + 1 }}</td>
+            @for (column of visibleColumns(); track column.key) {
+              <td [class.report-table__wrap]="column.wrap">{{ row[column.key] }}</td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td class="report-table__empty" [attr.colspan]="visibleColumns().length + 1">
+              {{ emptyMessage() }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<mat-menu #columnsMenu="matMenu" class="report-table__columns-menu">
+  <div class="report-table__columns-list" (click)="$event.stopPropagation()">
+    @for (column of columns(); track column.key) {
+      <mat-checkbox [checked]="isVisible(column.key)" (change)="toggleColumn(column.key)">
+        {{ column.label }}
+      </mat-checkbox>
+    }
+  </div>
+</mat-menu>

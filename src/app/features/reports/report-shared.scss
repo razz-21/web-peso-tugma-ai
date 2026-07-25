@@ -1,0 +1,120 @@
+// Shared card styles for the report detail pages (job-solicited,
+// applicant-referred, …). Referenced via `styleUrls` so each component gets its
+// own scoped copy.
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+    margin-bottom: 0.25rem;
+
+    mat-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    &--green {
+      background: #d7f0c0;
+      color: #4d7c1f;
+    }
+    &--teal {
+      background: #c5e8e6;
+      color: #146c68;
+    }
+    &--grey {
+      background: #e4e7de;
+      color: #5b6152;
+    }
+    &--amber {
+      background: #ffdf9e;
+      color: #b45309;
+    }
+  }
+
+  &__label {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__value {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--mat-sys-on-surface);
+
+    // Smaller size for long text values (e.g. an occupation name) so they don't
+    // dominate the card the way a short number does.
+    &--compact {
+      font-size: 1.25rem;
+      line-height: 1.25;
+    }
+  }
+
+  &__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+
+    &--up {
+      color: #4d7c1f;
+    }
+  }
+
+  &__delta-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1.25rem;
+  }
+
+  &__subtext {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

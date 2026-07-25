@@ -1,0 +1,36 @@
+<section class="reports">
+  <header class="reports__header">
+    <h1 class="reports__title">Reports</h1>
+    <p class="reports__subtitle">
+      Choose a report to generate. Each pulls live figures for your office and can be exported to
+      PDF, Excel, or CSV.
+    </p>
+  </header>
+
+  @for (group of groups; track group.label) {
+    <div class="reports__group">
+      <h2 class="reports__group-label">{{ group.label }}</h2>
+      <div class="reports__grid">
+        @for (report of group.reports; track report.id) {
+          @if (report.route; as route) {
+            <a class="report-card" [routerLink]="route">
+              <span class="report-card__icon" [class]="'report-card__icon--' + report.tone">
+                <mat-icon aria-hidden="true">{{ report.icon }}</mat-icon>
+              </span>
+              <h3 class="report-card__title">{{ report.title }}</h3>
+              <p class="report-card__description">{{ report.description }}</p>
+            </a>
+          } @else {
+            <button type="button" class="report-card" (click)="onSelectReport(report)">
+              <span class="report-card__icon" [class]="'report-card__icon--' + report.tone">
+                <mat-icon aria-hidden="true">{{ report.icon }}</mat-icon>
+              </span>
+              <h3 class="report-card__title">{{ report.title }}</h3>
+              <p class="report-card__description">{{ report.description }}</p>
+            </button>
+          }
+        }
+      </div>
+    </div>
+  }
+</section>

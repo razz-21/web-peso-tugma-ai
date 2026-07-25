@@ -69,6 +69,7 @@ export class SidebarComponent {
       ...(canManageUsers
         ? [{ label: 'User Management', icon: 'groups', link: APP_ROUTES.userManagement }]
         : []),
+      { label: 'Reports', icon: 'bar_chart', link: APP_ROUTES.reports },
       { label: 'Workspaces', icon: 'computer_arrow_up', link: workspacesLink },
     ];
   });

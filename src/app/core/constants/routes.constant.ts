@@ -18,6 +18,7 @@ export const APP_ROUTES = {
   applicants: '/main/applicants',
   jobListings: '/main/job-listings',
   userManagement: '/main/user-management',
+  reports: '/main/reports',
   workspaces: '/main/workspaces',
   profile: '/main/profile',
 } as const;

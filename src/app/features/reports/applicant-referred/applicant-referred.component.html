@@ -1,0 +1,76 @@
+<section class="applicant-referred">
+  <header class="applicant-referred__header">
+    <div class="applicant-referred__heading">
+      <a class="applicant-referred__back" [routerLink]="reportsLink" aria-label="Back to reports">
+        <span class="applicant-referred__icon">
+          <mat-icon aria-hidden="true">send</mat-icon>
+        </span>
+      </a>
+      <div class="applicant-referred__titles">
+        <h1 class="applicant-referred__title">Applicant Referred</h1>
+        <p class="applicant-referred__subtitle">Job seekers referred to employers for vacancies.</p>
+      </div>
+    </div>
+
+    <div class="applicant-referred__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="applicant-referred__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <span class="stat-card__icon" [class]="'stat-card__icon--' + card.tone">
+            <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
+          </span>
+          <p class="stat-card__label">{{ card.label }}</p>
+          <p class="stat-card__value">{{ card.value }}</p>
+          @if (card.subtext) {
+            <span class="stat-card__subtext">{{ card.subtext }}</span>
+          }
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="60%" />
+          <app-skeleton variant="text" width="40%" height="2.25rem" />
+          <app-skeleton variant="text" width="50%" />
+        </article>
+      }
+    }
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Referrals per month</h2>
+      @if (loading() && !report()) {
+        <app-skeleton variant="text" width="9rem" />
+      } @else {
+        <p class="chart-card__subtitle">{{ chartRangeLabel() }}</p>
+      }
+    </header>
+    @if (report(); as report) {
+      <app-monthly-bar-chart [points]="report.monthly" ariaLabelPrefix="Referrals per month" />
+    } @else {
+      <app-skeleton height="22rem" radius="0.75rem" />
+    }
+  </article>
+
+  @if (report(); as report) {
+    <app-report-table
+      title="Referral log"
+      [columns]="tableColumns"
+      [rows]="tableRows()"
+      [fileName]="tableFileName()"
+      emptyMessage="No referrals made in this period."
+    />
+  } @else {
+    <app-skeleton height="20rem" radius="1rem" />
+  }
+</section>
