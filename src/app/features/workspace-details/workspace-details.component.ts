@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +21,7 @@ import {
   ConfirmDialogData,
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
 import { APP_ROUTES } from '../../core/constants/routes.constant';
+import { MeStore } from '../../stores/me/me.store';
 import { WorkspaceDetailsStore } from '../../stores/workspace-details/workspace-details.store';
 import { workspaceDetailsEvents } from '../../stores/workspace-details/workspace-details.events';
 import { workspacesEvents } from '../../stores/workspaces/workspaces.events';
@@ -45,6 +53,12 @@ import { WorkspaceStatisticsComponent } from './workspace-statistics/workspace-s
 export class WorkspaceDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
   protected readonly store = inject(WorkspaceDetailsStore);
+  private readonly meStore = inject(MeStore);
+
+  /** Only super admins can browse the workspaces list, so only they see the back link. */
+  protected readonly canAccessWorkspaces = computed(
+    () => this.meStore.user()?.role === 'super_admin',
+  );
   private readonly dispatch = injectDispatch(workspaceDetailsEvents);
   private readonly workspacesDispatch = injectDispatch(workspacesEvents);
   private readonly route = inject(ActivatedRoute);

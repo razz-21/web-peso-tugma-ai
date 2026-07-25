@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { injectDispatch } from '@ngrx/signals/events';
 import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
 import { DashboardRangeParams } from '../../core/models/dashboard.model';
@@ -59,6 +60,7 @@ const toIsoDate = (date: Date): string => {
   selector: 'app-dashboard',
   imports: [
     MatIconModule,
+    RouterLink,
     SkeletonComponent,
     PlacementsChartComponent,
     MatchingFunnelComponent,
@@ -136,7 +138,7 @@ export class DashboardComponent implements OnInit {
 
   protected readonly matchesLabel = computed(() => {
     const funnel = this.store.funnel();
-    return funnel ? `${formatNumber(funnel.matches_generated)} AI matches generated` : '';
+    return funnel ? `${formatNumber(funnel.matches_generated)} matches generated` : '';
   });
 
   protected readonly placementRateLabel = computed(() => {

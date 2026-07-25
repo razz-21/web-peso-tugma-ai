@@ -3,6 +3,7 @@ import {
   RecommendationScores,
   RecommendedJob,
 } from '../../../core/models/recommended-job.model';
+import { MatchingScore } from '../../../core/models/workspace.model';
 import { JobMatch } from '../types/job-match.type';
 
 /** Highest MatchScore, i.e. the sum of every dimension's full weight. */
@@ -17,38 +18,70 @@ export const scoreColor = (score: number): string =>
   score >= 85 ? RING_GREEN : score >= 70 ? RING_TEAL : RING_AMBER;
 
 /**
- * Scoring dimensions in display order, mapped to labels, icons and their
- * workspace weight. Weights double as each dimension's maximum points and sum
- * to {@link MAX_MATCH_SCORE}.
+ * Scoring dimensions in display order, mapped to labels, icons and the
+ * workspace `matching_score` field that weights them. `weightKey` bridges a
+ * recommendation's per-dimension score key to its workspace weight, so the
+ * live weights (not a hard-coded profile) drive each dimension's points.
  */
 export const SCORE_DIMENSIONS: readonly {
   key: keyof RecommendationScores;
+  weightKey: keyof MatchingScore;
   label: string;
   icon: string;
-  weight: number;
 }[] = [
-  { key: 'semantic_similarity', label: 'Semantic', icon: 'auto_awesome', weight: 50 },
-  { key: 'skills', label: 'Skills', icon: 'edit', weight: 20 },
-  { key: 'experience', label: 'Experience', icon: 'work', weight: 15 },
-  { key: 'educational_background', label: 'Education', icon: 'school', weight: 10 },
-  { key: 'location_preference', label: 'Location', icon: 'location_on', weight: 5 },
+  {
+    key: 'semantic_similarity',
+    weightKey: 'semantic_similarity',
+    label: 'Semantic',
+    icon: 'auto_awesome',
+  },
+  { key: 'skills', weightKey: 'skills_match', label: 'Skills', icon: 'edit' },
+  { key: 'experience', weightKey: 'experience_match', label: 'Experience', icon: 'work' },
+  {
+    key: 'educational_background',
+    weightKey: 'educational_match',
+    label: 'Education',
+    icon: 'school',
+  },
+  {
+    key: 'location_preference',
+    weightKey: 'location_preference',
+    label: 'Location',
+    icon: 'location_on',
+  },
 ];
 
-/** Map a recommendation read model into the card/drawer view model. */
-export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): JobMatch => {
+/**
+ * Map a recommendation read model into the card/drawer view model, scoring it
+ * against the workspace's current `matching_score` weights. The final score is
+ * recomputed here from the stored per-dimension scores (which are
+ * weight-independent), so editing the workspace weights re-ranks and re-scores
+ * existing recommendations live — without regenerating them.
+ */
+export const toJobMatch = (
+  recommendation: RecommendedJob,
+  updating: boolean,
+  weights: MatchingScore,
+): JobMatch => {
   const scores = recommendation.scores;
   const breakdown = SCORE_DIMENSIONS.map((dimension) => {
     const value = scores[dimension.key];
+    const weight = weights[dimension.weightKey];
     return {
       key: dimension.key,
       label: dimension.label,
       icon: dimension.icon,
       value,
-      weight: dimension.weight,
-      points: Math.round((value * dimension.weight) / 100),
+      weight,
+      points: Math.round((value * weight) / 100),
       color: scoreColor(value),
     };
   });
+  // Weighted MatchScore, mirroring the backend's combined score:
+  // round(Σ score × weight ÷ 100). Weights sum to 100, so this stays 0–100.
+  const score = Math.round(
+    breakdown.reduce((total, dimension) => total + dimension.value * dimension.weight, 0) / 100,
+  );
   const company = recommendation.job?.company ?? null;
   const location = recommendation.job?.location ?? null;
   const salary = recommendation.job?.salary_per_month ?? null;
@@ -56,8 +89,8 @@ export const toJobMatch = (recommendation: RecommendedJob, updating: boolean): J
   return {
     recommendationId: recommendation.id,
     jobId: recommendation.job?.id ?? null,
-    score: recommendation.score,
-    color: scoreColor(recommendation.score),
+    score,
+    color: scoreColor(score),
     title: recommendation.job?.title ?? 'Job',
     company,
     location,

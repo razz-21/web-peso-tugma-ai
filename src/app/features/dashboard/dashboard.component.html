@@ -90,7 +90,7 @@
         <div class="chart-card__heading">
           <h2 class="chart-card__title">Recent applicants</h2>
         </div>
-        <a class="chart-card__link" href="#">
+        <a class="chart-card__link" routerLink="/applicants">
           View all
           <mat-icon aria-hidden="true">chevron_right</mat-icon>
         </a>
@@ -115,7 +115,6 @@
       <header class="chart-card__header">
         <div class="chart-card__heading">
           <h2 class="chart-card__title">Top hiring companies</h2>
-          <p class="chart-card__subtitle">By placements this month</p>
         </div>
       </header>
       @if (store.loading()) {

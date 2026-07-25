@@ -1,8 +1,10 @@
 <section class="workspace-details">
-  <a class="workspace-details__back" [routerLink]="routes.workspaces">
-    <mat-icon>arrow_back</mat-icon>
-    <span>Back to workspaces</span>
-  </a>
+  @if (canAccessWorkspaces()) {
+    <a class="workspace-details__back" [routerLink]="routes.workspaces">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to workspaces</span>
+    </a>
+  }
 
   @if (store.loading() && !store.workspace()) {
     <div class="workspace-details__status" role="status">

@@ -25,6 +25,9 @@ import { Events, injectDispatch } from '@ngrx/signals/events';
 import { ApplicantGet } from '../../core/models/applicant.model';
 import { JobGet } from '../../core/models/job.model';
 import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
+import { DEFAULT_MATCHING_SCORE, MatchingScore } from '../../core/models/workspace.model';
+import { WorkspacesService } from '../../core/services/workspaces.service';
+import { MeStore } from '../../stores/me/me.store';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
@@ -91,6 +94,8 @@ export class ApplicantDetailsComponent implements OnInit {
   private readonly applicantsDispatch = injectDispatch(applicantsEvents);
   private readonly recommendationsStore = inject(RecommendationsStore);
   private readonly recommendationsDispatch = injectDispatch(recommendationsEvents);
+  private readonly meStore = inject(MeStore);
+  private readonly workspacesService = inject(WorkspacesService);
   private readonly events = inject(Events);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -111,12 +116,20 @@ export class ApplicantDetailsComponent implements OnInit {
 
   protected readonly applicant = this.store.applicant;
 
+  /**
+   * The active workspace's scoring weights, used to score recommendations.
+   * Loaded from the workspace's `matching_score` so the officer's saved weights
+   * (not a hard-coded profile) drive the scores; defaults until it resolves.
+   */
+  private readonly matchingWeights = signal<MatchingScore>(DEFAULT_MATCHING_SCORE);
+
   /** AI recommendations for this applicant, ranked by MatchScore (desc). */
   protected readonly recommendations = computed<readonly JobMatch[]>(() => {
     const updating = new Set(this.recommendationsStore.updatingIds());
+    const weights = this.matchingWeights();
     return [...this.recommendationsStore.items()]
-      .sort((a, b) => b.score - a.score)
-      .map((recommendation) => toJobMatch(recommendation, updating.has(recommendation.id)));
+      .map((recommendation) => toJobMatch(recommendation, updating.has(recommendation.id), weights))
+      .sort((a, b) => b.score - a.score);
   });
 
   protected readonly generating = computed(() => this.recommendationsStore.generating());
@@ -271,6 +284,20 @@ export class ApplicantDetailsComponent implements OnInit {
   protected readonly applicantId = computed(() => this.applicant()?.id.slice(0, 8) ?? '');
 
   constructor() {
+    // Load the active workspace's `matching_score` weights so recommendation
+    // scores reflect the officer's saved weighting. Re-runs if the user's
+    // workspace changes; picks up edited weights on the next visit.
+    effect(() => {
+      const workspaceId = this.meStore.user()?.workspace?.id;
+      if (!workspaceId) {
+        return;
+      }
+      this.workspacesService
+        .get(workspaceId)
+        .then((workspace) => this.matchingWeights.set(workspace.matching_score))
+        .catch(() => this.matchingWeights.set(DEFAULT_MATCHING_SCORE));
+    });
+
     // Scroll-spy: highlight the section nearest the top of the viewport.
     effect((onCleanup) => {
       const els = this.sectionEls();
