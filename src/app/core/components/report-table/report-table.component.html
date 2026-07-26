@@ -21,7 +21,13 @@
         <tr>
           <th scope="col" class="report-table__index">#</th>
           @for (column of visibleColumns(); track column.key) {
-            <th scope="col" [class.report-table__wrap]="column.wrap">{{ column.label }}</th>
+            <th
+              scope="col"
+              [class.report-table__wrap]="column.wrap"
+              [style.max-width]="column.maxWidth"
+            >
+              {{ column.label }}
+            </th>
           }
         </tr>
       </thead>
@@ -30,7 +36,9 @@
           <tr>
             <td class="report-table__index">{{ $index + 1 }}</td>
             @for (column of visibleColumns(); track column.key) {
-              <td [class.report-table__wrap]="column.wrap">{{ row[column.key] }}</td>
+              <td [class.report-table__wrap]="column.wrap" [style.max-width]="column.maxWidth">
+                {{ row[column.key] }}
+              </td>
             }
           </tr>
         } @empty {

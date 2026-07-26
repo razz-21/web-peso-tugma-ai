@@ -3,8 +3,14 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  ApplicantPlacedReport,
+  ApplicantPlacedReportSchema,
   ApplicantReferredReport,
   ApplicantReferredReportSchema,
+  ApplicantRegisteredReport,
+  ApplicantRegisteredReportSchema,
+  EstablishmentsRegisteredReport,
+  EstablishmentsRegisteredReportSchema,
   JobSolicitedReport,
   JobSolicitedReportSchema,
   ReportRangeParams,
@@ -42,5 +48,34 @@ export class ReportsService {
       }),
     );
     return ApplicantReferredReportSchema.parse(body);
+  }
+
+  async applicantPlaced(params: ReportRangeParams = {}): Promise<ApplicantPlacedReport> {
+    const body = await firstValueFrom(
+      this.http.get<ApplicantPlacedReport>(`${this.baseUrl}/applicant-placed`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return ApplicantPlacedReportSchema.parse(body);
+  }
+
+  async applicantRegistered(params: ReportRangeParams = {}): Promise<ApplicantRegisteredReport> {
+    const body = await firstValueFrom(
+      this.http.get<ApplicantRegisteredReport>(`${this.baseUrl}/applicant-registered`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return ApplicantRegisteredReportSchema.parse(body);
+  }
+
+  async establishmentsRegistered(
+    params: ReportRangeParams = {},
+  ): Promise<EstablishmentsRegisteredReport> {
+    const body = await firstValueFrom(
+      this.http.get<EstablishmentsRegisteredReport>(`${this.baseUrl}/establishments-registered`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return EstablishmentsRegisteredReportSchema.parse(body);
   }
 }

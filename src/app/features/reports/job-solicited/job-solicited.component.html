@@ -1,11 +1,14 @@
 <section class="job-solicited">
+  <a class="report-back" [routerLink]="reportsLink">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    Back to reports
+  </a>
+
   <header class="job-solicited__header">
     <div class="job-solicited__heading">
-      <a class="job-solicited__back" [routerLink]="reportsLink" aria-label="Back to reports">
-        <span class="job-solicited__icon">
-          <mat-icon aria-hidden="true">work</mat-icon>
-        </span>
-      </a>
+      <span class="job-solicited__icon">
+        <mat-icon aria-hidden="true">work</mat-icon>
+      </span>
       <div class="job-solicited__titles">
         <h1 class="job-solicited__title">Job Solicited</h1>
         <p class="job-solicited__subtitle">Job vacancies solicited from partner establishments.</p>

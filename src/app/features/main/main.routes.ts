@@ -95,6 +95,27 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'reports/applicant-placed',
+        loadComponent: () =>
+          import('../reports/applicant-placed/applicant-placed.component').then(
+            (m) => m.ApplicantPlacedComponent,
+          ),
+      },
+      {
+        path: 'reports/applicant-registered',
+        loadComponent: () =>
+          import('../reports/applicant-registered/applicant-registered.component').then(
+            (m) => m.ApplicantRegisteredComponent,
+          ),
+      },
+      {
+        path: 'reports/establishments-registered',
+        loadComponent: () =>
+          import('../reports/establishments-registered/establishments-registered.component').then(
+            (m) => m.EstablishmentsRegisteredComponent,
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () => import('../profile/profile.component').then((m) => m.ProfileComponent),
       },

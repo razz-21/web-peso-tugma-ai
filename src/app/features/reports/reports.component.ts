@@ -55,6 +55,7 @@ export class ReportsComponent {
           tone: 'green',
           title: 'Applicant Placed',
           description: 'Job seekers successfully hired through the office.',
+          route: `${APP_ROUTES.reports}/applicant-placed`,
         },
         {
           id: 'vacancies-solicited-vs-filled',
@@ -74,6 +75,7 @@ export class ReportsComponent {
           tone: 'teal',
           title: 'Applicant Registered',
           description: 'New job seekers registered in the system.',
+          route: `${APP_ROUTES.reports}/applicant-registered`,
         },
         {
           id: 'establishments-registered',
@@ -81,18 +83,7 @@ export class ReportsComponent {
           tone: 'amber',
           title: 'Establishments Registered',
           description: 'Partner employers registered in the system.',
-        },
-      ],
-    },
-    {
-      label: 'AI Matching',
-      reports: [
-        {
-          id: 'matching-performance',
-          icon: 'auto_awesome',
-          tone: 'green',
-          title: 'Matching Performance',
-          description: 'AI recommendation quality and outcomes.',
+          route: `${APP_ROUTES.reports}/establishments-registered`,
         },
       ],
     },

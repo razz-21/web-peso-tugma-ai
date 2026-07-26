@@ -1,21 +1,23 @@
-<section class="applicant-referred">
+<section class="establishments-registered">
   <a class="report-back" [routerLink]="reportsLink">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
     Back to reports
   </a>
 
-  <header class="applicant-referred__header">
-    <div class="applicant-referred__heading">
-      <span class="applicant-referred__icon">
-        <mat-icon aria-hidden="true">send</mat-icon>
+  <header class="establishments-registered__header">
+    <div class="establishments-registered__heading">
+      <span class="establishments-registered__icon">
+        <mat-icon aria-hidden="true">apartment</mat-icon>
       </span>
-      <div class="applicant-referred__titles">
-        <h1 class="applicant-referred__title">Applicant Referred</h1>
-        <p class="applicant-referred__subtitle">Job seekers referred to employers for vacancies.</p>
+      <div class="establishments-registered__titles">
+        <h1 class="establishments-registered__title">Establishments Registered</h1>
+        <p class="establishments-registered__subtitle">
+          Partner employers registered in the system.
+        </p>
       </div>
     </div>
 
-    <div class="applicant-referred__actions">
+    <div class="establishments-registered__actions">
       <app-period-filter
         triggerAriaLabel="Filter report by date range"
         (rangeChange)="onPeriodChange($event)"
@@ -23,7 +25,7 @@
     </div>
   </header>
 
-  <div class="applicant-referred__cards">
+  <div class="establishments-registered__cards">
     @if (cards(); as cards) {
       @for (card of cards; track card.label) {
         <article class="stat-card">
@@ -32,8 +34,13 @@
           </span>
           <p class="stat-card__label">{{ card.label }}</p>
           <p class="stat-card__value">{{ card.value }}</p>
-          @if (card.subtext) {
-            <span class="stat-card__subtext">{{ card.subtext }}</span>
+          @if (card.delta; as delta) {
+            <span class="stat-card__delta" [class.stat-card__delta--up]="delta.positive">
+              <mat-icon class="stat-card__delta-icon" aria-hidden="true">
+                {{ delta.positive ? 'arrow_drop_up' : 'arrow_drop_down' }}
+              </mat-icon>
+              {{ delta.text }}
+            </span>
           }
         </article>
       }
@@ -51,15 +58,15 @@
 
   <article class="chart-card">
     <header class="chart-card__heading">
-      <h2 class="chart-card__title">Referrals per month</h2>
-      @if (loading() && !report()) {
-        <app-skeleton variant="text" width="9rem" />
-      } @else {
-        <p class="chart-card__subtitle">{{ chartRangeLabel() }}</p>
-      }
+      <h2 class="chart-card__title">Establishments by type</h2>
+      <p class="chart-card__subtitle">All registered</p>
     </header>
     @if (report(); as report) {
-      <app-monthly-bar-chart [points]="report.monthly" ariaLabelPrefix="Referrals per month" />
+      <app-monthly-area-chart
+        [points]="report.by_type"
+        [axisStep]="20"
+        ariaLabelPrefix="Establishments by type"
+      />
     } @else {
       <app-skeleton height="22rem" radius="0.75rem" />
     }
@@ -67,11 +74,11 @@
 
   @if (report(); as report) {
     <app-report-table
-      title="Referral log"
+      title="Establishment directory"
       [columns]="tableColumns"
       [rows]="tableRows()"
       [fileName]="tableFileName()"
-      emptyMessage="No referrals made in this period."
+      emptyMessage="No establishments registered."
     />
   } @else {
     <app-skeleton height="20rem" radius="1rem" />

@@ -1,21 +1,21 @@
-<section class="applicant-referred">
+<section class="applicant-placed">
   <a class="report-back" [routerLink]="reportsLink">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
     Back to reports
   </a>
 
-  <header class="applicant-referred__header">
-    <div class="applicant-referred__heading">
-      <span class="applicant-referred__icon">
-        <mat-icon aria-hidden="true">send</mat-icon>
+  <header class="applicant-placed__header">
+    <div class="applicant-placed__heading">
+      <span class="applicant-placed__icon">
+        <mat-icon aria-hidden="true">check_box</mat-icon>
       </span>
-      <div class="applicant-referred__titles">
-        <h1 class="applicant-referred__title">Applicant Referred</h1>
-        <p class="applicant-referred__subtitle">Job seekers referred to employers for vacancies.</p>
+      <div class="applicant-placed__titles">
+        <h1 class="applicant-placed__title">Applicant Placed</h1>
+        <p class="applicant-placed__subtitle">Job seekers successfully hired through the office.</p>
       </div>
     </div>
 
-    <div class="applicant-referred__actions">
+    <div class="applicant-placed__actions">
       <app-period-filter
         triggerAriaLabel="Filter report by date range"
         (rangeChange)="onPeriodChange($event)"
@@ -23,7 +23,7 @@
     </div>
   </header>
 
-  <div class="applicant-referred__cards">
+  <div class="applicant-placed__cards">
     @if (cards(); as cards) {
       @for (card of cards; track card.label) {
         <article class="stat-card">
@@ -31,7 +31,9 @@
             <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
           </span>
           <p class="stat-card__label">{{ card.label }}</p>
-          <p class="stat-card__value">{{ card.value }}</p>
+          <p class="stat-card__value" [class.stat-card__value--compact]="card.compact">
+            {{ card.value }}
+          </p>
           @if (card.subtext) {
             <span class="stat-card__subtext">{{ card.subtext }}</span>
           }
@@ -51,7 +53,7 @@
 
   <article class="chart-card">
     <header class="chart-card__heading">
-      <h2 class="chart-card__title">Referrals per month</h2>
+      <h2 class="chart-card__title">Placements per month</h2>
       @if (loading() && !report()) {
         <app-skeleton variant="text" width="9rem" />
       } @else {
@@ -59,7 +61,7 @@
       }
     </header>
     @if (report(); as report) {
-      <app-monthly-bar-chart [points]="report.monthly" ariaLabelPrefix="Referrals per month" />
+      <app-monthly-bar-chart [points]="report.monthly" ariaLabelPrefix="Placements per month" />
     } @else {
       <app-skeleton height="22rem" radius="0.75rem" />
     }
@@ -67,11 +69,11 @@
 
   @if (report(); as report) {
     <app-report-table
-      title="Referral log"
+      title="Placement log"
       [columns]="tableColumns"
       [rows]="tableRows()"
       [fileName]="tableFileName()"
-      emptyMessage="No referrals made in this period."
+      emptyMessage="No placements made in this period."
     />
   } @else {
     <app-skeleton height="20rem" radius="1rem" />

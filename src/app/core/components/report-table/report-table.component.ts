@@ -10,6 +10,8 @@ export interface ReportTableColumn {
   label: string;
   /** Cap this column's width and wrap long text (for free-text columns). */
   wrap?: boolean;
+  /** Override the wrapped column's max-width (any CSS length, e.g. "30rem"). */
+  maxWidth?: string;
 }
 
 /** One table row: display text keyed by column key. */
