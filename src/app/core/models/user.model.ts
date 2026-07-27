@@ -50,7 +50,11 @@ export const MePatchSchema = UserSchema.pick({
   email: true,
   password: true,
   avatar: true,
-}).partial();
+})
+  .partial()
+  // Required by the backend only when changing `password`; verified there and
+  // never stored.
+  .extend({ current_password: z.string().optional() });
 
 export const UserListSchema = z.object({
   total: z.number().int().nonnegative(),

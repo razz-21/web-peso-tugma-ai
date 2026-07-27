@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { signalStore, withState } from '@ngrx/signals';
 import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events';
@@ -22,8 +23,18 @@ const initialState: MeState = {
   error: null,
 };
 
-const errorMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string): string => {
+  // FastAPI surfaces the reason in `error.error.detail`; prefer it over the
+  // generic HttpErrorResponse message so users see e.g. "Current password is
+  // incorrect" instead of "Failed to update your profile."
+  if (error instanceof HttpErrorResponse) {
+    const detail = (error.error as { detail?: unknown } | null)?.detail;
+    if (typeof detail === 'string' && detail) {
+      return detail;
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+};
 
 export const MeStore = signalStore(
   { providedIn: 'root' },

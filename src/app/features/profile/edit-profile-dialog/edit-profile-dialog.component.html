@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Edit profile</h2>
+
+<form (submit)="submit($event)">
+  <mat-dialog-content class="dialog__content">
+    <p class="dialog__hint">Update your name and contact email.</p>
+
+    @if (serverError(); as msg) {
+      <p class="dialog__alert" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <span>{{ msg }}</span>
+      </p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Full name</mat-label>
+      <input matInput type="text" autocomplete="name" [formField]="profileForm.fullname" />
+      @if (fullnameError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" autocomplete="email" [formField]="profileForm.email" />
+      @if (emailError(); as msg) {
+        <mat-error>{{ msg }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button matButton type="button" [disabled]="store.saving()" (click)="cancel()">Cancel</button>
+    <button matButton="tonal" type="submit" [disabled]="store.saving()">Save changes</button>
+  </mat-dialog-actions>
+</form>

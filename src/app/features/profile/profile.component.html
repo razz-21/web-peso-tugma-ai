@@ -1,0 +1,106 @@
+<section class="profile">
+  @if (user(); as u) {
+    <!-- Header card -->
+    <div class="card profile__header">
+      <app-avatar class="profile__avatar" [name]="u.fullname" [seed]="u.email" [size]="96" />
+
+      <div class="profile__identity">
+        <h1 class="profile__name">{{ u.fullname }}</h1>
+
+        <div class="profile__badges">
+          <span class="badge badge--role">
+            <mat-icon aria-hidden="true">verified_user</mat-icon>
+            {{ roleLabel() }}
+          </span>
+          <span
+            class="badge"
+            [class.badge--active]="isActive()"
+            [class.badge--inactive]="!isActive()"
+          >
+            <span class="badge__dot" aria-hidden="true"></span>
+            {{ statusLabel() }}
+          </span>
+        </div>
+
+        <p class="profile__meta">
+          @if (u.workspace) {
+            <span>{{ u.workspace.name }}</span>
+            <span class="profile__meta-sep" aria-hidden="true">·</span>
+          }
+          <span>Member since {{ u.created_at | date: 'MMM d, y' }}</span>
+        </p>
+      </div>
+
+      <button matButton="tonal" type="button" class="profile__edit" (click)="editProfile()">
+        <mat-icon>edit</mat-icon>
+        Edit profile
+      </button>
+    </div>
+
+    <!-- Personal information -->
+    <div class="card">
+      <header class="profile__section-head">
+        <mat-icon class="profile__section-icon" aria-hidden="true">person</mat-icon>
+        <div>
+          <h2 class="card__title">Personal information</h2>
+          <p class="card__subtitle">
+            Your name and contact details. Role and status are managed by an administrator.
+          </p>
+        </div>
+      </header>
+
+      <dl class="profile__details">
+        <div class="profile__row">
+          <mat-icon aria-hidden="true">person</mat-icon>
+          <dt>Full name</dt>
+          <dd>{{ u.fullname }}</dd>
+        </div>
+        <div class="profile__row">
+          <mat-icon aria-hidden="true">mail</mat-icon>
+          <dt>Email</dt>
+          <dd>
+            <a class="profile__link" [href]="'mailto:' + u.email">{{ u.email }}</a>
+          </dd>
+        </div>
+        <div class="profile__row">
+          <mat-icon aria-hidden="true">shield</mat-icon>
+          <dt>Role</dt>
+          <dd>{{ roleLabel() }}</dd>
+        </div>
+        @if (u.workspace) {
+          <div class="profile__row">
+            <mat-icon aria-hidden="true">inbox</mat-icon>
+            <dt>Workspace</dt>
+            <dd>{{ u.workspace.name }}</dd>
+          </div>
+        }
+      </dl>
+    </div>
+
+    <!-- Security -->
+    <div class="card">
+      <header class="profile__section-head">
+        <mat-icon class="profile__section-icon" aria-hidden="true">lock</mat-icon>
+        <div>
+          <h2 class="card__title">Security</h2>
+          <p class="card__subtitle">Keep your account protected.</p>
+        </div>
+      </header>
+
+      <ul class="security">
+        <li class="security__item">
+          <span class="security__tile" aria-hidden="true">
+            <mat-icon>lock</mat-icon>
+          </span>
+          <div class="security__text">
+            <p class="security__label">Password</p>
+            <p class="security__desc">Use a strong, unique password.</p>
+          </div>
+          <button matButton="outlined" type="button" (click)="changePassword()">Change</button>
+        </li>
+      </ul>
+    </div>
+  } @else {
+    <p class="profile__empty">No profile information is available.</p>
+  }
+</section>
