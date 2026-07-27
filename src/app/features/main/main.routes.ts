@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { MainComponent } from './main.component';
 import {
   workspaceDetailsGuard,
@@ -10,6 +11,9 @@ export const mainRoutes: Routes = [
   {
     path: '',
     component: MainComponent,
+    // Chart.js is only used inside the main area (dashboard, applicant details),
+    // so register it here to keep it out of the initial bundle.
+    providers: [provideCharts(withDefaultRegisterables())],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
