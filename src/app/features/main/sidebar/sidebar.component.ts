@@ -70,6 +70,7 @@ export class SidebarComponent {
         ? [{ label: 'User Management', icon: 'groups', link: APP_ROUTES.userManagement }]
         : []),
       { label: 'Reports', icon: 'bar_chart', link: APP_ROUTES.reports },
+      { label: 'Audit Logs', icon: 'history', link: APP_ROUTES.auditLogs },
       { label: 'Workspaces', icon: 'computer_arrow_up', link: workspacesLink },
     ];
   });

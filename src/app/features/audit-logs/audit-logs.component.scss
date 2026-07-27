@@ -1,0 +1,343 @@
+.audit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 46rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Search -------------------------------------------------------------
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.25rem;
+    height: 3.5rem;
+    border-radius: 1.75rem;
+    background: var(--mat-sys-surface-container);
+  }
+
+  &__search-icon {
+    flex: none;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 1.0625rem;
+    color: var(--mat-sys-on-surface);
+
+    &::placeholder {
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    // Hide the native search-cancel button for a cleaner pill.
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+
+  // --- Filter toolbar -----------------------------------------------------
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    flex: 1 1 auto;
+  }
+
+  &__count {
+    flex: none;
+    margin-left: auto;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__group-label {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Feed card ----------------------------------------------------------
+  &__card {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 1.25rem;
+    background: var(--mat-sys-surface-container-lowest);
+    overflow: hidden;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--mat-sys-outline-variant);
+    border-radius: 1.25rem;
+    color: var(--mat-sys-on-surface-variant);
+    text-align: center;
+
+    mat-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 2.5rem;
+      opacity: 0.6;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.audit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1.25rem;
+  background: var(--mat-sys-surface-container-lowest);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    background: #d7f0c0;
+    border-color: #b7dd97;
+    color: #3f6b16;
+    font-weight: 600;
+  }
+
+  &__check {
+    width: 1.125rem;
+    height: 1.125rem;
+    font-size: 1.125rem;
+  }
+}
+
+.audit-entry {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+
+  & + & {
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+
+    mat-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    &--red {
+      background: #fbdada;
+      color: #b3261e;
+    }
+    &--green {
+      background: #d7f0c0;
+      color: #4d7c1f;
+    }
+    &--amber {
+      background: #ffe08a;
+      color: #b45309;
+    }
+    &--grey {
+      background: #e4e7de;
+      color: #5b6152;
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__headline {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__actor {
+    font-weight: 700;
+  }
+
+  &__record {
+    color: #3f6b16;
+    font-weight: 600;
+  }
+
+  &__sep {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Category chip + timestamp row
+  &__meta {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+
+    &--red {
+      background: #fbdada;
+      color: #b3261e;
+    }
+    &--green {
+      background: #d7f0c0;
+      color: #3f6b16;
+    }
+    &--amber {
+      background: #ffdf9e;
+      color: #8a5a00;
+    }
+    &--grey {
+      background: #e4e7de;
+      color: #5b6152;
+    }
+  }
+
+  &__dot {
+    color: var(--mat-sys-outline);
+  }
+
+  &__note,
+  &__diff {
+    margin: 0.25rem 0 0;
+    padding: 0.875rem 1.125rem;
+    border-radius: 0.875rem;
+    background: #eef1e6;
+  }
+
+  &__note {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__diff {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__diff-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.375rem 0;
+
+    & + & {
+      border-top: 1px solid rgb(0 0 0 / 6%);
+    }
+  }
+
+  &__diff-label {
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__diff-values {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+  }
+
+  &__diff-from {
+    color: #b04a3f;
+    text-decoration: line-through;
+  }
+
+  &__diff-arrow {
+    width: 1.125rem;
+    height: 1.125rem;
+    font-size: 1.125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__diff-to {
+    font-weight: 700;
+    color: #3f6b16;
+  }
+}

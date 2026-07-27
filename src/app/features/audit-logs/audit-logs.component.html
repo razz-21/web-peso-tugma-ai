@@ -1,0 +1,102 @@
+<section class="audit">
+  <header class="audit__header">
+    <h1 class="audit__title">Audit Logs</h1>
+    <p class="audit__subtitle">Every action taken across your office — who did what, and when.</p>
+  </header>
+
+  <div class="audit__search">
+    <mat-icon class="audit__search-icon" aria-hidden="true">search</mat-icon>
+    <input
+      type="search"
+      class="audit__search-input"
+      placeholder="Search by user, action or record"
+      aria-label="Search audit logs by user, action or record"
+      [value]="query()"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <div class="audit__toolbar">
+    <div class="audit__filters" role="group" aria-label="Filter audit logs by category">
+      @for (filter of filters; track filter.label) {
+        <button
+          type="button"
+          class="audit-chip"
+          [class.audit-chip--active]="activeCategory() === filter.value"
+          [attr.aria-pressed]="activeCategory() === filter.value"
+          (click)="onSelectFilter(filter.value)"
+        >
+          @if (activeCategory() === filter.value) {
+            <mat-icon class="audit-chip__check" aria-hidden="true">check</mat-icon>
+          }
+          {{ filter.label }}
+        </button>
+      }
+    </div>
+    <span class="audit__count">{{ eventCount() }} events</span>
+  </div>
+
+  @for (group of filteredGroups(); track group.label) {
+    <h2 class="audit__group-label">{{ group.label }}</h2>
+    <div class="audit__card">
+      @for (entry of group.entries; track entry.id) {
+        <article class="audit-entry">
+          <span class="audit-entry__icon" [class]="'audit-entry__icon--' + entry.iconTone">
+            <mat-icon aria-hidden="true">{{ entry.icon }}</mat-icon>
+          </span>
+
+          <div class="audit-entry__body">
+            <p class="audit-entry__headline">
+              <span class="audit-entry__actor">{{ entry.actor }}</span>
+              {{ entry.action }}
+              @for (record of entry.records; track record.label; let last = $last) {
+                <span class="audit-entry__record">{{ record.label }}</span>
+                @if (!last) {
+                  <span class="audit-entry__sep"> · </span>
+                }
+              }
+            </p>
+
+            <p class="audit-entry__meta">
+              <span class="audit-entry__chip" [class]="'audit-entry__chip--' + entry.chipTone">
+                {{ entry.categoryLabel }}
+              </span>
+              <span class="audit-entry__dot" aria-hidden="true">·</span>
+              <span class="audit-entry__time">{{ entry.time }}</span>
+              @for (fact of entry.meta ?? []; track fact) {
+                <span class="audit-entry__dot" aria-hidden="true">·</span>
+                <span class="audit-entry__fact">{{ fact }}</span>
+              }
+            </p>
+
+            @if (entry.note) {
+              <p class="audit-entry__note">{{ entry.note }}</p>
+            }
+
+            @if (entry.diff; as diff) {
+              <div class="audit-entry__diff">
+                @for (row of diff; track row.label) {
+                  <div class="audit-entry__diff-row">
+                    <span class="audit-entry__diff-label">{{ row.label }}</span>
+                    <span class="audit-entry__diff-values">
+                      <span class="audit-entry__diff-from">{{ row.from }}</span>
+                      <mat-icon class="audit-entry__diff-arrow" aria-label="changed to"
+                        >arrow_forward</mat-icon
+                      >
+                      <span class="audit-entry__diff-to">{{ row.to }}</span>
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @empty {
+    <div class="audit__empty">
+      <mat-icon aria-hidden="true">history</mat-icon>
+      <p>No events match your search or filter.</p>
+    </div>
+  }
+</section>

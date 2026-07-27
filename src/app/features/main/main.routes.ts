@@ -116,6 +116,11 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'audit-logs',
+        loadComponent: () =>
+          import('../audit-logs/audit-logs.component').then((m) => m.AuditLogsComponent),
+      },
+      {
         path: 'profile',
         loadComponent: () => import('../profile/profile.component').then((m) => m.ProfileComponent),
       },
