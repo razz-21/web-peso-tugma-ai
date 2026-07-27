@@ -9,6 +9,6 @@
 export const environment = {
   production: false,
   /** Base URL of the separate API used for preview/staging deployments. */
-  apiBaseUrl: 'https://dev.service-peso-tugmai.com/api',
+  apiBaseUrl: 'https://dev.service-peso-tugmai.razz-dev.com/api',
   apiTimeoutMs: 30000,
 } as const;
