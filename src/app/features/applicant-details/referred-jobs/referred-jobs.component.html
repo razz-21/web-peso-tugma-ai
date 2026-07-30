@@ -137,6 +137,12 @@
                   type="button"
                   [matMenuTriggerFor]="statusMenu"
                   [matMenuTriggerData]="{ match: row.match }"
+                  [disabled]="row.terminal"
+                  [attr.title]="
+                    row.terminal
+                      ? 'This referral is ' + row.statusLabel + ' and can no longer be updated'
+                      : null
+                  "
                 >
                   <mat-icon>check_box</mat-icon>
                   Update status
@@ -160,7 +166,7 @@
 
 <mat-menu #statusMenu="matMenu" class="referred-jobs__menu">
   <ng-template matMenuContent let-match="match">
-    @for (option of statusOptions; track option.value) {
+    @for (option of optionsFor(match.status); track option.value) {
       <button
         mat-menu-item
         type="button"

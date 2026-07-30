@@ -9,6 +9,16 @@ export interface ComparisonDialogData {
 
 export type RequirementStatus = 'met' | 'partial' | 'unmet' | 'unknown';
 
+/** A required skill covered by a related (not exact) applicant skill. */
+export interface SkillChip {
+  /** The job's required skill (e.g. "Excel"). */
+  readonly required: string;
+  /** The applicant skill that covers it (e.g. "Google Sheets"). */
+  readonly via: string | null;
+  /** Best similarity as a 0–100 percentage. */
+  readonly similarity: number;
+}
+
 /** One requirement row (skills / experience / education / location). */
 export interface RequirementView {
   readonly key: string;
@@ -24,7 +34,12 @@ export interface RequirementView {
   readonly isSkills: boolean;
   // Skills detail.
   readonly matchedSkills: readonly string[];
+  /** Required skills covered by a related (not exact) applicant skill. */
+  readonly relatedSkills: readonly SkillChip[];
   readonly missingSkills: readonly string[];
+  /** Applicant skills covering a requirement (exact or related), for the
+   * "Matching" column. */
+  readonly matchingSkills: readonly string[];
   readonly additionalSkills: readonly string[];
   readonly note: string | null;
   // Generic detail (experience / education / location).

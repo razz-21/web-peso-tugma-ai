@@ -129,6 +129,7 @@ export const toJobMatch = (
       })),
     breakdown,
     keyMatched: recommendation.key_matched,
+    skillMatches: recommendation.skill_matches,
     resumeVector: recommendation.embedded_applicant,
     jobVector: recommendation.embedded_job,
   };

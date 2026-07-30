@@ -425,6 +425,12 @@
       color: #33481a;
     }
 
+    &--related {
+      background: color-mix(in srgb, #9a7b1e 20%, var(--mat-sys-surface));
+      // Darkened amber for AA contrast against the tinted background.
+      color: #5f4a0f;
+    }
+
     &--missing {
       background: transparent;
       border: 1px dashed color-mix(in srgb, var(--mat-sys-error) 55%, transparent);
@@ -445,6 +451,11 @@
       background: var(--mat-sys-surface-container-high);
       color: var(--mat-sys-on-surface);
     }
+  }
+
+  &__chip-via {
+    font-weight: 500;
+    opacity: 0.85;
   }
 
   // --- Coverage bar --------------------------------------------------------

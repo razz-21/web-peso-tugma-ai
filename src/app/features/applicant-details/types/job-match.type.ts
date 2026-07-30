@@ -1,6 +1,7 @@
 import {
   RecommendationScores,
   RecommendedJobStatus,
+  SkillMatch,
 } from '../../../core/models/recommended-job.model';
 
 export interface JobMatchTag {
@@ -90,6 +91,9 @@ export interface JobMatch {
   readonly tags: readonly JobMatchTag[];
   readonly breakdown: readonly JobMatchDimension[];
   readonly keyMatched: readonly string[];
+  /** Per-required-skill coverage detail (matched / related / missing) for the
+   * compare modal. Empty on recommendations generated before this existed. */
+  readonly skillMatches: readonly SkillMatch[];
   /** Dense résumé embedding, for the vector-comparison chart. */
   readonly resumeVector: readonly number[];
   /** Dense job-requirements embedding, for the vector-comparison chart. */

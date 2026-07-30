@@ -24,7 +24,10 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { ApplicantGet } from '../../core/models/applicant.model';
 import { JobGet } from '../../core/models/job.model';
-import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
+import {
+  RECOMMENDED_JOB_STATUS_LABEL,
+  RecommendedJobStatus,
+} from '../../core/models/recommended-job.model';
 import { DEFAULT_MATCHING_SCORE, MatchingScore } from '../../core/models/workspace.model';
 import { WorkspacesService } from '../../core/services/workspaces.service';
 import { MeStore } from '../../stores/me/me.store';
@@ -51,6 +54,7 @@ import { SectionLink } from './types/applicant-details.type';
 import { ComparisonDialogData } from './types/comparison.type';
 import { ManualReferralDialogData } from './types/manual-referral.type';
 import { ReferralStatusChange } from './types/referred-jobs.type';
+import { isTerminalStatus } from './utils/referred-jobs.util';
 import { ApplicantEditDialogData, EditSectionId } from './types/applicant-edit-dialog.type';
 import { toJobMatch } from './utils/job-match.util';
 import { addressLines, sameAddress } from './utils/address.util';
@@ -402,7 +406,34 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferralStatus(change: ReferralStatusChange): void {
-    this.onSetStatus(change.match, change.status);
+    const { match, status } = change;
+    // Terminal statuses (Withdrawn / Not hired / Resigned) are final — once set,
+    // the referral can no longer be updated — so confirm before committing.
+    if (!isTerminalStatus(status)) {
+      this.onSetStatus(match, status);
+      return;
+    }
+    const label = RECOMMENDED_JOB_STATUS_LABEL[status];
+    const data: ConfirmDialogData = {
+      title: `Mark as ${label}?`,
+      message: `Are you sure you want to set <strong>${match.title}</strong> to <strong>${label}</strong>? This is final — you won't be able to update the status again.`,
+      confirmLabel: label,
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.onSetStatus(match, status);
+        }
+      });
   }
 
   /** Open a referred job's detail page. */

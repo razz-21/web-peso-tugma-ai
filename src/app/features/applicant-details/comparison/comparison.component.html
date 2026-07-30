@@ -272,6 +272,24 @@
                     {{ skill }}
                   </span>
                 }
+                @for (related of requirement.relatedSkills; track related.required) {
+                  <span
+                    class="comparison__chip comparison__chip--related"
+                    [attr.title]="
+                      related.via
+                        ? related.required + ' — related to ' + related.via
+                        : related.required + ' — related skill'
+                    "
+                  >
+                    <mat-icon aria-hidden="true">change_circle</mat-icon>
+                    {{ related.required }}
+                    @if (related.via) {
+                      <span class="comparison__chip-via"
+                        >· via {{ related.via }} ({{ related.similarity }}%)</span
+                      >
+                    }
+                  </span>
+                }
                 @for (skill of requirement.missingSkills; track skill) {
                   <span class="comparison__chip comparison__chip--missing">
                     <mat-icon aria-hidden="true">close</mat-icon>
@@ -317,9 +335,9 @@
 
             @if (requirement.isSkills) {
               <p class="comparison__sub-label">Matching</p>
-              @if (requirement.matchedSkills.length > 0) {
+              @if (requirement.matchingSkills.length > 0) {
                 <div class="comparison__chips">
-                  @for (skill of requirement.matchedSkills; track skill) {
+                  @for (skill of requirement.matchingSkills; track skill) {
                     <span class="comparison__chip comparison__chip--matched-soft">{{ skill }}</span>
                   }
                 </div>

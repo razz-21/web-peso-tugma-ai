@@ -8,6 +8,8 @@ export const RecommendedJobStatusSchema = z.enum([
   'hired',
   'withdrawn',
   'not_hired',
+  // Terminal, reachable only from 'hired' — the applicant left the position.
+  'resigned',
 ]);
 
 /** Per-dimension match scores (0-100) produced by the AI pipeline. */
@@ -17,6 +19,20 @@ export const RecommendationScoresSchema = z.object({
   experience: z.number().int(),
   educational_background: z.number().int(),
   location_preference: z.number().int(),
+});
+
+/**
+ * Per-required-skill coverage detail for the compare modal. `state` is
+ * 'matched' (exact token or strong semantic match), 'related' (a nearby skill
+ * worth surfacing — e.g. Google Sheets for a required Excel), or 'missing'.
+ * `applicant` names the covering skill (null for an exact match or a miss);
+ * `similarity` is the best cosine as a 0–100 percentage.
+ */
+export const SkillMatchSchema = z.object({
+  required: z.string(),
+  applicant: z.string().nullable().default(null),
+  similarity: z.number().int().default(0),
+  state: z.enum(['matched', 'related', 'missing']).catch('missing'),
 });
 
 /** Company summary embedded under a recommendation's job (resolves the FK). */
@@ -69,6 +85,9 @@ export const RecommendedJobSchema = z.object({
   embedded_applicant: z.array(z.number()).default([]),
   embedded_job: z.array(z.number()).default([]),
   key_matched: z.array(z.string()),
+  // Empty on recommendations generated before this field existed; the compare
+  // modal then falls back to `key_matched` for skill classification.
+  skill_matches: z.array(SkillMatchSchema).default([]),
   job: RecommendedJobJobSchema.nullable(),
   // Resolved assessor ({ id, name, avatar }); null when the user is missing.
   assessor: RecommendedJobUserSchema.nullable().default(null),
@@ -96,9 +115,11 @@ export const RECOMMENDED_JOB_STATUS_LABEL: Record<RecommendedJobStatus, string> 
   hired: 'Hired',
   withdrawn: 'Withdrawn',
   not_hired: 'Not hired',
+  resigned: 'Resigned',
 };
 
 export type RecommendationScores = z.infer<typeof RecommendationScoresSchema>;
+export type SkillMatch = z.infer<typeof SkillMatchSchema>;
 export type RecommendedJobCompany = z.infer<typeof RecommendedJobCompanySchema>;
 export type RecommendedJobUser = z.infer<typeof RecommendedJobUserSchema>;
 export type RecommendedJobJob = z.infer<typeof RecommendedJobJobSchema>;

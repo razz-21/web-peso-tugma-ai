@@ -43,4 +43,6 @@ export interface ReferralRow {
   readonly statusTone: string;
   readonly referredOnLabel: string;
   readonly steps: readonly StepNode[];
+  /** Terminal referrals (withdrawn / not hired / resigned) can't be updated. */
+  readonly terminal: boolean;
 }
