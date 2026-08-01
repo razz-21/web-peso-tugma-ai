@@ -110,7 +110,7 @@ export const CompaniesStore = signalStore(
       error: null,
     })),
     on(companiesEvents.createCompanySuccess, ({ payload }, state) => ({
-      companies: [payload, ...state.companies],
+      companies: [payload, ...state.companies].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createCompanyLoading: false,
       error: null,
@@ -159,7 +159,11 @@ export const CompaniesStore = signalStore(
       snackBar = inject(MatSnackBar),
     ) => ({
       loadCompanies$: events
-        .on(companiesEvents.loadCompany, companiesEvents.deleteCompanySuccess)
+        .on(
+          companiesEvents.loadCompany,
+          companiesEvents.createCompanySuccess,
+          companiesEvents.deleteCompanySuccess,
+        )
         .pipe(
           switchMap(() =>
             from(companiesService.list(toListParams(store.filter()))).pipe(
