@@ -1,0 +1,81 @@
+<section class="peso-accomplishment">
+  <a class="report-back" [routerLink]="reportsLink">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    Back to reports
+  </a>
+
+  <header class="peso-accomplishment__header">
+    <div class="peso-accomplishment__heading">
+      <span class="peso-accomplishment__icon">
+        <mat-icon aria-hidden="true">assignment_turned_in</mat-icon>
+      </span>
+      <div class="peso-accomplishment__titles">
+        <h1 class="peso-accomplishment__title">Accomplishment Report</h1>
+        <p class="peso-accomplishment__subtitle">
+          The official roll-up of all facilitation services for the period.
+        </p>
+      </div>
+    </div>
+
+    <div class="peso-accomplishment__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="peso-accomplishment__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <span class="stat-card__icon" [class]="'stat-card__icon--' + card.tone">
+            <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
+          </span>
+          <p class="stat-card__label">{{ card.label }}</p>
+          <p class="stat-card__value">{{ card.value }}</p>
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="60%" />
+          <app-skeleton variant="text" width="40%" height="2.25rem" />
+        </article>
+      }
+    }
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Employment facilitation summary</h2>
+      @if (loading() && !report()) {
+        <app-skeleton variant="text" width="12rem" />
+      } @else {
+        <p class="chart-card__subtitle">{{ periodLabel() }}</p>
+      }
+    </header>
+    @if (report()) {
+      <app-monthly-bar-chart
+        [points]="chartPoints()"
+        [axisStep]="chartAxisStep()"
+        ariaLabelPrefix="Employment facilitation summary"
+      />
+    } @else {
+      <app-skeleton height="22rem" radius="0.75rem" />
+    }
+  </article>
+
+  @if (report()) {
+    <app-report-table
+      title="Accomplishment summary"
+      [columns]="indicatorColumns"
+      [rows]="indicatorRows()"
+      [fileName]="tableFileName()"
+      emptyMessage="No accomplishments recorded in this period."
+    />
+  } @else {
+    <app-skeleton height="20rem" radius="1rem" />
+  }
+</section>

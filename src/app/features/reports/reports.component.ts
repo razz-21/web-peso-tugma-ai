@@ -31,6 +31,19 @@ interface ReportGroup {
 export class ReportsComponent {
   protected readonly groups: ReportGroup[] = [
     {
+      label: 'Summary',
+      reports: [
+        {
+          id: 'peso-accomplishment',
+          icon: 'assignment_turned_in',
+          tone: 'green',
+          title: 'Accomplishment Report',
+          description: 'The roll-up of all facilitation services for the period.',
+          route: `${APP_ROUTES.reports}/peso-accomplishment`,
+        },
+      ],
+    },
+    {
       label: 'Employment Facilitation',
       reports: [
         {
@@ -58,11 +71,12 @@ export class ReportsComponent {
           route: `${APP_ROUTES.reports}/applicant-placed`,
         },
         {
-          id: 'vacancies-solicited-vs-filled',
-          icon: 'bar_chart',
+          id: 'referral-to-placement-funnel',
+          icon: 'filter_alt',
           tone: 'teal',
-          title: 'Vacancies Solicited vs Filled',
-          description: 'Fill-rate of solicited vacancies by occupation.',
+          title: 'Referral-to-Placement Funnel',
+          description: 'Conversion at each stage from referral through to hire, with drop-off.',
+          route: `${APP_ROUTES.reports}/referral-to-placement-funnel`,
         },
       ],
     },

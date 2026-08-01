@@ -1,0 +1,119 @@
+<section class="referral-funnel">
+  <a class="report-back" [routerLink]="reportsLink">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    Back to reports
+  </a>
+
+  <header class="referral-funnel__header">
+    <div class="referral-funnel__heading">
+      <span class="referral-funnel__icon">
+        <mat-icon aria-hidden="true">filter_alt</mat-icon>
+      </span>
+      <div class="referral-funnel__titles">
+        <h1 class="referral-funnel__title">Referral-to-Placement Funnel</h1>
+        <p class="referral-funnel__subtitle">
+          Conversion at each stage from referral through to hire, with drop-off.
+        </p>
+      </div>
+    </div>
+
+    <div class="referral-funnel__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="referral-funnel__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <p class="stat-card__label">{{ card.label }}</p>
+          <p class="stat-card__value">{{ card.value }}</p>
+          @if (card.subtext) {
+            <span class="stat-card__subtext">{{ card.subtext }}</span>
+          }
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="text" width="50%" />
+          <app-skeleton variant="text" width="40%" height="2.25rem" />
+        </article>
+      }
+    }
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Applicants at each stage</h2>
+      @if (loading() && !report()) {
+        <app-skeleton variant="text" width="12rem" />
+      } @else {
+        <p class="chart-card__subtitle">{{ periodLabel() }}</p>
+      }
+    </header>
+
+    @if (report()) {
+      <ul class="funnel" aria-label="Applicants at each stage">
+        @for (bar of stageBars(); track bar.label) {
+          <li class="funnel__row">
+            <span class="funnel__label">{{ bar.label }}</span>
+            <span class="funnel__track">
+              <span
+                class="funnel__fill"
+                [class]="'funnel__fill--' + bar.tone"
+                [style.width.%]="bar.widthPct"
+              ></span>
+              <span class="funnel__value">{{ bar.count }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      @for (placeholder of barPlaceholders; track placeholder) {
+        <app-skeleton height="2.5rem" radius="0.5rem" />
+      }
+    }
+  </article>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Stage-by-stage conversion</h2>
+    </header>
+
+    @if (report()) {
+      <table class="stage-table">
+        <thead>
+          <tr>
+            <th scope="col">Stage</th>
+            <th scope="col" class="stage-table__num">Applicants</th>
+            <th scope="col">Share of referred</th>
+            <th scope="col">Conversion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of stageRows(); track row.stage) {
+            <tr>
+              <th scope="row" class="stage-table__stage">{{ row.stage }}</th>
+              <td class="stage-table__num">{{ row.applicants }}</td>
+              <td>
+                <span class="stage-table__share">
+                  <span class="stage-table__share-track">
+                    <span class="stage-table__share-fill" [style.width.%]="row.sharePct"></span>
+                  </span>
+                  <span class="stage-table__share-label">{{ row.shareLabel }}</span>
+                </span>
+              </td>
+              <td class="stage-table__conversion">{{ row.conversion }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <app-skeleton height="10rem" radius="0.75rem" />
+    }
+  </article>
+</section>

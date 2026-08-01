@@ -1,0 +1,199 @@
+.referral-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.875rem;
+    background: #c5e8e6;
+    color: #146c68;
+
+    mat-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+// Horizontal funnel bars ("Applicants at each stage").
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__label {
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__track {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__fill {
+    height: 2.25rem;
+    min-width: 0.25rem;
+    border-radius: 0.375rem;
+    transition: width 200ms ease;
+
+    &--green {
+      background: #4d7c1f;
+    }
+    &--teal {
+      background: #2f6b6b;
+    }
+    &--amber {
+      background: #b8860b;
+    }
+    &--grey {
+      background: #5b6152;
+    }
+  }
+
+  &__value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+// Stage-by-stage conversion table.
+.stage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th,
+  td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__stage {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__conversion {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__share {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 16rem;
+  }
+
+  &__share-track {
+    position: relative;
+    flex: 1;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #e4ecd9;
+    overflow: hidden;
+  }
+
+  &__share-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    height: 100%;
+    border-radius: 999px;
+    background: #4d7c1f;
+  }
+
+  &__share-label {
+    min-width: 2.75rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// `.stat-card` and `.chart-card` live in ../report-shared.scss (see styleUrls).
