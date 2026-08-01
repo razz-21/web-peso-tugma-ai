@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormField, email, form, maxLength, required } from '@angular/forms/signals';
+import { FormField, email, form, maxLength, pattern, required } from '@angular/forms/signals';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap } from 'rxjs';
@@ -104,6 +104,10 @@ export class CompanyFormComponent {
     required(p.company_name, { message: 'Name is required' });
     maxLength(p.company_name, COMPANY_NAME_MAX, {
       message: `Name must be ${COMPANY_NAME_MAX} characters or fewer`,
+    });
+
+    pattern(p.contact_number, /^09\d{9}$/, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
     });
 
     required(p.company_type, { message: 'Type is required' });
