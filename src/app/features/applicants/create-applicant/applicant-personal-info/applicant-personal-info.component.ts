@@ -32,6 +32,8 @@ export class ApplicantPersonalInfoComponent {
   protected readonly store = inject(CreateApplicantDraftStore);
   protected readonly sexOptions = SEXES;
   protected readonly civilStatusOptions = CIVIL_STATUSES;
+  /** Upper bound for the DOB datepicker — prevents selecting a future date. */
+  protected readonly today = new Date();
 
   protected error(field: FieldState): string | null {
     if (!field.touched() || field.valid()) {
