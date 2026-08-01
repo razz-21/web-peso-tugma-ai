@@ -30,6 +30,7 @@ import { VectorComparisonComponent } from './vector-comparison/vector-comparison
 })
 export class MatchDetailsComponent {
   readonly match = input.required<JobMatch>();
+  readonly disabled = input<boolean>(false);
 
   /** User dismissed the panel. */
   readonly closed = output<void>();
@@ -45,7 +46,8 @@ export class MatchDetailsComponent {
   /**
    * Refer-button state. The applicant can only be referred to a job that is both
    * unreferred and still active — a closed job is not open for referrals, so the
-   * button is disabled and its label/notice explain why.
+   * button is disabled and its label/notice explain why. An inactive applicant
+   * cannot be referred either.
    */
   protected readonly referButton = computed<{
     disabled: boolean;
@@ -53,6 +55,14 @@ export class MatchDetailsComponent {
     label: string;
     notice: string | null;
   }>(() => {
+    if (this.disabled()) {
+      return {
+        disabled: true,
+        icon: 'block',
+        label: 'Applicant inactive',
+        notice: 'This applicant is inactive and cannot be referred to jobs.',
+      };
+    }
     const match = this.match();
     if (match.status !== null) {
       return { disabled: true, icon: 'check', label: 'Already referred', notice: null };

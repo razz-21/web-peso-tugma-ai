@@ -4,7 +4,7 @@
     Referred jobs
     <span class="referred-jobs__count">{{ rows().length }}</span>
   </h2>
-  <button matButton="outlined" type="button" (click)="newReferral.emit()">
+  <button matButton="outlined" type="button" [disabled]="disabled()" (click)="newReferral.emit()">
     <mat-icon>add</mat-icon>
     Manual referral
   </button>
@@ -35,7 +35,7 @@
       This applicant hasn't been referred to any job. Refer them to a matched opening to start
       tracking the referral through interview and hiring.
     </p>
-    <button matButton="tonal" type="button" (click)="newReferral.emit()">
+    <button matButton="tonal" type="button" [disabled]="disabled()" (click)="newReferral.emit()">
       <mat-icon>add</mat-icon>
       Manual referral
     </button>
@@ -137,11 +137,13 @@
                   type="button"
                   [matMenuTriggerFor]="statusMenu"
                   [matMenuTriggerData]="{ match: row.match }"
-                  [disabled]="row.terminal"
+                  [disabled]="disabled() || row.terminal"
                   [attr.title]="
-                    row.terminal
-                      ? 'This referral is ' + row.statusLabel + ' and can no longer be updated'
-                      : null
+                    disabled()
+                      ? 'Applicant is inactive'
+                      : row.terminal
+                        ? 'This referral is ' + row.statusLabel + ' and can no longer be updated'
+                        : null
                   "
                 >
                   <mat-icon>check_box</mat-icon>

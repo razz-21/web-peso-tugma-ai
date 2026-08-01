@@ -3,6 +3,7 @@
     @if (selectedMatch(); as match) {
       <app-match-details
         [match]="match"
+        [disabled]="applicant()?.status === 'inactive'"
         (closed)="matchDrawer.close()"
         (relevanceChange)="onSetRelevance(match, $event)"
         (viewComparison)="onViewComparison(match)"
@@ -133,6 +134,7 @@
               <!-- Referred jobs card -->
               <app-referred-jobs
                 class="applicant-details__card"
+                [disabled]="applicant.status === 'inactive'"
                 [loading]="loadingRecommendations()"
                 [referrals]="referrals()"
                 (statusChange)="onReferralStatus($event)"
@@ -162,7 +164,12 @@
                     matButton="filled"
                     type="button"
                     class="applicant-details__generate"
-                    [disabled]="generating()"
+                    [disabled]="generating() || applicant.status === 'inactive'"
+                    [attr.title]="
+                      applicant.status === 'inactive'
+                        ? 'Activate applicant to generate recommendations'
+                        : null
+                    "
                     (click)="onGenerate()"
                   >
                     <mat-icon>auto_awesome</mat-icon>
@@ -210,7 +217,12 @@
                           occupation, educational background, skills, location, and semantic
                           similarity.
                         </p>
-                        <button matButton="tonal" type="button" (click)="onGenerate()">
+                        <button
+                          matButton="tonal"
+                          type="button"
+                          [disabled]="generating() || applicant.status === 'inactive'"
+                          (click)="onGenerate()"
+                        >
                           <mat-icon>auto_awesome</mat-icon>
                           Generate 5 matches
                         </button>
@@ -224,11 +236,15 @@
                         ) {
                           <li
                             class="applicant-details__match"
+                            [class.applicant-details__match--disabled]="
+                              applicant.status === 'inactive'
+                            "
                             role="button"
                             tabindex="0"
+                            [attr.aria-disabled]="applicant.status === 'inactive'"
                             [attr.aria-label]="'View match details for ' + match.title"
-                            (click)="selectMatch(match); matchDrawer.open()"
-                            (keydown.enter)="selectMatch(match); matchDrawer.open()"
+                            (click)="onSelectMatch(match)"
+                            (keydown.enter)="onSelectMatch(match)"
                           >
                             <span class="applicant-details__match-rank">{{ i + 1 }}</span>
                             <div

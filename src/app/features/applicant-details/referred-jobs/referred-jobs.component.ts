@@ -36,6 +36,8 @@ export class ReferredJobsComponent {
   readonly referrals = input<readonly JobMatch[]>([]);
   /** Shows placeholder rows during the initial referrals fetch. */
   readonly loading = input<boolean>(false);
+  /** When true, disables adding or modifying referrals (e.g. inactive applicant). */
+  readonly disabled = input<boolean>(false);
 
   /** Placeholder rows rendered while referrals load. */
   protected readonly skeletonRows = [0, 1] as const;
