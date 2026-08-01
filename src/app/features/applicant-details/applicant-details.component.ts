@@ -383,9 +383,17 @@ export class ApplicantDetailsComponent implements OnInit {
     );
   }
 
+  protected onSelectMatch(match: JobMatch): void {
+    if (this.applicant()?.status === 'inactive') {
+      return;
+    }
+    this.selectMatch(match);
+    this.matchDrawer()?.open();
+  }
+
   protected onGenerate(): void {
     const applicant = this.applicant();
-    if (!applicant || this.generating()) {
+    if (!applicant || applicant.status === 'inactive' || this.generating()) {
       return;
     }
     this.recommendationsDispatch.generate({ applicantId: applicant.id, topK: 5 });
@@ -407,6 +415,9 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferralStatus(change: ReferralStatusChange): void {
+    if (this.applicant()?.status === 'inactive') {
+      return;
+    }
     const { match, status } = change;
     // Terminal statuses (Withdrawn / Not hired / Resigned) are final — once set,
     // the referral can no longer be updated — so confirm before committing.
@@ -457,7 +468,7 @@ export class ApplicantDetailsComponent implements OnInit {
   /** "Manual referral" opens the full-page screening dialog to pick a job to refer. */
   protected onNewReferral(): void {
     const applicant = this.applicant();
-    if (!applicant) {
+    if (!applicant || applicant.status === 'inactive') {
       return;
     }
     this.pendingManualReferral.set(false);
@@ -488,7 +499,7 @@ export class ApplicantDetailsComponent implements OnInit {
   /** Confirm, then manually refer the applicant to the chosen workspace job. */
   private onReferJob(job: JobGet): void {
     const applicant = this.applicant();
-    if (!applicant) {
+    if (!applicant || applicant.status === 'inactive') {
       return;
     }
     if (this.referredJobIds().has(job.id)) {
@@ -554,6 +565,12 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferApplicant(match: JobMatch): void {
+    if (this.applicant()?.status === 'inactive') {
+      this.snackBar.open('This applicant is inactive and cannot be referred to jobs.', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
     // A closed job can't take referrals — the drawer button is already disabled
     // for it, but guard here too in case the handler is reached another way.
     if (!match.active) {
