@@ -65,6 +65,8 @@ export class ApplicantEditDialogComponent {
   protected readonly employmentStatusOptions = EMPLOYMENT_STATUSES;
   protected readonly saving = signal(false);
   protected readonly description = SECTION_DESCRIPTIONS[this.data.section];
+  /** Upper bound for the DOB datepicker — prevents selecting a future date. */
+  protected readonly today = new Date();
 
   constructor() {
     this.store.hydrate(
