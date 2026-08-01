@@ -1,15 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { injectDispatch } from '@ngrx/signals/events';
 import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
+import { MeStore } from '../../stores/me/me.store';
 import { DashboardRangeParams } from '../../core/models/dashboard.model';
 import { DashboardStore } from '../../stores/dashboard/dashboard.store';
 import { dashboardEvents } from '../../stores/dashboard/dashboard.events';
@@ -48,25 +42,6 @@ const percentDelta = (changePct: number | null): KpiDelta =>
     ? { text: '—', trend: 'neutral' }
     : { text: `${changePct}%`, trend: changePct >= 0 ? 'up' : 'neutral' };
 
-/**
- * Badge for active listings' net change vs the previous window. The count can be
- * negative when the current period added fewer listings than the one before, so
- * the wording flips instead of rendering a nonsensical "-13 new".
- */
-const listingsDelta = (net: number): KpiDelta => {
-  if (net > 0) return { text: `${net} new`, trend: 'up' };
-  if (net < 0) return { text: `${Math.abs(net)} fewer`, trend: 'neutral' };
-  return { text: 'No change', trend: 'neutral' };
-};
-
-/**
- * Hide a card's trailing badge when the period is empty. A value of 0 means
- * nothing happened this window, so a comparison to the previous one (e.g.
- * "-100%" or "13 fewer") is noise — render a neutral dash instead.
- */
-const withEmptyState = (value: number, delta: KpiDelta): KpiDelta =>
-  value === 0 ? { text: '—', trend: 'neutral' } : delta;
-
 /** Format a Date as a local `YYYY-MM-DD` (avoids the UTC shift of toISOString). */
 const toIsoDate = (date: Date): string => {
   const year = date.getFullYear();
@@ -93,10 +68,13 @@ const toIsoDate = (date: Date): string => {
 })
 export class DashboardComponent implements OnInit {
   protected readonly store = inject(DashboardStore);
+  private readonly meStore = inject(MeStore);
   private readonly dispatch = injectDispatch(dashboardEvents);
 
-  // TODO: replace the hard-coded name with the authenticated user (auth store).
-  protected readonly userName = signal('Ernesto');
+  /** First word of the authenticated user's full name, used in the greeting. */
+  protected readonly userName = computed(
+    () => this.meStore.user()?.fullname.split(' ')[0] ?? 'there',
+  );
 
   protected readonly greeting = computed(() => {
     const hour = new Date().getHours();
@@ -119,40 +97,34 @@ export class DashboardComponent implements OnInit {
         tone: 'green',
         value: formatNumber(summary.registered_job_seekers.value),
         label: 'Registered job seekers',
-        delta: withEmptyState(
-          summary.registered_job_seekers.value,
-          percentDelta(summary.registered_job_seekers.change_pct),
-        ),
+        delta: percentDelta(summary.registered_job_seekers.change_pct),
       },
       {
         icon: 'work',
         tone: 'teal',
         value: formatNumber(summary.active_job_listings.value),
         label: 'Active job listings',
-        delta: withEmptyState(
-          summary.active_job_listings.value,
-          listingsDelta(summary.active_job_listings.new),
-        ),
+        delta: {
+          text: `${summary.active_job_listings.new} new`,
+          trend: summary.active_job_listings.new > 0 ? 'up' : 'neutral',
+        },
       },
       {
         icon: 'list',
         tone: 'grey',
         value: formatNumber(summary.open_vacancies.value),
         label: 'Open vacancies',
-        delta: withEmptyState(summary.open_vacancies.value, {
+        delta: {
           text: `across ${formatNumber(summary.open_vacancies.listings)} listings`,
           trend: 'neutral',
-        }),
+        },
       },
       {
         icon: 'task_alt',
         tone: 'amber',
         value: formatNumber(summary.placements.value),
         label: 'Placements (hired)',
-        delta: withEmptyState(
-          summary.placements.value,
-          percentDelta(summary.placements.change_pct),
-        ),
+        delta: percentDelta(summary.placements.change_pct),
       },
     ];
   });
