@@ -78,7 +78,7 @@ export const ApplicantReferredRowSchema = z.object({
   date_referred: z.string(),
   contact_number: z.string().nullable(),
   company_referred: z.string().nullable(),
-  city_province_address: z.string().nullable(),
+  job_location: z.string().nullable(),
 });
 
 export const ApplicantReferredReportSchema = z.object({
