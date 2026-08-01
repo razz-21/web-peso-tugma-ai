@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ApplicantGet } from '../../../core/models/applicant.model';
+import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../../core/models/applicant.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import { ApplicantsStore } from '../../../stores/applicants/applicants.store';
@@ -14,6 +14,8 @@ interface ApplicantRow {
   fullName: string;
   occupationLabel: string;
   educationLabel: string;
+  statusLabel: string;
+  isActive: boolean;
 }
 
 @Component({
@@ -45,6 +47,8 @@ export class ApplicantsTableComponent {
       fullName: fullNameOf(applicant),
       occupationLabel: occupationLabelOf(applicant),
       educationLabel: applicant.educational_background?.highest_education_level || '—',
+      statusLabel: APPLICANT_STATUS_LABELS[applicant.status || 'active'],
+      isActive: (applicant.status || 'active') === 'active',
     })),
   );
 
@@ -53,6 +57,7 @@ export class ApplicantsTableComponent {
     'email',
     'occupation',
     'education',
+    'status',
     'updated_at',
     'actions',
   ] as const;

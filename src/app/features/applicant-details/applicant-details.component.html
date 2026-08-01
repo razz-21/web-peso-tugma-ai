@@ -42,9 +42,15 @@
             <div class="applicant-details__identity">
               <div class="applicant-details__name-row">
                 <h2 class="applicant-details__name">{{ fullName() || 'Unnamed applicant' }}</h2>
-                <span class="applicant-details__badge">
+                <span
+                  class="applicant-details__badge"
+                  [class.applicant-details__badge--active]="
+                    (applicant.status || 'active') === 'active'
+                  "
+                  [class.applicant-details__badge--inactive]="applicant.status === 'inactive'"
+                >
                   <span class="applicant-details__badge-dot" aria-hidden="true"></span>
-                  Active
+                  {{ statusLabels[applicant.status || 'active'] }}
                 </span>
                 <button
                   mat-icon-button
@@ -58,15 +64,30 @@
               </div>
             </div>
 
-            <button
-              mat-icon-button
-              type="button"
-              class="applicant-details__delete"
-              aria-label="Delete applicant"
-              (click)="onDelete(applicant)"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="applicant-details__head-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                class="applicant-details__status-btn"
+                [class.applicant-details__status-btn--inactive]="applicant.status === 'inactive'"
+                (click)="onToggleStatus(applicant)"
+              >
+                <mat-icon>{{ applicant.status === 'inactive' ? 'check_box' : 'lock' }}</mat-icon>
+                {{
+                  applicant.status === 'inactive' ? 'Activate applicant' : 'Deactivate applicant'
+                }}
+              </button>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="applicant-details__delete"
+                aria-label="Delete applicant"
+                (click)="onDelete(applicant)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
 
           <hr class="applicant-details__divider" />
@@ -665,7 +686,7 @@
                       </div>
                       <div class="applicant-details__overview-row">
                         <dt><mat-icon aria-hidden="true">toggle_on</mat-icon> Status</dt>
-                        <dd>Active</dd>
+                        <dd>{{ statusLabels[applicant.status || 'active'] }}</dd>
                       </div>
                       <div class="applicant-details__overview-row">
                         <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Registered</dt>
