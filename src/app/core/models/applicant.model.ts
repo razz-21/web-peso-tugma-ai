@@ -6,6 +6,15 @@ export const NAME_MAX = 100;
 export const SexSchema = z.enum(['Male', 'Female']);
 export const SEXES = SexSchema.options;
 
+export const ApplicantStatusSchema = z.enum(['active', 'inactive']);
+export const APPLICANT_STATUSES = ApplicantStatusSchema.options;
+export type ApplicantStatus = z.infer<typeof ApplicantStatusSchema>;
+
+export const APPLICANT_STATUS_LABELS: Record<ApplicantStatus, string> = {
+  active: 'Active',
+  inactive: 'Inactive',
+};
+
 /** Selectable civil status options shown in applicant forms. Stored as a
  *  free-form string on the backend, so this list is UI-only guidance. */
 export const CIVIL_STATUSES = ['Single', 'Married', 'Widowed', 'Separated', 'Divorced'] as const;
@@ -92,6 +101,7 @@ export const ApplicantSchema = z.object({
   secondary_mobile_number: z.string().nullable(),
   email_address: z.email().nullable(),
   employment_status: z.string().nullable(),
+  status: ApplicantStatusSchema.default('active'),
   preferred_occupation_industry: z.array(OccupationIndustrySchema),
   preferred_work_location: z.array(z.string()),
   salary_expectation: z.string().nullable(),
@@ -159,6 +169,7 @@ export const ApplicantPostSchema = z.object({
   secondary_mobile_number: z.string().nullable().optional(),
   email_address: z.email().nullable().optional(),
   employment_status: z.string().nullable().optional(),
+  status: ApplicantStatusSchema.optional(),
   preferred_occupation_industry: z.array(OccupationIndustrySchema).optional(),
   preferred_work_location: z.array(z.string()).optional(),
   salary_expectation: z.string().nullable().optional(),
@@ -183,6 +194,7 @@ export interface ListApplicantsParams {
   limit?: number;
   offset?: number;
   q?: string;
+  status?: ApplicantStatus;
 }
 
 export type Sex = z.infer<typeof SexSchema>;

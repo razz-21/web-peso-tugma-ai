@@ -166,6 +166,16 @@
     color: var(--mat-sys-on-primary-container);
     font-size: 0.85rem;
     font-weight: 600;
+
+    &--active {
+      background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+      color: var(--mat-sys-primary);
+    }
+
+    &--inactive {
+      background: color-mix(in srgb, var(--mat-sys-outline) 16%, transparent);
+      color: var(--mat-sys-outline);
+    }
   }
 
   &__badge-dot {
@@ -195,9 +205,24 @@
     color: var(--mat-sys-outline);
   }
 
-  &__delete {
-    // Pushed to the far right of the header; icon-only.
+  &__head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  &__status-btn {
+    border-color: color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+    &--inactive {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  &__delete {
+    // Icon-only delete button in head-actions.
     flex-shrink: 0;
     color: var(--mat-sys-error);
 

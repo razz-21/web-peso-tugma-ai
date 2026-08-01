@@ -22,7 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Events, injectDispatch } from '@ngrx/signals/events';
-import { ApplicantGet } from '../../core/models/applicant.model';
+import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../core/models/applicant.model';
 import { JobGet } from '../../core/models/job.model';
 import {
   RECOMMENDED_JOB_STATUS_LABEL,
@@ -93,6 +93,7 @@ const SECTIONS: readonly SectionLink[] = [
 export class ApplicantDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
   protected readonly sections = SECTIONS;
+  protected readonly statusLabels = APPLICANT_STATUS_LABELS;
   protected readonly store = inject(ApplicantDetailsStore);
   private readonly dispatch = injectDispatch(applicantDetailsEvents);
   private readonly applicantsDispatch = injectDispatch(applicantsEvents);
@@ -604,6 +605,40 @@ export class ApplicantDetailsComponent implements OnInit {
     // Flag it as pending so the drawer closes once the update succeeds.
     this.pendingReferralId.set(match.recommendationId);
     this.recommendationsDispatch.setStatus({ id: match.recommendationId, status: 'referred' });
+  }
+
+  protected onToggleStatus(applicant: ApplicantGet): void {
+    const deactivating = (applicant.status ?? 'active') === 'active';
+    const status = deactivating ? 'inactive' : 'active';
+    const name = this.fullName() || 'this applicant';
+
+    const data: ConfirmDialogData = deactivating
+      ? {
+          title: 'Deactivate applicant',
+          message: `Deactivate <strong>${name}</strong>? They will be marked as inactive and excluded from job recommendations.`,
+          confirmLabel: 'Deactivate applicant',
+          destructive: true,
+        }
+      : {
+          title: 'Activate applicant',
+          message: `Activate <strong>${name}</strong>? They will be marked as active again.`,
+          confirmLabel: 'Activate applicant',
+        };
+
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.dispatch.updateApplicant({ id: applicant.id, patch: { status } });
+        }
+      });
   }
 
   protected onDelete(applicant: ApplicantGet): void {
