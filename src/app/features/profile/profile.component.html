@@ -2,7 +2,17 @@
   @if (user(); as u) {
     <!-- Header card -->
     <div class="card profile__header">
-      <app-avatar class="profile__avatar" [name]="u.fullname" [seed]="u.email" [size]="96" />
+      <app-avatar
+        class="profile__avatar"
+        [name]="u.fullname"
+        [seed]="u.email"
+        [image]="u.avatar"
+        [size]="96"
+        [editable]="true"
+        [uploading]="uploadingAvatar()"
+        (fileSelected)="onAvatarSelected($event)"
+        (invalid)="onAvatarInvalid($event)"
+      />
 
       <div class="profile__identity">
         <h1 class="profile__name">{{ u.fullname }}</h1>

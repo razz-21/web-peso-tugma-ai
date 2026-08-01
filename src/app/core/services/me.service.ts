@@ -19,4 +19,12 @@ export class MeService {
     const body = await firstValueFrom(this.http.patch<unknown>(this.baseUrl, payload));
     return UserGetSchema.parse(body);
   }
+
+  /** Upload a new avatar image for the current user and return the updated profile. */
+  async uploadAvatar(file: File): Promise<UserGet> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const body = await firstValueFrom(this.http.post<unknown>(`${this.baseUrl}/avatar`, formData));
+    return UserGetSchema.parse(body);
+  }
 }

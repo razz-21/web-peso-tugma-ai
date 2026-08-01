@@ -13,6 +13,7 @@ type MeState = {
   user: UserGet | null;
   loading: boolean;
   saving: boolean;
+  uploadAvatarLoading: boolean;
   error: string | null;
 };
 
@@ -20,6 +21,7 @@ const initialState: MeState = {
   user: null,
   loading: false,
   saving: false,
+  uploadAvatarLoading: false,
   error: null,
 };
 
@@ -58,6 +60,16 @@ export const MeStore = signalStore(
       error: null,
     })),
     on(meEvents.updateMeFailed, ({ payload }) => ({ saving: false, error: payload })),
+    on(meEvents.uploadAvatar, () => ({ uploadAvatarLoading: true, error: null })),
+    on(meEvents.uploadAvatarSuccess, ({ payload }) => ({
+      user: payload,
+      uploadAvatarLoading: false,
+      error: null,
+    })),
+    on(meEvents.uploadAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
     on(meEvents.resetMe, () => initialState),
   ),
   withEventHandlers(
@@ -92,8 +104,22 @@ export const MeStore = signalStore(
       updateMeSuccess$: events
         .on(meEvents.updateMeSuccess)
         .pipe(tap(({ payload }) => snackBar.open(payload.message, 'Close', { duration: 3000 }))),
+      uploadAvatar$: events.on(meEvents.uploadAvatar).pipe(
+        switchMap(({ payload }) =>
+          from(meService.uploadAvatar(payload.file)).pipe(
+            mapResponse({
+              next: (user) => meEvents.uploadAvatarSuccess(user),
+              error: (error: unknown) =>
+                meEvents.uploadAvatarFailed(errorMessage(error, 'Failed to upload avatar.')),
+            }),
+          ),
+        ),
+      ),
+      uploadAvatarSuccess$: events
+        .on(meEvents.uploadAvatarSuccess)
+        .pipe(tap(() => snackBar.open('Avatar updated successfully', 'Close', { duration: 3000 }))),
       failures$: events
-        .on(meEvents.loadMeFailed, meEvents.updateMeFailed)
+        .on(meEvents.loadMeFailed, meEvents.updateMeFailed, meEvents.uploadAvatarFailed)
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
     }),
   ),

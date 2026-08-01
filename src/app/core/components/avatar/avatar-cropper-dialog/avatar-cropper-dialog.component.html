@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Crop avatar</h2>
+<mat-dialog-content class="avatar-cropper__content">
+  @if (failed()) {
+    <p class="avatar-cropper__error" role="alert">
+      Couldn't load this image. Please close and choose another file.
+    </p>
+  } @else {
+    <div class="avatar-cropper__stage">
+      <image-cropper
+        [imageFile]="data.file"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
+        [roundCropper]="true"
+        [resizeToWidth]="512"
+        [onlyScaleDown]="true"
+        output="blob"
+        format="png"
+        [backgroundColor]="'transparent'"
+        (imageCropped)="onCropped($event)"
+        (cropperReady)="onReady()"
+        (loadImageFailed)="onFailed()"
+      />
+      @if (!ready()) {
+        <div class="avatar-cropper__loading" role="status" aria-label="Loading image">
+          <mat-progress-spinner mode="indeterminate" diameter="36" aria-hidden="true" />
+        </div>
+      }
+    </div>
+    <p class="avatar-cropper__hint">
+      Drag to reposition and use the corners to zoom the crop area.
+    </p>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton="tonal" type="button" (click)="cancel()">Cancel</button>
+  <button
+    mat-flat-button
+    type="button"
+    [disabled]="!ready() || failed()"
+    (click)="save()"
+    cdkFocusInitial
+  >
+    Save
+  </button>
+</mat-dialog-actions>

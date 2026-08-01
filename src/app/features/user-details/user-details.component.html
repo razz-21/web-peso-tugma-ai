@@ -12,7 +12,13 @@
   } @else if (store.user(); as user) {
     <!-- Header card -->
     <div class="card user-details__header">
-      <app-avatar class="user-details__avatar" [name]="user.fullname" [seed]="user.email" />
+      <app-avatar
+        class="user-details__avatar"
+        [name]="user.fullname"
+        [seed]="user.email"
+        [image]="user.avatar"
+        [size]="62"
+      />
       <div class="user-details__identity">
         <h1 class="user-details__name">{{ user.fullname }}</h1>
         <p class="user-details__email">{{ user.email }}</p>

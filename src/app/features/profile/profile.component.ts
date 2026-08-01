@@ -3,9 +3,12 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { injectDispatch } from '@ngrx/signals/events';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import { ROLE_LABELS, STATUS_LABELS } from '../../core/models/user.model';
 import { MeStore } from '../../stores/me/me.store';
+import { meEvents } from '../../stores/me/me.events';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
 import { EditProfileDialogComponent } from './edit-profile-dialog/edit-profile-dialog.component';
 
@@ -19,8 +22,12 @@ import { EditProfileDialogComponent } from './edit-profile-dialog/edit-profile-d
 export class ProfileComponent {
   private readonly store = inject(MeStore);
   private readonly dialog = inject(MatDialog);
+  private readonly dispatch = injectDispatch(meEvents);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly user = this.store.user;
+  /** True while an avatar upload is in flight. */
+  protected readonly uploadingAvatar = this.store.uploadAvatarLoading;
   protected readonly roleLabel = computed(() => {
     const role = this.user()?.role;
     return role ? ROLE_LABELS[role] : '';
@@ -45,5 +52,13 @@ export class ProfileComponent {
       maxWidth: '95vw',
       restoreFocus: true,
     });
+  }
+
+  protected onAvatarSelected(file: File): void {
+    this.dispatch.uploadAvatar({ file });
+  }
+
+  protected onAvatarInvalid(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
   }
 }
