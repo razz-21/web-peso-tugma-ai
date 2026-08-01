@@ -41,7 +41,13 @@
             />
             <div class="applicant-details__identity">
               <div class="applicant-details__name-row">
-                <h2 class="applicant-details__name">{{ fullName() || 'Unnamed applicant' }}</h2>
+                <h2
+                  class="applicant-details__name"
+                  [matTooltip]="fullName() || 'Unnamed applicant'"
+                  matTooltipPosition="above"
+                >
+                  {{ fullName() || 'Unnamed applicant' }}
+                </h2>
                 <span
                   class="applicant-details__badge"
                   [class.applicant-details__badge--active]="

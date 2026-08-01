@@ -74,34 +74,31 @@
 
   <!-- Preferred work locations -->
   <h4 class="wform__section">Preferred work locations</h4>
-  <div class="wform__repeat">
-    @if (store.form.preferred_work_location().value().length === 0) {
-      <p class="wform__empty">No preferred locations added yet.</p>
-    }
-    @for (location of store.form.preferred_work_location().value(); track $index; let i = $index) {
-      <div class="wform__row">
-        <mat-form-field appearance="outline">
-          <mat-label>Location</mat-label>
-          <input
-            matInput
-            type="text"
-            autocomplete="off"
-            [formField]="store.form.preferred_work_location[i]"
-          />
-        </mat-form-field>
-        <button
-          mat-icon-button
-          type="button"
-          aria-label="Remove location"
-          (click)="store.removeWorkLocation(i)"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    }
-    <button mat-stroked-button type="button" class="wform__add" (click)="store.addWorkLocation()">
-      <mat-icon>add</mat-icon>
-      Add location
-    </button>
-  </div>
+  <mat-form-field appearance="outline" class="wform__chip-field">
+    <mat-label>Preferred work locations</mat-label>
+    <mat-chip-grid #locationGrid aria-label="Preferred work locations">
+      @for (
+        location of store.form.preferred_work_location().value();
+        track $index;
+        let i = $index
+      ) {
+        <mat-chip-row (removed)="store.removeWorkLocation(i)">
+          {{ location }}
+          <button matChipRemove [attr.aria-label]="'Remove ' + location">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+      <input
+        placeholder="Add a location..."
+        [matChipInputFor]="locationGrid"
+        [matChipInputSeparatorKeyCodes]="separatorKeys"
+        (matChipInputTokenEnd)="addLocation($event)"
+      />
+    </mat-chip-grid>
+    <mat-hint
+      >Add the locations or areas where the applicant wants to work. Type a location and press Enter
+      or comma to add.</mat-hint
+    >
+  </mat-form-field>
 </div>

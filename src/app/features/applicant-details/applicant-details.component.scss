@@ -154,6 +154,10 @@
     font-weight: 700;
     line-height: 1.2;
     color: var(--mat-sys-on-surface);
+    max-width: 32ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__badge {

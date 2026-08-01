@@ -20,6 +20,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../core/models/applicant.model';
@@ -79,6 +80,7 @@ const SECTIONS: readonly SectionLink[] = [
     MatProgressSpinnerModule,
     MatSidenavModule,
     MatTabsModule,
+    MatTooltipModule,
     AvatarComponent,
     SkeletonComponent,
     DetailFieldComponent,
