@@ -108,7 +108,7 @@ export const WorkspacesStore = signalStore(
       error: null,
     })),
     on(workspacesEvents.createWorkspaceSuccess, ({ payload }, state) => ({
-      workspaces: [...state.workspaces, payload],
+      workspaces: [payload, ...state.workspaces].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createWorkspaceLoading: false,
       error: null,
@@ -150,7 +150,11 @@ export const WorkspacesStore = signalStore(
       snackBar = inject(MatSnackBar),
     ) => ({
       loadWorkspaces$: events
-        .on(workspacesEvents.loadWorkspace, workspacesEvents.deleteWorkspaceSuccess)
+        .on(
+          workspacesEvents.loadWorkspace,
+          workspacesEvents.createWorkspaceSuccess,
+          workspacesEvents.deleteWorkspaceSuccess,
+        )
         .pipe(
           switchMap(() =>
             from(workspacesService.list(toListParams(store.filter()))).pipe(

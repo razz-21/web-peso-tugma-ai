@@ -108,7 +108,7 @@ export const JobsStore = signalStore(
       error: null,
     })),
     on(jobsEvents.createJobSuccess, ({ payload }, state) => ({
-      jobs: [payload, ...state.jobs],
+      jobs: [payload, ...state.jobs].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createJobLoading: false,
       error: null,
@@ -147,17 +147,19 @@ export const JobsStore = signalStore(
       jobsService = inject(JobsService),
       snackBar = inject(MatSnackBar),
     ) => ({
-      loadJobs$: events.on(jobsEvents.loadJob, jobsEvents.deleteJobSuccess).pipe(
-        switchMap(() =>
-          from(jobsService.list(toListParams(store.filter()))).pipe(
-            mapResponse({
-              next: (list) => jobsEvents.loadJobSuccess(list),
-              error: (error: unknown) =>
-                jobsEvents.loadJobFailed(errorMessage(error, 'Failed to load jobs.')),
-            }),
+      loadJobs$: events
+        .on(jobsEvents.loadJob, jobsEvents.createJobSuccess, jobsEvents.deleteJobSuccess)
+        .pipe(
+          switchMap(() =>
+            from(jobsService.list(toListParams(store.filter()))).pipe(
+              mapResponse({
+                next: (list) => jobsEvents.loadJobSuccess(list),
+                error: (error: unknown) =>
+                  jobsEvents.loadJobFailed(errorMessage(error, 'Failed to load jobs.')),
+              }),
+            ),
           ),
         ),
-      ),
       loadJobFailed$: events.on(jobsEvents.loadJobFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });

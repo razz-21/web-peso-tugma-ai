@@ -92,7 +92,7 @@ export const ApplicantsStore = signalStore(
       error: null,
     })),
     on(applicantsEvents.createApplicantSuccess, ({ payload }, state) => ({
-      applicants: [payload, ...state.applicants],
+      applicants: [payload, ...state.applicants].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createApplicantLoading: false,
       error: null,
@@ -120,19 +120,25 @@ export const ApplicantsStore = signalStore(
       applicantsService = inject(ApplicantsService),
       snackBar = inject(MatSnackBar),
     ) => ({
-      loadApplicants$: events.on(applicantsEvents.loadApplicant).pipe(
-        switchMap(() =>
-          from(applicantsService.list(toListParams(store.filter()))).pipe(
-            mapResponse({
-              next: (list) => applicantsEvents.loadApplicantSuccess(list),
-              error: (error: unknown) =>
-                applicantsEvents.loadApplicantFailed(
-                  errorMessage(error, 'Failed to load applicants.'),
-                ),
-            }),
+      loadApplicants$: events
+        .on(
+          applicantsEvents.loadApplicant,
+          applicantsEvents.createApplicantSuccess,
+          applicantsEvents.deleteApplicantSuccess,
+        )
+        .pipe(
+          switchMap(() =>
+            from(applicantsService.list(toListParams(store.filter()))).pipe(
+              mapResponse({
+                next: (list) => applicantsEvents.loadApplicantSuccess(list),
+                error: (error: unknown) =>
+                  applicantsEvents.loadApplicantFailed(
+                    errorMessage(error, 'Failed to load applicants.'),
+                  ),
+              }),
+            ),
           ),
         ),
-      ),
       loadApplicantFailed$: events.on(applicantsEvents.loadApplicantFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });

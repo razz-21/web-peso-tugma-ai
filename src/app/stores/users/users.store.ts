@@ -113,7 +113,7 @@ export const UsersStore = signalStore(
       error: null,
     })),
     on(usersEvents.createUserSuccess, ({ payload }, state) => ({
-      users: [...state.users, payload],
+      users: [payload, ...state.users].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createUserLoading: false,
       error: null,
@@ -159,17 +159,19 @@ export const UsersStore = signalStore(
       usersService = inject(UsersService),
       snackBar = inject(MatSnackBar),
     ) => ({
-      loadUsers$: events.on(usersEvents.loadUser, usersEvents.deleteUserSuccess).pipe(
-        switchMap(() =>
-          from(usersService.list(toListParams(store.filter()))).pipe(
-            mapResponse({
-              next: (list) => usersEvents.loadUserSuccess(list),
-              error: (error: unknown) =>
-                usersEvents.loadUserFailed(errorMessage(error, 'Failed to load users.')),
-            }),
+      loadUsers$: events
+        .on(usersEvents.loadUser, usersEvents.createUserSuccess, usersEvents.deleteUserSuccess)
+        .pipe(
+          switchMap(() =>
+            from(usersService.list(toListParams(store.filter()))).pipe(
+              mapResponse({
+                next: (list) => usersEvents.loadUserSuccess(list),
+                error: (error: unknown) =>
+                  usersEvents.loadUserFailed(errorMessage(error, 'Failed to load users.')),
+              }),
+            ),
           ),
         ),
-      ),
       loadUserFailed$: events.on(usersEvents.loadUserFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
