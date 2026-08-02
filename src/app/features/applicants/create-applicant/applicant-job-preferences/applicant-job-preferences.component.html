@@ -36,6 +36,9 @@
               autocomplete="off"
               [formField]="store.form.preferred_occupation_industry[i].occupation"
             />
+            @if (error(store.form.preferred_occupation_industry[i].occupation()); as msg) {
+              <mat-error>{{ msg }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">

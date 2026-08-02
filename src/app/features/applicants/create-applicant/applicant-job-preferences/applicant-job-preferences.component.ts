@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -33,5 +33,16 @@ export class ApplicantJobPreferencesComponent {
   protected addLocation(event: MatChipInputEvent): void {
     this.store.addWorkLocation(event.value);
     event.chipInput.clear();
+  }
+
+  protected error(field: {
+    touched: () => boolean;
+    valid: () => boolean;
+    errors: () => ReadonlyArray<{ message?: string }>;
+  }): string | null {
+    if (!field.touched() || field.valid()) {
+      return null;
+    }
+    return field.errors()[0]?.message ?? 'Invalid value';
   }
 }

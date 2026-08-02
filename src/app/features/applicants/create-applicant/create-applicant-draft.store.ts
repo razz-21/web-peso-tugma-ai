@@ -1,12 +1,12 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 import {
+  applyEach,
   disabled,
   email,
   form,
   maxLength,
   pattern,
   required,
-  validate,
 } from '@angular/forms/signals';
 import { ApplicantPost, ResumeExtraction } from '../../../core/models/applicant.model';
 import {
@@ -45,10 +45,6 @@ const NAME_MAX = 100;
 const MOBILE_PATTERN = /^[0-9+()\-\s]{7,20}$/;
 /** Digits only, up to 5 characters (e.g. graduation year). */
 const YEAR_PATTERN = /^\d{0,5}$/;
-/** Minimum working age in years. */
-const MIN_WORKING_AGE = 1;
-/** Upper guard — rejects obviously wrong birth years. */
-const MAX_REALISTIC_AGE = 120;
 
 /** Minimal structural view of a Signal Forms field tree for recursive traversal. */
 interface FieldTreeLike {
@@ -122,6 +118,10 @@ export class CreateApplicantDraftStore {
   readonly form = form(this.data, (p) => {
     disabled(p.permanent_address, () => this.sameAsPresent());
 
+    applyEach(p.preferred_occupation_industry, (item) => {
+      required(item.occupation, { message: 'Occupation is required' });
+    });
+
     required(p.firstname, { message: 'First name is required' });
     maxLength(p.firstname, NAME_MAX, { message: `Must be ${NAME_MAX} characters or fewer` });
 
@@ -132,30 +132,6 @@ export class CreateApplicantDraftStore {
     maxLength(p.suffix, 20, { message: 'Must be 20 characters or fewer' });
 
     required(p.date_of_birth, { message: 'Date of birth is required' });
-    validate(p.date_of_birth, ({ value }) => {
-      const dob = value() as Date | null;
-      if (!dob) return null;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (dob > today) {
-        return { kind: 'dob-future', message: 'Date of birth cannot be in the future.' };
-      }
-      let age = today.getFullYear() - dob.getFullYear();
-      const m = today.getMonth() - dob.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
-      }
-      if (age < MIN_WORKING_AGE) {
-        return {
-          kind: 'dob-min-age',
-          message: `Applicant must be at least ${MIN_WORKING_AGE} years old.`,
-        };
-      }
-      if (age > MAX_REALISTIC_AGE) {
-        return { kind: 'dob-unrealistic', message: 'Date of birth appears unrealistic.' };
-      }
-      return null;
-    });
     required(p.sex, { message: 'Sex is required' });
 
     required(p.email_address, { message: 'Email is required' });
