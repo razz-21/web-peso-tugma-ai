@@ -331,8 +331,12 @@ export class CreateApplicantDraftStore {
     this.removeAt('preferred_occupation_industry', index);
   }
 
-  addWorkLocation(): void {
-    this.push('preferred_work_location', '');
+  addWorkLocation(value: string): void {
+    const location = value.trim();
+    if (location.length === 0) {
+      return;
+    }
+    this.push('preferred_work_location', location);
   }
 
   removeWorkLocation(index: number): void {
