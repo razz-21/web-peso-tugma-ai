@@ -64,6 +64,7 @@ export class ApplicantEditDialogComponent {
   protected readonly civilStatusOptions = CIVIL_STATUSES;
   protected readonly employmentStatusOptions = EMPLOYMENT_STATUSES;
   protected readonly saving = signal(false);
+  protected readonly emptyFieldError = signal(false);
   protected readonly description = SECTION_DESCRIPTIONS[this.data.section];
   /** Upper bound for the DOB datepicker — prevents selecting a future date. */
   protected readonly today = new Date();
@@ -96,6 +97,14 @@ export class ApplicantEditDialogComponent {
     if (this.saving()) {
       return;
     }
+
+    if (this.data.section === 'preferences') {
+      const rows = this.store.form.preferred_occupation_industry;
+      for (let i = 0; i < rows().value().length; i++) {
+        rows[i].occupation().markAsTouched();
+      }
+    }
+
     if (!this.store.validateFields(SECTION_KEYS[this.data.section] as string[])) {
       return;
     }
