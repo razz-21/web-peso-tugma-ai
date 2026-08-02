@@ -27,9 +27,16 @@ export class RecommendationsService {
     return RecommendedJobArraySchema.parse(body);
   }
 
-  /** Load the applicant's previously generated recommendations. */
-  async list(applicantId: string): Promise<RecommendedJob[]> {
-    const params = new HttpParams().set('applicant_id', applicantId).set('limit', 50);
+  /**
+   * Load the applicant's recommendations. `referred` splits the set server-side:
+   * `false` returns only the untouched AI recommendations (no referral status),
+   * `true` only the ones already referred; omit it to fetch both.
+   */
+  async list(applicantId: string, referred?: boolean): Promise<RecommendedJob[]> {
+    let params = new HttpParams().set('applicant_id', applicantId).set('limit', 50);
+    if (referred !== undefined) {
+      params = params.set('referred', referred);
+    }
     const body = await firstValueFrom(this.http.get<RecommendedJobList>(this.baseUrl, { params }));
     return RecommendedJobListSchema.parse(body).items;
   }

@@ -12,7 +12,10 @@ import { RecommendationsService } from '../../core/services/recommendations.serv
 import { recommendationsEvents } from './recommendations.events';
 
 type RecommendationsState = {
+  /** Untouched AI recommendations (no referral status) — the Recommended list. */
   items: RecommendedJob[];
+  /** Recommendations already referred (a lifecycle status is set) — the Referred list. */
+  referrals: RecommendedJob[];
   loading: boolean;
   generating: boolean;
   /** Ids of recommendations with an in-flight relevance update. */
@@ -22,6 +25,7 @@ type RecommendationsState = {
 
 const initialState: RecommendationsState = {
   items: [],
+  referrals: [],
   loading: false,
   generating: false,
   updatingIds: [],
@@ -31,12 +35,19 @@ const initialState: RecommendationsState = {
 const errorMessage = (error: unknown, fallback: string): string =>
   error instanceof Error ? error.message : fallback;
 
+/** Replace the matching row by id, or prepend it when it isn't in the list yet. */
+const upsertById = (list: RecommendedJob[], item: RecommendedJob): RecommendedJob[] =>
+  list.some((existing) => existing.id === item.id)
+    ? list.map((existing) => (existing.id === item.id ? item : existing))
+    : [item, ...list];
+
 export const RecommendationsStore = signalStore(
   withState(initialState),
   withReducer(
     on(recommendationsEvents.load, () => ({ loading: true, error: null })),
     on(recommendationsEvents.loadSuccess, ({ payload }) => ({
-      items: payload,
+      items: payload.recommended,
+      referrals: payload.referred,
       loading: false,
       error: null,
     })),
@@ -44,6 +55,8 @@ export const RecommendationsStore = signalStore(
 
     on(recommendationsEvents.generate, () => ({ generating: true, error: null })),
     on(recommendationsEvents.generateSuccess, ({ payload }) => ({
+      // Generate only refreshes the untouched recommendations; the referred list
+      // is unaffected (the backend excludes already-referred jobs from the set).
       items: payload,
       generating: false,
       error: null,
@@ -54,9 +67,15 @@ export const RecommendationsStore = signalStore(
     })),
 
     on(recommendationsEvents.referSuccess, ({ payload }, state) => ({
-      // Upsert by job so a manual referral replaces any existing recommendation
-      // for the same job, and surfaces at the top of the referred list.
-      items: [payload, ...state.items.filter((item) => item.job?.id !== payload.job?.id)],
+      // A manual referral becomes a referred row and leaves the Recommended list:
+      // drop any recommendation/referral for the same job, then surface it on top.
+      items: state.items.filter((item) => item.job?.id !== payload.job?.id),
+      referrals: [
+        payload,
+        ...state.referrals.filter(
+          (item) => item.job?.id !== payload.job?.id && item.id !== payload.id,
+        ),
+      ],
       error: null,
     })),
     on(recommendationsEvents.referFailed, ({ payload }) => ({ error: payload })),
@@ -66,7 +85,10 @@ export const RecommendationsStore = signalStore(
       error: null,
     })),
     on(recommendationsEvents.setRelevanceSuccess, ({ payload }, state) => ({
+      // Relevance never changes the referral status, so update in place wherever
+      // the row currently lives.
       items: state.items.map((item) => (item.id === payload.id ? payload : item)),
+      referrals: state.referrals.map((item) => (item.id === payload.id ? payload : item)),
       updatingIds: state.updatingIds.filter((id) => id !== payload.id),
     })),
     on(recommendationsEvents.setRelevanceFailed, ({ payload }, state) => ({
@@ -78,10 +100,20 @@ export const RecommendationsStore = signalStore(
       updatingIds: [...state.updatingIds, payload.id],
       error: null,
     })),
-    on(recommendationsEvents.setStatusSuccess, ({ payload }, state) => ({
-      items: state.items.map((item) => (item.id === payload.id ? payload : item)),
-      updatingIds: state.updatingIds.filter((id) => id !== payload.id),
-    })),
+    on(recommendationsEvents.setStatusSuccess, ({ payload }, state) => {
+      // Setting a status moves the row into the Referred list (and out of the
+      // Recommended one); clearing it back to null moves it the other way.
+      const isReferred = payload.status !== null;
+      return {
+        items: isReferred
+          ? state.items.filter((item) => item.id !== payload.id)
+          : upsertById(state.items, payload),
+        referrals: isReferred
+          ? upsertById(state.referrals, payload)
+          : state.referrals.filter((item) => item.id !== payload.id),
+        updatingIds: state.updatingIds.filter((id) => id !== payload.id),
+      };
+    }),
     on(recommendationsEvents.setStatusFailed, ({ payload }, state) => ({
       updatingIds: state.updatingIds.filter((id) => id !== payload.id),
       error: payload.message,
@@ -96,9 +128,15 @@ export const RecommendationsStore = signalStore(
     ) => ({
       load$: events.on(recommendationsEvents.load).pipe(
         switchMap(({ payload }) =>
-          from(recommendationsService.list(payload.applicantId)).pipe(
+          from(
+            Promise.all([
+              recommendationsService.list(payload.applicantId, false),
+              recommendationsService.list(payload.applicantId, true),
+            ]),
+          ).pipe(
             mapResponse({
-              next: (items) => recommendationsEvents.loadSuccess(items),
+              next: ([recommended, referred]) =>
+                recommendationsEvents.loadSuccess({ recommended, referred }),
               error: (error: unknown) =>
                 recommendationsEvents.loadFailed(
                   errorMessage(error, 'Failed to load recommendations.'),

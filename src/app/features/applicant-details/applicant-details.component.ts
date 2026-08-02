@@ -27,6 +27,7 @@ import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../core/models/applica
 import { JobGet } from '../../core/models/job.model';
 import {
   RECOMMENDED_JOB_STATUS_LABEL,
+  RecommendedJob,
   RecommendedJobStatus,
 } from '../../core/models/recommended-job.model';
 import { DEFAULT_MATCHING_SCORE, MatchingScore } from '../../core/models/workspace.model';
@@ -130,14 +131,21 @@ export class ApplicantDetailsComponent implements OnInit {
    */
   private readonly matchingWeights = signal<MatchingScore>(DEFAULT_MATCHING_SCORE);
 
-  /** AI recommendations for this applicant, ranked by MatchScore (desc). */
-  protected readonly recommendations = computed<readonly JobMatch[]>(() => {
+  /** Map persisted recommendation rows to view models, tagging in-flight updates. */
+  private toMatches(rows: readonly RecommendedJob[]): JobMatch[] {
     const updating = new Set(this.recommendationsStore.updatingIds());
     const weights = this.matchingWeights();
-    return [...this.recommendationsStore.items()]
-      .map((recommendation) => toJobMatch(recommendation, updating.has(recommendation.id), weights))
-      .sort((a, b) => b.score - a.score);
-  });
+    return rows.map((row) => toJobMatch(row, updating.has(row.id), weights));
+  }
+
+  /**
+   * The untouched AI recommendations for the Recommended list, ranked by
+   * MatchScore (desc). Referred jobs are excluded server-side, so they never
+   * appear here — no frontend status filtering needed.
+   */
+  protected readonly recommendations = computed<readonly JobMatch[]>(() =>
+    this.toMatches(this.recommendationsStore.items()).sort((a, b) => b.score - a.score),
+  );
 
   protected readonly generating = computed(() => this.recommendationsStore.generating());
 
@@ -154,9 +162,9 @@ export class ApplicantDetailsComponent implements OnInit {
    * jumps to the top. Empty until someone is referred.
    */
   protected readonly referrals = computed<readonly JobMatch[]>(() =>
-    this.recommendations()
-      .filter((match) => match.status !== null)
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+    this.toMatches(this.recommendationsStore.referrals()).sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    ),
   );
 
   /** When the current recommendations were generated, shown in the card footer. */
@@ -170,10 +178,15 @@ export class ApplicantDetailsComponent implements OnInit {
 
   /** Recommendation id shown in the details drawer; the match is derived live. */
   protected readonly selectedId = signal<string | null>(null);
-  protected readonly selectedMatch = computed<JobMatch | null>(
-    () =>
-      this.recommendations().find((match) => match.recommendationId === this.selectedId()) ?? null,
-  );
+  protected readonly selectedMatch = computed<JobMatch | null>(() => {
+    const id = this.selectedId();
+    // Search both lists: a match referred from the drawer moves to `referrals`.
+    return (
+      this.recommendations().find((match) => match.recommendationId === id) ??
+      this.referrals().find((match) => match.recommendationId === id) ??
+      null
+    );
+  });
 
   protected selectMatch(match: JobMatch): void {
     this.selectedId.set(match.recommendationId);
@@ -461,8 +474,8 @@ export class ApplicantDetailsComponent implements OnInit {
   protected readonly referredJobIds = computed<ReadonlySet<string>>(
     () =>
       new Set(
-        this.recommendations()
-          .filter((match) => match.status !== null && match.jobId)
+        this.referrals()
+          .filter((match) => match.jobId)
           .map((match) => match.jobId as string),
       ),
   );
