@@ -117,7 +117,7 @@
           @if (store.loadingMore()) {
             <mat-spinner diameter="18" aria-hidden="true" />
           }
-          {{ store.loadingMore() ? 'Loading…' : 'Load more' }}
+          <span>{{ store.loadingMore() ? 'Loading…' : 'Load more' }}</span>
         </button>
       </div>
     }
