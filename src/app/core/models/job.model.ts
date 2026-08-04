@@ -18,6 +18,7 @@ export const JobCompanySchema = z.object({
   id: z.uuid(),
   company_name: z.string(),
   company_type: CompanyTypeSchema,
+  avatar: z.string().nullable().default(null),
 });
 
 /** Fields shared between read and write shapes. */

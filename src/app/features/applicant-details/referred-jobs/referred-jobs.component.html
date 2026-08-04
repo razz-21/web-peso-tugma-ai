@@ -51,7 +51,12 @@
           [attr.aria-expanded]="open"
           (click)="toggle(row.id)"
         >
-          <app-avatar [name]="row.companyName" [seed]="row.companyName" [size]="48" />
+          <app-avatar
+            [name]="row.companyName"
+            [seed]="row.match.company?.id ?? row.companyName"
+            [image]="row.match.company?.avatar ?? null"
+            [size]="48"
+          />
           <span class="referred-jobs__summary-body">
             <span class="referred-jobs__summary-title">
               <span class="referred-jobs__job-title">{{ row.title }}</span>

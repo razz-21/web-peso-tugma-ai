@@ -230,7 +230,12 @@
                 [attr.aria-expanded]="open"
                 (click)="toggle(job.id)"
               >
-                <app-avatar [name]="job.companyName" [seed]="job.seed" [size]="44" />
+                <app-avatar
+                  [name]="job.companyName"
+                  [seed]="job.seed"
+                  [image]="job.job.company?.avatar ?? null"
+                  [size]="44"
+                />
                 <span class="manual-referral__job-info">
                   <span class="manual-referral__job-title">{{ job.title }}</span>
                   <span class="manual-referral__job-meta">

@@ -12,7 +12,13 @@
     <mat-chip-grid #chipGrid aria-label="Selected people">
       @for (user of selected(); track user.id) {
         <mat-chip-row (removed)="remove(user)">
-          <app-avatar matChipAvatar [name]="user.fullname" [seed]="user.email" [size]="24" />
+          <app-avatar
+            matChipAvatar
+            [name]="user.fullname"
+            [seed]="user.email"
+            [image]="user.avatar"
+            [size]="24"
+          />
           {{ user.fullname }}
           <button matChipRemove [attr.aria-label]="'Remove ' + user.fullname">
             <mat-icon>cancel</mat-icon>
@@ -45,7 +51,12 @@
         @for (user of options(); track user.id) {
           <mat-option [value]="user" [disabled]="!!user.workspace">
             <div class="invite-dialog__option">
-              <app-avatar [name]="user.fullname" [seed]="user.email" [size]="32" />
+              <app-avatar
+                [name]="user.fullname"
+                [seed]="user.email"
+                [image]="user.avatar"
+                [size]="32"
+              />
               <span class="invite-dialog__option-text">
                 <span class="invite-dialog__option-name">{{ user.fullname }}</span>
                 <span class="invite-dialog__option-email">{{ user.email }}</span>

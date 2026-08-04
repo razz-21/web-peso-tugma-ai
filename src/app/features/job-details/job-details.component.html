@@ -18,6 +18,7 @@
         class="job-details__header-avatar"
         [name]="job.company?.company_name ?? job.title"
         [seed]="job.company?.id ?? job.id"
+        [image]="job.company?.avatar ?? null"
         [size]="64"
       />
       <div class="job-details__header-body">

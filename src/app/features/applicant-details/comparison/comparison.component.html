@@ -22,7 +22,12 @@
         </p>
         <div class="comparison__party-head">
           @if (match.company; as company) {
-            <app-avatar [name]="company.name" [seed]="company.id" [size]="52" />
+            <app-avatar
+              [name]="company.name"
+              [seed]="company.id"
+              [image]="company.avatar"
+              [size]="52"
+            />
           } @else {
             <app-avatar [name]="match.title" [seed]="match.recommendationId" [size]="52" />
           }
