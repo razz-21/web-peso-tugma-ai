@@ -42,7 +42,7 @@ type PrefillKey =
   | 'eligibility';
 
 const NAME_MAX = 100;
-const MOBILE_PATTERN = /^[0-9+()\-\s]{7,20}$/;
+const MOBILE_PATTERN = /^09\d{9}$/;
 /** Digits only, up to 5 characters (e.g. graduation year). */
 const YEAR_PATTERN = /^\d{0,5}$/;
 
@@ -138,8 +138,12 @@ export class CreateApplicantDraftStore {
     email(p.email_address, { message: 'Enter a valid email address' });
 
     required(p.primary_mobile_number, { message: 'Primary mobile number is required' });
-    pattern(p.primary_mobile_number, MOBILE_PATTERN, { message: 'Enter a valid mobile number' });
-    pattern(p.secondary_mobile_number, MOBILE_PATTERN, { message: 'Enter a valid mobile number' });
+    pattern(p.primary_mobile_number, MOBILE_PATTERN, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
+    });
+    pattern(p.secondary_mobile_number, MOBILE_PATTERN, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
+    });
 
     required(p.present_address.province, { message: 'Province is required' });
     required(p.present_address.municipality_city, { message: 'Municipality/City is required' });
