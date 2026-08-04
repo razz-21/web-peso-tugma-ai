@@ -724,6 +724,22 @@
               </div>
             </div>
           </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon aria-hidden="true">folder</mat-icon>
+              Files
+            </ng-template>
+
+            <div class="applicant-details__panel">
+              <article class="applicant-details__card">
+                <app-files-panel
+                  [foreignId]="applicant.id"
+                  [disabled]="applicant.status === 'inactive'"
+                />
+              </article>
+            </div>
+          </mat-tab>
         </mat-tab-group>
       </div>
     }

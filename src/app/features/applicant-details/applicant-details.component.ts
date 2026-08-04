@@ -36,6 +36,7 @@ import { MeStore } from '../../stores/me/me.store';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
+import { FilesPanelComponent } from '../../core/components/files-panel/files-panel.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -87,6 +88,7 @@ const SECTIONS: readonly SectionLink[] = [
     DetailFieldComponent,
     ReferredJobsComponent,
     MatchDetailsComponent,
+    FilesPanelComponent,
   ],
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',

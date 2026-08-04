@@ -1,0 +1,90 @@
+<div class="files-panel">
+  <header class="files-panel__head">
+    <div class="files-panel__heading">
+      <h2 class="files-panel__title">
+        <mat-icon aria-hidden="true">folder</mat-icon>
+        Files
+      </h2>
+      <p class="files-panel__subtitle">Documents and attachments stored for this record.</p>
+    </div>
+
+    @if (!disabled()) {
+      <button matButton="filled" type="button" class="files-panel__upload" (click)="onUpload()">
+        <mat-icon>upload</mat-icon>
+        Upload files
+      </button>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="files-panel__status" role="status">
+      <mat-progress-spinner mode="indeterminate" [diameter]="32" aria-hidden="true" />
+      <p>Loading files&hellip;</p>
+    </div>
+  } @else if (error()) {
+    <app-empty-state
+      icon="error_outline"
+      title="Couldn't load files"
+      text="Something went wrong. Please try again later."
+    />
+  } @else if (files().length === 0) {
+    <app-empty-state
+      icon="folder_open"
+      title="No files yet"
+      [text]="disabled() ? 'No files have been uploaded.' : 'Upload a file to see it listed here.'"
+    />
+  } @else {
+    <ul class="files-panel__list" aria-label="Uploaded files">
+      @for (file of files(); track file.id) {
+        <li class="files-panel__item">
+          <span class="files-panel__item-icon" aria-hidden="true">
+            <mat-icon>{{ fileIcon(file.content_type) }}</mat-icon>
+          </span>
+          <span class="files-panel__item-info">
+            <span class="files-panel__item-name" [matTooltip]="file.filename">
+              {{ file.filename }}
+            </span>
+            <span class="files-panel__item-meta">
+              {{ formatSize(file.size) }}
+              <span class="files-panel__dot" aria-hidden="true">·</span>
+              {{ file.uploaded_at | date: 'MMM d, y' }}
+            </span>
+          </span>
+          <span class="files-panel__item-actions">
+            <button
+              mat-icon-button
+              type="button"
+              [disabled]="downloadingId() === file.id"
+              [attr.aria-label]="'Download ' + file.filename"
+              matTooltip="Download"
+              (click)="onDownload(file)"
+            >
+              @if (downloadingId() === file.id) {
+                <mat-progress-spinner mode="indeterminate" [diameter]="18" />
+              } @else {
+                <mat-icon>download</mat-icon>
+              }
+            </button>
+            @if (!disabled()) {
+              <button
+                mat-icon-button
+                type="button"
+                class="files-panel__delete"
+                [disabled]="deletingId() === file.id"
+                [attr.aria-label]="'Delete ' + file.filename"
+                matTooltip="Delete"
+                (click)="onDelete(file)"
+              >
+                @if (deletingId() === file.id) {
+                  <mat-progress-spinner mode="indeterminate" [diameter]="18" />
+                } @else {
+                  <mat-icon>delete</mat-icon>
+                }
+              </button>
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</div>

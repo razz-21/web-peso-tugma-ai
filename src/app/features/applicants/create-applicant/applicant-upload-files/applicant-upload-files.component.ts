@@ -50,6 +50,9 @@ export class ApplicantUploadFilesComponent {
   protected readonly errorMessage = signal<string | null>(null);
   /** True while the backend is parsing the resume. */
   protected readonly extracting = signal(false);
+  /** True once a resume has been parsed, so the review-for-verification notice
+   *  shows even when few (or no) fields were recognized. */
+  protected readonly parsed = signal(false);
 
   protected readonly resumeFile = this.store.resumeFile;
 
@@ -100,6 +103,7 @@ export class ApplicantUploadFilesComponent {
   protected removeFile(): void {
     this.store.clearResume();
     this.errorMessage.set(null);
+    this.parsed.set(false);
   }
 
   protected formatSize(bytes: number): string {
@@ -126,6 +130,7 @@ export class ApplicantUploadFilesComponent {
       return;
     }
     this.errorMessage.set(null);
+    this.parsed.set(false);
     this.store.setResumeFile(file);
     await this.extract(file);
   }
@@ -135,6 +140,7 @@ export class ApplicantUploadFilesComponent {
     try {
       const extraction = await this.applicants.extract(file);
       this.store.applyExtraction(extraction);
+      this.parsed.set(true);
     } catch {
       this.errorMessage.set("Couldn't read the file — please fill the fields manually.");
     } finally {
