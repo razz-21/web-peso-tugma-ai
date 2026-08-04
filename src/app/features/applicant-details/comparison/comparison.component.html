@@ -282,12 +282,14 @@
                     "
                   >
                     <mat-icon aria-hidden="true">change_circle</mat-icon>
-                    {{ related.required }}
-                    @if (related.via) {
-                      <span class="comparison__chip-via"
-                        >· via {{ related.via }} ({{ related.similarity }}%)</span
-                      >
-                    }
+                    <span class="comparison__chip-body">
+                      <span class="comparison__chip-name">{{ related.required }}</span>
+                      @if (related.via) {
+                        <span class="comparison__chip-via"
+                          >via {{ related.via }} ({{ related.similarity }}%)</span
+                        >
+                      }
+                    </span>
                   </span>
                 }
                 @for (skill of requirement.missingSkills; track skill) {

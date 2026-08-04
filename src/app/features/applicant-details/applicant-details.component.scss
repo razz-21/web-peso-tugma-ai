@@ -800,7 +800,9 @@
     transition: background-color 150ms ease;
 
     &:hover {
-      background: color-mix(in srgb, var(--mat-sys-primary) 11%, var(--mat-sys-surface));
+      // Deepen the same primary tint on hover so it complements the base
+      // background (12% -> 24%) with a clearly perceptible shift.
+      background: color-mix(in srgb, var(--mat-sys-primary) 24%, var(--mat-sys-surface));
     }
 
     &--skeleton {

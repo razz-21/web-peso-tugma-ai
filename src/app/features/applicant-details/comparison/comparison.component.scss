@@ -429,6 +429,16 @@
       background: color-mix(in srgb, #9a7b1e 20%, var(--mat-sys-surface));
       // Darkened amber for AA contrast against the tinted background.
       color: #5f4a0f;
+      // Stack the skill name over its "via" note, so a long related-skill
+      // explanation reads on its own line instead of wrapping beside the name.
+      align-items: flex-start;
+      max-width: 100%;
+      border-radius: 1rem;
+
+      mat-icon {
+        // Nudge the icon onto the first text line now that the body can wrap.
+        margin-top: 0.1rem;
+      }
     }
 
     &--missing {
@@ -453,9 +463,23 @@
     }
   }
 
+  &__chip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0; // allow the via note to wrap instead of overflowing the chip
+  }
+
+  &__chip-name {
+    font-weight: 600;
+  }
+
   &__chip-via {
     font-weight: 500;
+    font-size: 0.85rem;
+    line-height: 1.3;
     opacity: 0.85;
+    overflow-wrap: anywhere;
   }
 
   // --- Coverage bar --------------------------------------------------------
