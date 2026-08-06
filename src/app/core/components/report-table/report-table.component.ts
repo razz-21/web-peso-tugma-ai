@@ -69,7 +69,10 @@ export class ReportTableComponent {
       ['#', ...columns.map((column) => column.label)],
       ...this.rows().map((row, index) => [
         String(index + 1),
-        ...columns.map((column) => row[column.key] ?? ''),
+        ...columns.map((column) => {
+          const value = row[column.key] ?? '';
+          return value === '—' ? '' : value;
+        }),
       ]),
     ];
 
