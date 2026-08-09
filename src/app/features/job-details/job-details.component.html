@@ -179,7 +179,12 @@
           <div class="job-details__card job-details__side">
             <h3 class="job-details__side-title">Company</h3>
             <div class="job-details__company">
-              <app-avatar [name]="company.company_name" [seed]="company.id" [size]="44" />
+              <app-avatar
+                [name]="company.company_name"
+                [seed]="company.id"
+                [image]="company.avatar ?? null"
+                [size]="44"
+              />
               <div class="job-details__company-text">
                 <span class="job-details__company-name">{{ company.company_name }}</span>
                 <span class="job-details__company-type">{{

@@ -1,0 +1,74 @@
+<h2 mat-dialog-title class="file-preview-dialog__title">
+  <mat-icon aria-hidden="true">{{ icon }}</mat-icon>
+  <span class="file-preview-dialog__name" [matTooltip]="file.filename">{{ file.filename }}</span>
+  <span class="file-preview-dialog__spacer"></span>
+  <button
+    mat-icon-button
+    type="button"
+    matTooltip="Download"
+    [disabled]="downloading()"
+    [attr.aria-label]="'Download ' + file.filename"
+    (click)="onDownload()"
+  >
+    @if (downloading()) {
+      <mat-progress-spinner mode="indeterminate" [diameter]="18" />
+    } @else {
+      <mat-icon>download</mat-icon>
+    }
+  </button>
+  <button
+    mat-icon-button
+    type="button"
+    matTooltip="Close"
+    mat-dialog-close
+    aria-label="Close preview"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="file-preview-dialog__content">
+  @if (loading()) {
+    <div class="file-preview-dialog__status" role="status">
+      <mat-progress-spinner mode="indeterminate" [diameter]="40" aria-hidden="true" />
+      <p>Loading preview&hellip;</p>
+    </div>
+  } @else if (error()) {
+    <div class="file-preview-dialog__status">
+      <mat-icon class="file-preview-dialog__status-icon" aria-hidden="true">error_outline</mat-icon>
+      <p>Couldn't load this file.</p>
+      <button matButton="tonal" type="button" (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download instead
+      </button>
+    </div>
+  } @else {
+    @switch (kind) {
+      @case ('image') {
+        <img class="file-preview-dialog__image" [src]="objectUrl()" [alt]="file.filename" />
+      }
+      @case ('pdf') {
+        <iframe
+          class="file-preview-dialog__frame"
+          [src]="safeUrl()"
+          [title]="file.filename"
+        ></iframe>
+      }
+      @case ('text') {
+        <pre class="file-preview-dialog__text">{{ textContent() }}</pre>
+      }
+      @default {
+        <div class="file-preview-dialog__status">
+          <mat-icon class="file-preview-dialog__status-icon" aria-hidden="true">
+            visibility_off
+          </mat-icon>
+          <p>Preview isn't available for this file type.</p>
+          <button matButton="tonal" type="button" (click)="onDownload()">
+            <mat-icon>download</mat-icon>
+            Download to view
+          </button>
+        </div>
+      }
+    }
+  }
+</mat-dialog-content>

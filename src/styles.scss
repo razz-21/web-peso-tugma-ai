@@ -192,6 +192,24 @@ body {
   }
 }
 
+// File preview dialog: a full-window, edge-to-edge surface whose title bar and
+// body manage their own spacing (see file-preview-dialog.component).
+.file-preview-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  .mat-mdc-dialog-container {
+    --mat-dialog-container-max-width: 100vw;
+  }
+}
+
 // Searchable company select: the panel renders in an overlay (outside the
 // component view), so its search box is styled globally via `panelClass`.
 .job-form__company-panel {

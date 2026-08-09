@@ -51,6 +51,17 @@
             </span>
           </span>
           <span class="files-panel__item-actions">
+            @if (canPreview(file.content_type)) {
+              <button
+                mat-icon-button
+                type="button"
+                [attr.aria-label]="'View ' + file.filename"
+                matTooltip="View"
+                (click)="onView(file)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            }
             <button
               mat-icon-button
               type="button"

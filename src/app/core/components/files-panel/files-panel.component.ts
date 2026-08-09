@@ -23,6 +23,10 @@ import {
 } from '../confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
 import {
+  FilePreviewDialogComponent,
+  FilePreviewDialogData,
+} from '../file-preview-dialog/file-preview-dialog.component';
+import {
   FileUploadDialogComponent,
   FileUploadDialogData,
 } from '../file-upload-dialog/file-upload-dialog.component';
@@ -116,6 +120,33 @@ export class FilesPanelComponent {
           });
         }
       });
+  }
+
+  /** True when the file's type can be rendered inline in the preview dialog. */
+  protected canPreview(contentType: string): boolean {
+    return (
+      contentType.startsWith('image/') ||
+      contentType.includes('pdf') ||
+      contentType.startsWith('text/')
+    );
+  }
+
+  protected onView(file: FileRead): void {
+    const data: FilePreviewDialogData = { file };
+    this.dialog.open<FilePreviewDialogComponent, FilePreviewDialogData>(
+      FilePreviewDialogComponent,
+      {
+        panelClass: 'file-preview-dialog',
+        width: '100vw',
+        maxWidth: '100vw',
+        height: '100vh',
+        maxHeight: '100vh',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        ariaLabel: 'File preview',
+        data,
+      },
+    );
   }
 
   protected async onDownload(file: FileRead): Promise<void> {

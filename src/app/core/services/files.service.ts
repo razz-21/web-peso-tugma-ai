@@ -34,14 +34,19 @@ export class FilesService {
     await firstValueFrom(this.http.delete<void>(`${this.baseUrl}/${id}`));
   }
 
+  /** Fetch a file's bytes through the authenticated download proxy. */
+  async fetchBlob(id: string): Promise<Blob> {
+    return firstValueFrom(
+      this.http.get(`${this.baseUrl}/${id}/download`, { responseType: 'blob' }),
+    );
+  }
+
   /**
    * Fetch the bytes through the authenticated download proxy and trigger a
    * browser download with the original filename.
    */
   async download(file: Pick<FileRead, 'id' | 'filename'>): Promise<void> {
-    const blob = await firstValueFrom(
-      this.http.get(`${this.baseUrl}/${file.id}/download`, { responseType: 'blob' }),
-    );
+    const blob = await this.fetchBlob(file.id);
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;

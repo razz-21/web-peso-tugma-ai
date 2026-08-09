@@ -2,14 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   OnInit,
   computed,
   effect,
   inject,
   signal,
   viewChild,
-  viewChildren,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -35,8 +33,6 @@ import { WorkspacesService } from '../../core/services/workspaces.service';
 import { MeStore } from '../../stores/me/me.store';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
-import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
-import { FilesPanelComponent } from '../../core/components/files-panel/files-panel.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -46,31 +42,20 @@ import { applicantDetailsEvents } from '../../stores/applicant-details/applicant
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
 import { RecommendationsStore } from '../../stores/recommendations/recommendations.store';
 import { recommendationsEvents } from '../../stores/recommendations/recommendations.events';
-import { DetailFieldComponent } from './detail-field/detail-field.component';
-import { ReferredJobsComponent } from './referred-jobs/referred-jobs.component';
 import { MatchDetailsComponent } from './match-details/match-details.component';
+import { ApplicantJobsComponent } from './applicant-jobs/applicant-jobs.component';
+import { ApplicantInfoComponent } from './applicant-info/applicant-info.component';
+import { ApplicantFilesComponent } from './applicant-files/applicant-files.component';
 import { ComparisonComponent } from './comparison/comparison.component';
 import { ManualReferralComponent } from './manual-referral/manual-referral.component';
 import { ApplicantEditDialogComponent } from './applicant-edit-dialog/applicant-edit-dialog.component';
 import { JobMatch } from './types/job-match.type';
-import { SectionLink } from './types/applicant-details.type';
 import { ComparisonDialogData } from './types/comparison.type';
 import { ManualReferralDialogData } from './types/manual-referral.type';
 import { ReferralStatusChange } from './types/referred-jobs.type';
 import { isTerminalStatus } from './utils/referred-jobs.util';
 import { ApplicantEditDialogData, EditSectionId } from './types/applicant-edit-dialog.type';
 import { toJobMatch } from './utils/job-match.util';
-import { addressLines, sameAddress } from './utils/address.util';
-
-const SECTIONS: readonly SectionLink[] = [
-  { id: 'personal', label: 'Personal information', icon: 'person' },
-  { id: 'contact', label: 'Contact', icon: 'call' },
-  { id: 'address', label: 'Address', icon: 'location_on' },
-  { id: 'education', label: 'Educational background', icon: 'school' },
-  { id: 'skills', label: 'Skills & training', icon: 'edit' },
-  { id: 'work', label: 'Work experience', icon: 'work' },
-  { id: 'preferences', label: 'Job preferences', icon: 'star' },
-];
 
 @Component({
   selector: 'app-applicant-details',
@@ -84,11 +69,10 @@ const SECTIONS: readonly SectionLink[] = [
     MatTabsModule,
     MatTooltipModule,
     AvatarComponent,
-    SkeletonComponent,
-    DetailFieldComponent,
-    ReferredJobsComponent,
     MatchDetailsComponent,
-    FilesPanelComponent,
+    ApplicantJobsComponent,
+    ApplicantInfoComponent,
+    ApplicantFilesComponent,
   ],
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',
@@ -97,7 +81,6 @@ const SECTIONS: readonly SectionLink[] = [
 })
 export class ApplicantDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
-  protected readonly sections = SECTIONS;
   protected readonly statusLabels = APPLICANT_STATUS_LABELS;
   protected readonly store = inject(ApplicantDetailsStore);
   private readonly dispatch = injectDispatch(applicantDetailsEvents);
@@ -112,7 +95,6 @@ export class ApplicantDetailsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly datePipe = new DatePipe('en-US');
 
   /** The match-details drawer, closed once a referral it triggered succeeds. */
   private readonly matchDrawer = viewChild(MatDrawer);
@@ -194,11 +176,6 @@ export class ApplicantDetailsComponent implements OnInit {
     this.selectedId.set(match.recommendationId);
   }
 
-  /** Section currently in view, highlighted in the Sections rail. */
-  protected readonly activeSection = signal<string>(SECTIONS[0].id);
-
-  private readonly sectionEls = viewChildren<ElementRef<HTMLElement>>('section');
-
   protected readonly fullName = computed(() => {
     const a = this.applicant();
     if (!a) {
@@ -259,52 +236,6 @@ export class ApplicantDetailsComponent implements OnInit {
     () => this.applicant()?.educational_background?.highest_education_level || '—',
   );
 
-  // --- Detail section derived values --------------------------------------
-
-  protected readonly dobLabel = computed(() => {
-    const dob = this.applicant()?.date_of_birth;
-    if (!dob) {
-      return null;
-    }
-    const formatted = this.datePipe.transform(dob, 'MMM d, y');
-    const age = this.age();
-    return age === null ? formatted : `${formatted} (${age})`;
-  });
-
-  protected readonly heightLabel = computed(() => {
-    const height = this.applicant()?.height_in_cm;
-    return height === null || height === undefined ? null : `${height} cm`;
-  });
-
-  protected readonly weightLabel = computed(() => {
-    const weight = this.applicant()?.weight_in_kg;
-    return weight === null || weight === undefined ? null : `${weight} kg`;
-  });
-
-  protected readonly presentAddressLines = computed(() =>
-    addressLines(this.applicant()?.present_address ?? null),
-  );
-
-  protected readonly permanentSameAsPresent = computed(() => {
-    const a = this.applicant();
-    if (!a) {
-      return false;
-    }
-    return a.permanent_address === null || sameAddress(a.present_address, a.permanent_address);
-  });
-
-  protected readonly permanentAddressLines = computed(() => {
-    const a = this.applicant();
-    if (!a) {
-      return [];
-    }
-    return this.permanentSameAsPresent()
-      ? addressLines(a.present_address)
-      : addressLines(a.permanent_address);
-  });
-
-  protected readonly applicantId = computed(() => this.applicant()?.id.slice(0, 8) ?? '');
-
   constructor() {
     // Load the active workspace's `matching_score` weights so recommendation
     // scores reflect the officer's saved weighting. Re-runs if the user's
@@ -318,29 +249,6 @@ export class ApplicantDetailsComponent implements OnInit {
         .get(workspaceId)
         .then((workspace) => this.matchingWeights.set(workspace.matching_score))
         .catch(() => this.matchingWeights.set(DEFAULT_MATCHING_SCORE));
-    });
-
-    // Scroll-spy: highlight the section nearest the top of the viewport.
-    effect((onCleanup) => {
-      const els = this.sectionEls();
-      if (els.length === 0) {
-        return;
-      }
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const visible = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          if (visible[0]) {
-            this.activeSection.set(visible[0].target.id);
-          }
-        },
-        { rootMargin: '-88px 0px -60% 0px', threshold: 0 },
-      );
-      for (const el of els) {
-        observer.observe(el.nativeElement);
-      }
-      onCleanup(() => observer.disconnect());
     });
 
     // Close the match-details drawer once the referral it started persists.
@@ -374,11 +282,6 @@ export class ApplicantDetailsComponent implements OnInit {
       this.dispatch.loadApplicantDetails({ id });
       this.recommendationsDispatch.load({ applicantId: id });
     }
-  }
-
-  protected scrollToSection(id: string): void {
-    this.activeSection.set(id);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   protected onEditSection(section: EditSectionId, label: string): void {
