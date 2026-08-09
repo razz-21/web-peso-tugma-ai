@@ -55,7 +55,9 @@ import { ManualReferralDialogData } from './types/manual-referral.type';
 import { ReferralStatusChange } from './types/referred-jobs.type';
 import { isTerminalStatus } from './utils/referred-jobs.util';
 import { ApplicantEditDialogData, EditSectionId } from './types/applicant-edit-dialog.type';
+import { RankingMetrics } from './types/match-details.type';
 import { toJobMatch } from './utils/job-match.util';
+import { EVALUATION_K, rankingMetricsAtK } from './utils/ranking-metrics.util';
 
 @Component({
   selector: 'app-applicant-details',
@@ -175,6 +177,22 @@ export class ApplicantDetailsComponent implements OnInit {
   protected selectMatch(match: JobMatch): void {
     this.selectedId.set(match.recommendationId);
   }
+
+  /**
+   * Applicant-level Precision@K / Recall@K / F1@K / nDCG@K over the generated
+   * Top-K recommendations (K = 5, the manuscript's operational cut-off), judged
+   * against the officers' relevant / not-relevant feedback. Per Chapter 3 the
+   * metrics evaluate the system's Top-K generation, which is exactly the
+   * Recommended jobs list — `recommendations()`, already ranked by MatchScore.
+   *
+   * Referred jobs are intentionally excluded: they leave the Recommended list
+   * once referred, so folding them back in would let unassessed referrals occupy
+   * top-K slots and understate the metrics. Null until a recommendation exists.
+   */
+  protected readonly rankingMetrics = computed<RankingMetrics | null>(() => {
+    const ranked = this.recommendations();
+    return ranked.length === 0 ? null : rankingMetricsAtK(ranked, EVALUATION_K);
+  });
 
   protected readonly fullName = computed(() => {
     const a = this.applicant();

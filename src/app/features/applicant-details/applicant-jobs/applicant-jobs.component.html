@@ -153,6 +153,58 @@
       }
     </div>
 
+    <!-- Ranking metrics — evaluated per applicant over the generated Top-K
+         recommendations, using the officers' relevant / not-relevant judgments as
+         ground truth (Chapter 3, Evaluation Metrics). -->
+    @if (metrics(); as metrics) {
+      @if (recommendations().length > 0) {
+        <section class="applicant-details__metrics" aria-label="Recommendation ranking metrics">
+          <div class="applicant-details__metrics-head">
+            <h3 class="applicant-details__metrics-title">
+              <mat-icon aria-hidden="true">insights</mat-icon>
+              Ranking metrics
+            </h3>
+            <span class="applicant-details__metrics-k">K = {{ metrics.k }}</span>
+          </div>
+          <p class="applicant-details__metrics-note">
+            Evaluated over the Top-{{ metrics.k }} recommendations using the officers' relevant /
+            not-relevant assessments as ground truth.
+          </p>
+          <ul class="applicant-details__metric-grid">
+            @for (row of metricRows(); track row.key) {
+              <li class="applicant-details__metric">
+                <span class="applicant-details__metric-value">
+                  {{ row.value | percent: '1.0-1' }}
+                </span>
+                <span class="applicant-details__metric-label">
+                  {{ row.label }}
+                  <button
+                    type="button"
+                    class="applicant-details__metric-help"
+                    [attr.aria-label]="row.label + ' — ' + row.tooltip"
+                    [matTooltip]="row.tooltip"
+                    matTooltipPosition="above"
+                    matTooltipClass="applicant-details__metric-tooltip"
+                  >
+                    <mat-icon aria-hidden="true">help_outline</mat-icon>
+                  </button>
+                </span>
+                <span class="applicant-details__metric-hint">{{ row.hint }}</span>
+              </li>
+            }
+          </ul>
+          @if (metrics.assessedCount === 0) {
+            <p class="applicant-details__metrics-empty" role="note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              <span>
+                Assess the recommendations as relevant or not relevant to populate these metrics.
+              </span>
+            </p>
+          }
+        </section>
+      }
+    }
+
     @if (recommendations().length > 0) {
       <div class="applicant-details__recommend-footer">
         <span class="applicant-details__recommend-note">

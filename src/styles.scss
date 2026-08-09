@@ -250,3 +250,14 @@ body {
     color: var(--mat-sys-on-surface-variant);
   }
 }
+
+// Wider, more readable tooltip for the ranking-metric help icons. Tooltips render
+// in a global overlay, so this must live outside the component's scoped styles.
+.applicant-details__metric-tooltip {
+  .mdc-tooltip__surface {
+    max-width: 18rem;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    text-align: left;
+  }
+}
