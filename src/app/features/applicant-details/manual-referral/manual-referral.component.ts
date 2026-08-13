@@ -307,8 +307,14 @@ export class ManualReferralComponent {
     if (courseRequired) {
       educationParts.push(courseRequired);
     }
-    const educationText =
+    const educationBase =
       educationParts.length > 0 ? educationParts.join(', ') : 'No minimum education';
+    // Surface preferred (nice-to-have) education inline so it's visible without a
+    // separate block in this compact screening card.
+    const educationText =
+      job.preferred_education.length > 0
+        ? `${educationBase} · Preferred: ${job.preferred_education.join(', ')}`
+        : educationBase;
     const location = job.location?.trim() ?? '';
     const locationText = location.length > 0 ? location : 'No location specified';
 
@@ -340,7 +346,9 @@ export class ManualReferralComponent {
       referred,
       active: job.status === 'active',
       skillsRequired: job.skills_required,
+      preferredSkills: job.preferred_skills,
       experienceText,
+      experienceIsPreferred: job.experience_is_preferred,
       educationText,
       locationText,
       salaryText: salaryText ?? 'Salary not specified',

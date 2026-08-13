@@ -227,6 +227,25 @@
     font-size: 0.9375rem;
     font-weight: 600;
     line-height: 1.2;
+
+    // Preferred (nice-to-have) items read muted — an outlined chip — so they are
+    // visually distinct from the solid required ones.
+    &--preferred {
+      background: transparent;
+      border: 1px dashed var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  // Sub-heading separating a "Preferred (nice-to-have)" group from the required
+  // list within the same card.
+  &__subgroup-title {
+    margin: 0.875rem 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   // --- Sidebar ---

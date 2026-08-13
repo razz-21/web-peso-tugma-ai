@@ -33,6 +33,10 @@ export const SkillMatchSchema = z.object({
   applicant: z.string().nullable().default(null),
   similarity: z.number().int().default(0),
   state: z.enum(['matched', 'related', 'missing']).catch('missing'),
+  // Requirement tier: 'mandatory' (a required skill) or 'preferred' (a
+  // nice-to-have), so the compare UI can show "missing (required)" vs.
+  // "missing (preferred)". Defaults to 'mandatory' on older recommendations.
+  tier: z.enum(['mandatory', 'preferred']).catch('mandatory'),
 });
 
 /** Company summary embedded under a recommendation's job (resolves the FK). */

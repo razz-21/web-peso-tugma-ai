@@ -447,6 +447,13 @@
       color: var(--mat-sys-error);
     }
 
+    // A missing *preferred* skill is only a nice-to-have, so it reads muted (a
+    // neutral outline) rather than the strong error styling of a missing must-have.
+    &--missing-preferred {
+      border-color: color-mix(in srgb, var(--mat-sys-outline) 60%, transparent);
+      color: var(--mat-sys-on-surface-variant);
+    }
+
     &--matched-soft {
       background: color-mix(in srgb, #4d6a24 16%, var(--mat-sys-surface));
       color: #33481a;
@@ -472,6 +479,16 @@
 
   &__chip-name {
     font-weight: 600;
+  }
+
+  // Small tier tag inside a skill chip ("preferred" / "(preferred)"), so a
+  // nice-to-have skill is visually distinct from a must-have.
+  &__chip-tier {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
   }
 
   &__chip-via {

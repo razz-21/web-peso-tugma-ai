@@ -197,13 +197,23 @@
       <!-- Requirements -->
       <h3 class="job-form__section">Requirements</h3>
       <mat-form-field appearance="outline">
-        <mat-label>Minimum education attainment</mat-label>
+        <mat-label>Minimum education attainment (required)</mat-label>
         <mat-select [formField]="jobForm.minimum_education_attainment" multiple>
           @for (option of educationOptions; track option) {
             <mat-option [value]="option">{{ option }}</mat-option>
           }
         </mat-select>
-        <mat-hint>Select all that apply</mat-hint>
+        <mat-hint>Mandatory — select all that apply</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Preferred education / certifications (optional)</mat-label>
+        <mat-select [formField]="jobForm.preferred_education" multiple>
+          @for (option of educationOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -229,6 +239,17 @@
         <mat-hint>e.g. 2 years in a related field</mat-hint>
       </mat-form-field>
 
+      <div class="job-form__tier">
+        <span class="job-form__tier-label" id="experience-tier-label">Experience is</span>
+        <mat-button-toggle-group
+          [formField]="jobForm.experience_is_preferred"
+          aria-labelledby="experience-tier-label"
+        >
+          <mat-button-toggle [value]="false">Required</mat-button-toggle>
+          <mat-button-toggle [value]="true">Preferred</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
       <mat-form-field appearance="outline">
         <mat-label>Eligibility</mat-label>
         <input
@@ -242,8 +263,8 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Skills required</mat-label>
-        <mat-chip-grid #skillsGrid aria-label="Skills required">
+        <mat-label>Required skills</mat-label>
+        <mat-chip-grid #skillsGrid aria-label="Required skills">
           @for (skill of skills(); track skill) {
             <mat-chip-row (removed)="removeSkill(skill)">
               {{ skill }}
@@ -260,7 +281,29 @@
             (matChipInputTokenEnd)="addSkill($event)"
           />
         </mat-chip-grid>
-        <mat-hint>Press Enter or comma to add each skill</mat-hint>
+        <mat-hint>Mandatory — press Enter or comma to add each skill</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Preferred skills (optional)</mat-label>
+        <mat-chip-grid #preferredSkillsGrid aria-label="Preferred skills">
+          @for (skill of preferredSkills(); track skill) {
+            <mat-chip-row (removed)="removeSkill(skill, 'preferred')">
+              {{ skill }}
+              <button matChipRemove type="button" [attr.aria-label]="'Remove ' + skill">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+          <input
+            placeholder="Type a skill, press Enter"
+            [matChipInputFor]="preferredSkillsGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="true"
+            (matChipInputTokenEnd)="addSkill($event, 'preferred')"
+          />
+        </mat-chip-grid>
+        <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
       </mat-form-field>
     </div>
   </mat-dialog-content>

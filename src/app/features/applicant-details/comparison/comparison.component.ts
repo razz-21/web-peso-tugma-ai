@@ -12,6 +12,7 @@ import {
   RequirementSummary,
   RequirementView,
   SkillChip,
+  SkillTierItem,
 } from '../types/comparison.type';
 import { BOTH_SEXES, ageRangeLabel, parseAgeRange } from '../utils/age.util';
 import { STATUS_LABEL, statusColor, statusFromScore } from '../utils/comparison.util';
@@ -97,17 +98,26 @@ export class ComparisonComponent {
     // surfaces as its own tier with a "via" hint. Falls back to an
     // exact-token + keyMatched overlap for recommendations generated before
     // `skill_matches` existed (no related tier then).
-    let matchedSkills: string[];
+    let matchedSkills: SkillTierItem[];
     let relatedSkills: SkillChip[];
-    let missingSkills: string[];
+    let missingSkills: SkillTierItem[];
     let matchingSkills: string[];
     if (this.match.skillMatches.length > 0) {
       const skillMatches = this.match.skillMatches;
-      matchedSkills = skillMatches.filter((m) => m.state === 'matched').map((m) => m.required);
+      matchedSkills = skillMatches
+        .filter((m) => m.state === 'matched')
+        .map((m) => ({ name: m.required, tier: m.tier }));
       relatedSkills = skillMatches
         .filter((m) => m.state === 'related')
-        .map((m) => ({ required: m.required, via: m.applicant, similarity: m.similarity }));
-      missingSkills = skillMatches.filter((m) => m.state === 'missing').map((m) => m.required);
+        .map((m) => ({
+          required: m.required,
+          via: m.applicant,
+          similarity: m.similarity,
+          tier: m.tier,
+        }));
+      missingSkills = skillMatches
+        .filter((m) => m.state === 'missing')
+        .map((m) => ({ name: m.required, tier: m.tier }));
       // The applicant's own skills that cover a requirement: the exact skill
       // (state matched, no `via`) or the covering skill for a semantic/related
       // match.
@@ -115,15 +125,20 @@ export class ComparisonComponent {
         .filter((m) => m.state === 'matched' || m.state === 'related')
         .map((m) => m.applicant ?? m.required);
     } else {
+      // Fallback for recommendations generated before `skill_matches` existed:
+      // no tier info, so every required skill is treated as mandatory.
       const matchedSet = new Set(this.match.keyMatched.map(norm));
       const applicantSet = new Set(applicantSkills.map(norm));
-      matchedSkills = required.filter(
+      const matchedNames = required.filter(
         (skill) => matchedSet.has(norm(skill)) || applicantSet.has(norm(skill)),
       );
-      const matchedNorms = new Set(matchedSkills.map(norm));
+      const matchedNorms = new Set(matchedNames.map(norm));
+      matchedSkills = matchedNames.map((name) => ({ name, tier: 'mandatory' as const }));
       relatedSkills = [];
-      missingSkills = required.filter((skill) => !matchedNorms.has(norm(skill)));
-      matchingSkills = matchedSkills;
+      missingSkills = required
+        .filter((skill) => !matchedNorms.has(norm(skill)))
+        .map((name) => ({ name, tier: 'mandatory' as const }));
+      matchingSkills = matchedNames;
     }
 
     // Exclude any applicant skill already surfaced as a covering ("via") skill
@@ -133,27 +148,34 @@ export class ComparisonComponent {
       (skill) => !requiredSet.has(norm(skill)) && !coveredSet.has(norm(skill)),
     );
 
-    // Only classify when both the job and the applicant list skills.
-    const skillsHasData = required.length > 0 && applicantSkills.length > 0;
+    // Status and the "X of N matched" badge summarize the *mandatory* required
+    // skills (must-haves), so count only mandatory-tier chips — a missing
+    // preferred skill shows as a muted chip but never drops the status or the
+    // count. `required.length` is the mandatory denominator.
+    const matchedCount = matchedSkills.filter((skill) => skill.tier === 'mandatory').length;
+    const relatedCount = relatedSkills.filter((skill) => skill.tier === 'mandatory').length;
+    const mandatoryMissing = missingSkills.filter((skill) => skill.tier === 'mandatory');
+
+    // Data exists once either tier lists a skill and the applicant lists skills.
+    const totalConsidered = matchedSkills.length + relatedSkills.length + missingSkills.length;
+    const skillsHasData = totalConsidered > 0 && applicantSkills.length > 0;
     const skillsStatus: RequirementStatus = !skillsHasData
       ? 'unknown'
-      : missingSkills.length === 0 && relatedSkills.length === 0
+      : mandatoryMissing.length === 0 && relatedCount === 0
         ? 'met'
-        : matchedSkills.length > 0 || relatedSkills.length > 0
+        : matchedCount > 0 || relatedCount > 0
           ? 'partial'
           : 'unmet';
     // Use the backend's calibrated skills score so a related skill earns partial
     // coverage (e.g. 71%) instead of the old count-based 0%.
     const skillsCoverage = skillScore;
+    // Advice focuses on the missing must-haves (preferred gaps don't block a referral).
     const skillsNote =
-      !skillsHasData || missingSkills.length === 0
+      !skillsHasData || mandatoryMissing.length === 0
         ? null
-        : `Missing ${joinList(missingSkills)}. ${
-            missingSkills.length > 1 ? 'These are' : 'This is'
+        : `Missing ${joinList(mandatoryMissing.map((skill) => skill.name))}. ${
+            mandatoryMissing.length > 1 ? 'These are' : 'This is'
           } often picked up on the job — consider referring anyway, or suggest a short TESDA course first.`;
-
-    const matchedCount = matchedSkills.length;
-    const relatedCount = relatedSkills.length;
     const skills: RequirementView = {
       key: 'skills',
       label: 'Skills',

@@ -135,6 +135,14 @@
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
+          @if (job.preferred_education.length) {
+            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <ul class="job-details__skills" aria-label="Preferred education / certifications">
+              @for (education of job.preferred_education; track education) {
+                <li class="job-details__skill job-details__skill--preferred">{{ education }}</li>
+              }
+            </ul>
+          }
         </div>
 
         <div class="job-details__card job-details__section">
@@ -152,7 +160,8 @@
         <div class="job-details__card job-details__section">
           <h3 class="job-details__section-title">
             <mat-icon aria-hidden="true">work_history</mat-icon>
-            Experience required
+            Experience
+            {{ job.experience_is_preferred ? '(preferred)' : 'required' }}
           </h3>
           @if (job.experience_required) {
             <p class="job-details__body">{{ job.experience_required }}</p>
@@ -210,13 +219,21 @@
             Skills required
           </h3>
           @if (job.skills_required.length) {
-            <ul class="job-details__skills" aria-label="Skills required">
+            <ul class="job-details__skills" aria-label="Required skills">
               @for (skill of job.skills_required; track skill) {
                 <li class="job-details__skill">{{ skill }}</li>
               }
             </ul>
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+          @if (job.preferred_skills.length) {
+            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <ul class="job-details__skills" aria-label="Preferred skills">
+              @for (skill of job.preferred_skills; track skill) {
+                <li class="job-details__skill job-details__skill--preferred">{{ skill }}</li>
+              }
+            </ul>
           }
         </div>
 

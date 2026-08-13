@@ -54,7 +54,11 @@ export interface JobCard {
 
   // Job requirement details.
   readonly skillsRequired: readonly string[];
+  /** Preferred (nice-to-have) skills — shown as a muted secondary group. */
+  readonly preferredSkills: readonly string[];
   readonly experienceText: string;
+  /** Whether the experience requirement is preferred (nice-to-have) vs. required. */
+  readonly experienceIsPreferred: boolean;
   readonly educationText: string;
   readonly locationText: string;
   readonly salaryText: string;

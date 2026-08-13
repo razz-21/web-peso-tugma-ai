@@ -9,6 +9,17 @@ export interface ComparisonDialogData {
 
 export type RequirementStatus = 'met' | 'partial' | 'unmet' | 'unknown';
 
+/** Requirement tier of a skill: a must-have vs. a nice-to-have. */
+export type SkillTier = 'mandatory' | 'preferred';
+
+/** A job skill with its requirement tier, for matched / missing chips. */
+export interface SkillTierItem {
+  /** The job's skill (e.g. "Excel"). */
+  readonly name: string;
+  /** 'mandatory' (required) or 'preferred' (nice-to-have). */
+  readonly tier: SkillTier;
+}
+
 /** A required skill covered by a related (not exact) applicant skill. */
 export interface SkillChip {
   /** The job's required skill (e.g. "Excel"). */
@@ -17,6 +28,8 @@ export interface SkillChip {
   readonly via: string | null;
   /** Best similarity as a 0–100 percentage. */
   readonly similarity: number;
+  /** 'mandatory' (required) or 'preferred' (nice-to-have). */
+  readonly tier: SkillTier;
 }
 
 /** One requirement row (skills / experience / education / location). */
@@ -33,10 +46,10 @@ export interface RequirementView {
   readonly coverageColor: string;
   readonly isSkills: boolean;
   // Skills detail.
-  readonly matchedSkills: readonly string[];
+  readonly matchedSkills: readonly SkillTierItem[];
   /** Required skills covered by a related (not exact) applicant skill. */
   readonly relatedSkills: readonly SkillChip[];
-  readonly missingSkills: readonly string[];
+  readonly missingSkills: readonly SkillTierItem[];
   /** Applicant skills covering a requirement (exact or related), for the
    * "Matching" column. */
   readonly matchingSkills: readonly string[];

@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -42,6 +43,33 @@ export interface JobFormData {
   lockedCompany?: CompanyGet | null;
 }
 
+/**
+ * Split a raw chip value into individual, trimmed skills. Splitting on commas
+ * means pasting a comma-separated list ("AWS, Docker, Kubernetes") adds one chip
+ * per skill instead of storing the whole list as a single "skill" — which would
+ * otherwise be scored as one unmatchable requirement.
+ */
+const splitSkills = (value: string): string[] =>
+  value
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+/** Normalize a stored skills list by splitting any comma-joined entries and
+ * de-duplicating, so an older job saved with a single CSV "skill" is repaired
+ * the next time it's edited and saved. */
+const normalizeSkills = (list: readonly string[] | undefined): string[] => {
+  const out: string[] = [];
+  for (const entry of list ?? []) {
+    for (const skill of splitSkills(entry)) {
+      if (!out.includes(skill)) {
+        out.push(skill);
+      }
+    }
+  }
+  return out;
+};
+
 /** Character limit shown under the description field. */
 const DESCRIPTION_MAX = 2000;
 /** Upper cap for the SMALLINT-backed monthly salary; guards obvious typos. */
@@ -54,8 +82,10 @@ type JobFormValue = {
   salary_per_month: number | null;
   location: string;
   minimum_education_attainment: string[];
+  preferred_education: string[];
   course_program: string;
   experience_required: string;
+  experience_is_preferred: boolean;
   description: string;
   age_range: string;
   sex: Sex | '';
@@ -70,8 +100,10 @@ const INITIAL_VALUE: JobFormValue = {
   salary_per_month: null,
   location: '',
   minimum_education_attainment: [],
+  preferred_education: [],
   course_program: '',
   experience_required: '',
+  experience_is_preferred: false,
   description: '',
   age_range: '',
   sex: '',
@@ -87,6 +119,7 @@ const INITIAL_VALUE: JobFormValue = {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatChipsModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -148,8 +181,10 @@ export class JobFormComponent {
           salary_per_month: this.job.salary_per_month,
           location: this.job.location ?? '',
           minimum_education_attainment: this.job.minimum_education_attainment ?? [],
+          preferred_education: this.job.preferred_education ?? [],
           course_program: this.job.course_program ?? '',
           experience_required: this.job.experience_required ?? '',
+          experience_is_preferred: this.job.experience_is_preferred ?? false,
           description: this.job.description ?? '',
           age_range: this.job.age_range ?? '',
           sex: this.job.sex ?? '',
@@ -166,8 +201,13 @@ export class JobFormComponent {
 
   protected readonly companyTypeLabels = COMPANY_TYPE_LABELS;
 
-  /** Skills are edited as chips, so they live outside the signal form. */
-  protected readonly skills = signal<string[]>(this.job?.skills_required ?? []);
+  /** Skills are edited as chips, so they live outside the signal form. Required
+   * (mandatory) and preferred (nice-to-have) skills are two separate lists. */
+  protected readonly skills = signal<string[]>(normalizeSkills(this.job?.skills_required));
+  protected readonly preferredSkills = signal<string[]>(
+    // Drop any preferred skill that's also required, so a skill never appears twice.
+    normalizeSkills(this.job?.preferred_skills).filter((skill) => !this.skills().includes(skill)),
+  );
   protected readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   protected readonly saving = computed(() =>
@@ -240,9 +280,12 @@ export class JobFormComponent {
       salary_per_month: value.salary_per_month ?? null,
       location: location || null,
       minimum_education_attainment: value.minimum_education_attainment,
+      preferred_education: value.preferred_education,
       course_program: courseProgram || null,
       experience_required: experience || null,
+      experience_is_preferred: value.experience_is_preferred,
       skills_required: this.skills(),
+      preferred_skills: this.preferredSkills(),
       description: description || null,
       age_range: ageRange || null,
       sex: value.sex || null,
@@ -275,16 +318,22 @@ export class JobFormComponent {
     }
   }
 
-  protected addSkill(event: MatChipInputEvent): void {
-    const skill = event.value.trim();
-    if (skill && !this.skills().includes(skill)) {
-      this.skills.update((current) => [...current, skill]);
+  protected addSkill(event: MatChipInputEvent, tier: 'required' | 'preferred' = 'required'): void {
+    const target = tier === 'preferred' ? this.preferredSkills : this.skills;
+    const other = tier === 'preferred' ? this.skills : this.preferredSkills;
+    // Split on commas so a pasted list adds one chip per skill. Don't let the same
+    // skill sit in both tiers — a required skill can't also be "preferred".
+    for (const skill of splitSkills(event.value)) {
+      if (!target().includes(skill) && !other().includes(skill)) {
+        target.update((current) => [...current, skill]);
+      }
     }
     event.chipInput.clear();
   }
 
-  protected removeSkill(skill: string): void {
-    this.skills.update((current) => current.filter((item) => item !== skill));
+  protected removeSkill(skill: string, tier: 'required' | 'preferred' = 'required'): void {
+    const target = tier === 'preferred' ? this.preferredSkills : this.skills;
+    target.update((current) => current.filter((item) => item !== skill));
   }
 
   private async loadCompanies(): Promise<void> {

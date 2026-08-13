@@ -699,6 +699,24 @@ $error: #b3261e;
       background: var(--mat-sys-surface-container-high);
       color: var(--mat-sys-on-surface);
     }
+
+    // Preferred (nice-to-have) skill — muted outline, distinct from required.
+    &--preferred {
+      background: transparent;
+      border: 1px dashed var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  // Secondary sub-label inside a criterion (e.g. "Preferred (nice-to-have)").
+  &__criterion-sublabel {
+    display: block;
+    margin: 0.65rem 0 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   &__panel-foot {
