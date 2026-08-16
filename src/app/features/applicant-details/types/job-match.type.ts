@@ -86,6 +86,8 @@ export interface JobMatch {
   readonly createdAt: string;
   /** When this recommendation was last updated (ISO string); tracks referral time. */
   readonly updatedAt: string;
+  /** When the applicant was referred to this job (ISO string); orders the Referred panel. */
+  readonly referredAt: string;
   /** A relevance update is in flight for this recommendation. */
   readonly updating: boolean;
   readonly tags: readonly JobMatchTag[];

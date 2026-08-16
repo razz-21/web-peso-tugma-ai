@@ -14,6 +14,22 @@
     </span>
   </header>
 
+  @if (workspace(); as workspace) {
+    <section class="sidebar__workspace">
+      <app-avatar
+        class="sidebar__workspace-badge"
+        [name]="workspace.name"
+        [seed]="workspace.id"
+        [image]="workspace.avatar"
+        [size]="44"
+      />
+      <span class="sidebar__workspace-text">
+        <span class="sidebar__workspace-label">Workspace</span>
+        <span class="sidebar__workspace-name">{{ workspace.name }}</span>
+      </span>
+    </section>
+  }
+
   <mat-nav-list class="sidebar__nav">
     @for (item of navItems(); track item.link) {
       <a

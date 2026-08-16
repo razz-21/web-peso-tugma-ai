@@ -54,6 +54,15 @@ export class WorkspacesService {
     return WorkspaceGetSchema.parse(body);
   }
 
+  async uploadAvatar(id: string, file: File): Promise<WorkspaceGet> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const body = await firstValueFrom(
+      this.http.post<WorkspaceGet>(`${this.baseUrl}/${id}/avatar`, formData),
+    );
+    return WorkspaceGetSchema.parse(body);
+  }
+
   async delete(id: string): Promise<boolean> {
     const body = await firstValueFrom(this.http.delete<boolean>(`${this.baseUrl}/${id}`));
     return body;

@@ -92,8 +92,8 @@ export class ReferredJobsComponent {
 
   private toRow(match: JobMatch, isLatest: boolean): ReferralRow {
     const status = match.status ?? 'referred';
-    const referredOn = this.datePipe.transform(match.createdAt, 'MMM d, y') ?? '—';
-    const referredShort = this.datePipe.transform(match.createdAt, 'MMM d') ?? '—';
+    const referredOn = this.datePipe.transform(match.referredAt, 'MMM d, y') ?? '—';
+    const referredShort = this.datePipe.transform(match.referredAt, 'MMM d') ?? '—';
     const salaryText = match.salary === null ? null : `₱${match.salary.toLocaleString('en-US')}/mo`;
     const companyName = match.company?.name ?? '—';
 

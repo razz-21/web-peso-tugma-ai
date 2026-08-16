@@ -5,6 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { injectDispatch } from '@ngrx/signals/events';
+import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ROLE_LABELS } from '../../../core/models/user.model';
 import { APP_ROUTES } from '../../../core/constants/routes.constant';
@@ -34,6 +35,7 @@ const initialsOf = (name: string): string =>
     MatListModule,
     MatIconModule,
     MatMenuModule,
+    AvatarComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -47,6 +49,7 @@ export class SidebarComponent {
 
   protected readonly routes = APP_ROUTES;
   protected readonly user = this.store.user;
+  protected readonly workspace = computed(() => this.user()?.workspace ?? null);
 
   // Super admins browse the full workspace list; admins/officers are scoped to
   // their own workspace, so their link points straight to its details page.

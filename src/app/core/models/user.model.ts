@@ -14,6 +14,8 @@ export const USER_STATUSES = UserStatusSchema.options;
 export const WorkspaceRefSchema = z.object({
   id: z.uuid(),
   name: z.string(),
+  // Optional so refs from backends that don't resolve the logo still parse.
+  avatar: z.string().nullable().default(null),
 });
 
 export const UserSchema = z.object({

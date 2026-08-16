@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserGet } from '../../core/models/user.model';
 import { MeService } from '../../core/services/me.service';
 import { meEvents } from './me.events';
+import { workspacesEvents } from '../workspaces/workspaces.events';
 
 type MeState = {
   user: UserGet | null;
@@ -71,6 +72,20 @@ export const MeStore = signalStore(
       error: payload,
     })),
     on(meEvents.resetMe, () => initialState),
+    // Keep the embedded workspace ref (shown in the sidebar) in sync when the
+    // user's own workspace is edited elsewhere — e.g. an avatar upload or rename.
+    on(workspacesEvents.updateWorkspaceSuccess, ({ payload }, state) => {
+      const user = state.user;
+      if (user?.workspace == null || user.workspace.id !== payload.id) {
+        return {};
+      }
+      return {
+        user: {
+          ...user,
+          workspace: { id: payload.id, name: payload.name, avatar: payload.avatar },
+        },
+      };
+    }),
   ),
   withEventHandlers(
     (

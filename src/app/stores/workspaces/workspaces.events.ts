@@ -30,5 +30,10 @@ export const workspacesEvents = eventGroup({
     updateWorkspace: type<{ id: string; workspace: WorkspacePatch }>(),
     updateWorkspaceSuccess: type<WorkspaceGet>(),
     updateWorkspaceFailed: type<string>(),
+
+    // Avatar upload reuses updateWorkspaceSuccess to apply the returned workspace,
+    // so every view bound to it (list + details) refreshes with the new image.
+    uploadWorkspaceAvatar: type<{ id: string; file: File }>(),
+    uploadWorkspaceAvatarFailed: type<string>(),
   },
 });

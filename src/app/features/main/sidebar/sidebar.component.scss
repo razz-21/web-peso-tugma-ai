@@ -66,6 +66,41 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.sidebar__workspace {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem;
+  border-radius: 1.25rem;
+  background: var(--mat-sys-surface-container);
+}
+
+.sidebar__workspace-badge {
+  flex: 0 0 auto;
+}
+
+.sidebar__workspace-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.sidebar__workspace-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.sidebar__workspace-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
 .sidebar__nav {
   flex: 1 1 auto;
   padding-top: 0.5rem;

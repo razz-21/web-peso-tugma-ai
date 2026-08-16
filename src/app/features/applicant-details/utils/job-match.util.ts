@@ -116,6 +116,7 @@ export const toJobMatch = (
     referredBy: recommendation.assessor,
     createdAt: recommendation.created_at,
     updatedAt: recommendation.updated_at,
+    referredAt: recommendation.referred_at,
     updating,
     // Surface the dimensions that scored well as quick chips. Semantic
     // similarity is always shown — it's the highest-weighted, headline AI

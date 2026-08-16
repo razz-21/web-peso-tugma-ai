@@ -37,6 +37,10 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
+import {
+  LoadingDialogComponent,
+  LoadingDialogData,
+} from '../../core/components/loading-dialog/loading-dialog.component';
 import { ApplicantDetailsStore } from '../../stores/applicant-details/applicant-details.store';
 import { applicantDetailsEvents } from '../../stores/applicant-details/applicant-details.events';
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
@@ -103,6 +107,9 @@ export class ApplicantDetailsComponent implements OnInit {
   /** Recommendation id of an in-flight drawer referral (null when none pending). */
   private readonly pendingReferralId = signal<string | null>(null);
 
+  /** Blocking "please wait" loader shown while a referral / status update runs. */
+  private loadingDialogRef: MatDialogRef<LoadingDialogComponent> | null = null;
+
   /** Open manual-referral dialog, closed once its referral succeeds. */
   private manualReferralRef: MatDialogRef<ManualReferralComponent> | null = null;
   /** True while a manual referral is in flight, so its success closes the dialog. */
@@ -143,13 +150,14 @@ export class ApplicantDetailsComponent implements OnInit {
 
   /**
    * Every recommendation the officer has referred (status set), most-recently
-   * referred first, for the Referred jobs accordion. Sorted by `updatedAt` so a
+   * referred first, for the Referred jobs accordion. Sorted by `referredAt` so a
    * freshly referred job (whether newly created or an advanced recommendation)
-   * jumps to the top. Empty until someone is referred.
+   * jumps to the top and later lifecycle updates don't reshuffle the list. Empty
+   * until someone is referred.
    */
   protected readonly referrals = computed<readonly JobMatch[]>(() =>
     this.toMatches(this.recommendationsStore.referrals()).sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      (a, b) => new Date(b.referredAt).getTime() - new Date(a.referredAt).getTime(),
     ),
   );
 
@@ -268,6 +276,34 @@ export class ApplicantDetailsComponent implements OnInit {
         .then((workspace) => this.matchingWeights.set(workspace.matching_score))
         .catch(() => this.matchingWeights.set(DEFAULT_MATCHING_SCORE));
     });
+
+    // Open a blocking "please wait" loader the moment a referral or referral-
+    // status update is dispatched: referring the applicant to a job (manual
+    // `refer`, or advancing a recommendation to `referred`), or changing a
+    // referred job's lifecycle status. The message reflects which action ran.
+    this.events
+      .on(recommendationsEvents.setStatus)
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ payload }) =>
+        payload.status === 'referred'
+          ? this.openLoading('Referring applicant', 'Sending the referral')
+          : this.openLoading('Updating referral', 'Saving the new status'),
+      );
+    this.events
+      .on(recommendationsEvents.refer)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.openLoading('Referring applicant', 'Sending the referral'));
+
+    // Dismiss the loader once the referral / status update settles (either way).
+    this.events
+      .on(
+        recommendationsEvents.setStatusSuccess,
+        recommendationsEvents.setStatusFailed,
+        recommendationsEvents.referSuccess,
+        recommendationsEvents.referFailed,
+      )
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.closeLoading());
 
     // Close the match-details drawer once the referral it started persists.
     this.events
@@ -560,6 +596,30 @@ export class ApplicantDetailsComponent implements OnInit {
     // Flag it as pending so the drawer closes once the update succeeds.
     this.pendingReferralId.set(match.recommendationId);
     this.recommendationsDispatch.setStatus({ id: match.recommendationId, status: 'referred' });
+  }
+
+  /** Show the blocking "please wait" loader (a no-op if one is already open). */
+  private openLoading(message: string, hint?: string): void {
+    if (this.loadingDialogRef) {
+      return;
+    }
+    this.loadingDialogRef = this.dialog.open<LoadingDialogComponent, LoadingDialogData>(
+      LoadingDialogComponent,
+      {
+        width: '380px',
+        maxWidth: '90vw',
+        disableClose: true,
+        restoreFocus: true,
+        ariaLabel: message,
+        data: { message, hint },
+      },
+    );
+  }
+
+  /** Dismiss the blocking loader once the referral / status update settles. */
+  private closeLoading(): void {
+    this.loadingDialogRef?.close();
+    this.loadingDialogRef = null;
   }
 
   protected onToggleStatus(applicant: ApplicantGet): void {

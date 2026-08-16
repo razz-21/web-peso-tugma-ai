@@ -98,6 +98,9 @@ export const RecommendedJobSchema = z.object({
   date_registered: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
+  // When the applicant was referred to this job — stamped on referral, used to
+  // sort the Referred jobs panel. Present on every read (server-defaulted).
+  referred_at: z.string(),
 });
 
 /** `POST /recommended-jobs/generate` returns the ranked Top-K directly. */

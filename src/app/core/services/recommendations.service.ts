@@ -67,8 +67,13 @@ export class RecommendationsService {
 
   /** Human-in-the-Loop: set a recommendation's referral lifecycle status. */
   async setStatus(id: string, status: RecommendedJobStatus): Promise<RecommendedJob> {
+    // Stamp the referral time when the applicant is (re-)referred to this job, so
+    // the Referred jobs panel orders by when each referral actually happened.
+    // Later lifecycle advances (interview / hired / …) leave `referred_at` intact.
+    const patch: { status: RecommendedJobStatus; referred_at?: string } =
+      status === 'referred' ? { status, referred_at: new Date().toISOString() } : { status };
     const body = await firstValueFrom(
-      this.http.patch<RecommendedJob>(`${this.baseUrl}/${id}`, { status }),
+      this.http.patch<RecommendedJob>(`${this.baseUrl}/${id}`, patch),
     );
     return RecommendedJobSchema.parse(body);
   }

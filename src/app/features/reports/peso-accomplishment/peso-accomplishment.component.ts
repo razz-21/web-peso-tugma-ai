@@ -33,6 +33,14 @@ interface StatCard {
 
 const formatNumber = (value: number): string => value.toLocaleString('en-US');
 
+/** Format a percentage (0–100) to one decimal, e.g. `42.5%`. */
+const formatPercent = (value: number): string =>
+  `${(Math.round(value * 10) / 10).toLocaleString('en-US')}%`;
+
+/** Share of registered job seekers who were placed, as a percentage (0 when none registered). */
+const employmentRate = (placed: number, registered: number): number =>
+  registered > 0 ? (placed / registered) * 100 : 0;
+
 /** Render a `Jul 15, 2026` date from an ISO/`YYYY-MM-DD` string; empty when invalid. */
 const formatDay = (iso: string): string => {
   const date = new Date(iso);
@@ -68,7 +76,7 @@ export class PesoAccomplishmentComponent {
 
   protected readonly report = signal<PesoAccomplishmentReport | null>(null);
   protected readonly loading = signal(false);
-  protected readonly cardPlaceholders = [0, 1, 2, 3];
+  protected readonly cardPlaceholders = [0, 1, 2, 3, 4];
 
   protected readonly indicatorColumns = INDICATOR_COLUMNS;
 
@@ -100,6 +108,14 @@ export class PesoAccomplishmentComponent {
         tone: 'grey',
         label: 'Applicants placed',
         value: formatNumber(report.applicants_placed),
+      },
+      {
+        icon: 'trending_up',
+        tone: 'green',
+        label: 'Employment rate',
+        value: formatPercent(
+          employmentRate(report.applicants_placed, report.job_seekers_registered),
+        ),
       },
     ];
   });
