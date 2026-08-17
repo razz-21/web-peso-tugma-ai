@@ -32,6 +32,10 @@ export class CompanyProfileComponent {
     this.dispatch.uploadCompanyAvatar({ id: this.company().id, file });
   }
 
+  protected onAvatarRemove(): void {
+    this.dispatch.removeCompanyAvatar({ id: this.company().id });
+  }
+
   protected onAvatarInvalid(message: string): void {
     this.snackBar.open(message, 'Close', { duration: 3000 });
   }

@@ -82,6 +82,10 @@ export class WorkspaceDetailsComponent implements OnInit {
     this.workspacesDispatch.uploadWorkspaceAvatar({ id: workspace.id, file });
   }
 
+  protected onAvatarRemove(workspace: WorkspaceGet): void {
+    this.workspacesDispatch.removeWorkspaceAvatar({ id: workspace.id });
+  }
+
   protected onAvatarInvalid(message: string): void {
     this.snackBar.open(message, 'Close', { duration: 3000 });
   }

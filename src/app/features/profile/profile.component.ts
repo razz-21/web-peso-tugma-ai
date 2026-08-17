@@ -58,6 +58,10 @@ export class ProfileComponent {
     this.dispatch.uploadAvatar({ file });
   }
 
+  protected onAvatarRemove(): void {
+    this.dispatch.removeAvatar();
+  }
+
   protected onAvatarInvalid(message: string): void {
     this.snackBar.open(message, 'Close', { duration: 3000 });
   }

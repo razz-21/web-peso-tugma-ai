@@ -27,4 +27,10 @@ export class MeService {
     const body = await firstValueFrom(this.http.post<unknown>(`${this.baseUrl}/avatar`, formData));
     return UserGetSchema.parse(body);
   }
+
+  /** Remove the current user's avatar and return the updated profile. */
+  async removeAvatar(): Promise<UserGet> {
+    const body = await firstValueFrom(this.http.delete<unknown>(`${this.baseUrl}/avatar`));
+    return UserGetSchema.parse(body);
+  }
 }

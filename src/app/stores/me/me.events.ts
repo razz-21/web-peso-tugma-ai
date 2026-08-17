@@ -18,5 +18,9 @@ export const meEvents = eventGroup({
     uploadAvatar: type<{ file: File }>(),
     uploadAvatarSuccess: type<UserGet>(),
     uploadAvatarFailed: type<string>(),
+
+    removeAvatar: type<void>(),
+    removeAvatarSuccess: type<UserGet>(),
+    removeAvatarFailed: type<string>(),
   },
 });

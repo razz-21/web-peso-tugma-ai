@@ -71,6 +71,16 @@ export const MeStore = signalStore(
       uploadAvatarLoading: false,
       error: payload,
     })),
+    on(meEvents.removeAvatar, () => ({ uploadAvatarLoading: true, error: null })),
+    on(meEvents.removeAvatarSuccess, ({ payload }) => ({
+      user: payload,
+      uploadAvatarLoading: false,
+      error: null,
+    })),
+    on(meEvents.removeAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
     on(meEvents.resetMe, () => initialState),
     // Keep the embedded workspace ref (shown in the sidebar) in sync when the
     // user's own workspace is edited elsewhere — e.g. an avatar upload or rename.
@@ -133,8 +143,27 @@ export const MeStore = signalStore(
       uploadAvatarSuccess$: events
         .on(meEvents.uploadAvatarSuccess)
         .pipe(tap(() => snackBar.open('Avatar updated successfully', 'Close', { duration: 3000 }))),
+      removeAvatar$: events.on(meEvents.removeAvatar).pipe(
+        switchMap(() =>
+          from(meService.removeAvatar()).pipe(
+            mapResponse({
+              next: (user) => meEvents.removeAvatarSuccess(user),
+              error: (error: unknown) =>
+                meEvents.removeAvatarFailed(errorMessage(error, 'Failed to remove avatar.')),
+            }),
+          ),
+        ),
+      ),
+      removeAvatarSuccess$: events
+        .on(meEvents.removeAvatarSuccess)
+        .pipe(tap(() => snackBar.open('Avatar removed successfully', 'Close', { duration: 3000 }))),
       failures$: events
-        .on(meEvents.loadMeFailed, meEvents.updateMeFailed, meEvents.uploadAvatarFailed)
+        .on(
+          meEvents.loadMeFailed,
+          meEvents.updateMeFailed,
+          meEvents.uploadAvatarFailed,
+          meEvents.removeAvatarFailed,
+        )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
     }),
   ),

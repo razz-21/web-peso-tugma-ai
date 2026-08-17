@@ -143,6 +143,14 @@ export const WorkspacesStore = signalStore(
       uploadAvatarLoading: false,
       error: payload,
     })),
+    on(workspacesEvents.removeWorkspaceAvatar, () => ({
+      uploadAvatarLoading: true,
+      error: null,
+    })),
+    on(workspacesEvents.removeWorkspaceAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
     on(workspacesEvents.deleteWorkspace, () => ({ deleteWorkspaceLoading: true, error: null })),
     on(workspacesEvents.deleteWorkspaceSuccess, () => ({
       deleteWorkspaceLoading: false,
@@ -267,6 +275,26 @@ export const WorkspacesStore = signalStore(
       // Success reuses updateWorkspaceSuccess (handled above): its snackbar and
       // state patch already cover avatar changes, so no separate handler here.
       uploadWorkspaceAvatarFailed$: events.on(workspacesEvents.uploadWorkspaceAvatarFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      removeWorkspaceAvatar$: events.on(workspacesEvents.removeWorkspaceAvatar).pipe(
+        exhaustMap(({ payload }) =>
+          from(workspacesService.removeAvatar(payload.id)).pipe(
+            mapResponse({
+              // Reuse updateWorkspaceSuccess so the list and details views both
+              // pick up the returned workspace (now without an avatar).
+              next: (workspace) => workspacesEvents.updateWorkspaceSuccess(workspace),
+              error: (error: unknown) =>
+                workspacesEvents.removeWorkspaceAvatarFailed(
+                  errorMessage(error, 'Failed to remove avatar.'),
+                ),
+            }),
+          ),
+        ),
+      ),
+      removeWorkspaceAvatarFailed$: events.on(workspacesEvents.removeWorkspaceAvatarFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
         }),

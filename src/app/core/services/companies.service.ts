@@ -66,4 +66,10 @@ export class CompaniesService {
     );
     return CompanyGetSchema.parse(body);
   }
+
+  /** Remove the company's avatar and return the updated record. */
+  async removeAvatar(id: string): Promise<CompanyGet> {
+    const body = await firstValueFrom(this.http.delete<CompanyGet>(`${this.baseUrl}/${id}/avatar`));
+    return CompanyGetSchema.parse(body);
+  }
 }

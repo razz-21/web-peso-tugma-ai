@@ -12,6 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   AvatarCropperData,
@@ -56,7 +57,7 @@ const avatarClassOf = (seed: string): string => {
 
 @Component({
   selector: 'app-avatar',
-  imports: [MatIconModule, MatProgressSpinnerModule],
+  imports: [MatIconModule, MatMenuModule, MatProgressSpinnerModule],
   template: `<span class="avatar-wrap" [style.width.px]="size()" [style.height.px]="size()">
     @if (image()) {
       <img
@@ -86,7 +87,7 @@ const avatarClassOf = (seed: string): string => {
         [style.width.px]="badgeSize()"
         [style.height.px]="badgeSize()"
         [attr.aria-label]="'Change ' + name() + ' avatar'"
-        (click)="openPicker()"
+        [matMenuTriggerFor]="avatarMenu"
       >
         <mat-icon
           [style.fontSize.px]="iconSize()"
@@ -95,6 +96,19 @@ const avatarClassOf = (seed: string): string => {
           >photo_camera</mat-icon
         >
       </button>
+
+      <mat-menu #avatarMenu="matMenu">
+        <button type="button" mat-menu-item (click)="openPicker()">
+          <mat-icon>upload</mat-icon>
+          <span>Upload photo</span>
+        </button>
+        @if (image()) {
+          <button type="button" mat-menu-item (click)="removeRequested.emit()">
+            <mat-icon>delete</mat-icon>
+            <span>Remove photo</span>
+          </button>
+        }
+      </mat-menu>
 
       @if (uploading()) {
         <span class="avatar__overlay" role="status" aria-label="Uploading avatar">
@@ -139,6 +153,8 @@ export class AvatarComponent {
 
   /** Emits the (optionally cropped) file once it passes the type/size checks. */
   readonly fileSelected = output<File>();
+  /** Emits when the user chooses to remove the current avatar. */
+  readonly removeRequested = output<void>();
   /** Emits a human-readable reason when the picked file is rejected. */
   readonly invalid = output<string>();
 

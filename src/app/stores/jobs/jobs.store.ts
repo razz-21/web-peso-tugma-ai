@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { signalStore, withComputed, withState } from '@ngrx/signals';
 import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events';
@@ -36,8 +37,18 @@ const initialState: JobsState = {
   error: null,
 };
 
-const errorMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string): string => {
+  // FastAPI surfaces the reason in `error.error.detail` (e.g. "Cannot delete
+  // this job because it is used by ..."); prefer it over the generic
+  // HttpErrorResponse message. Fall back to the default when there is no detail.
+  if (error instanceof HttpErrorResponse) {
+    const detail = (error.error as { detail?: unknown } | null)?.detail;
+    if (typeof detail === 'string' && detail) {
+      return detail;
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+};
 
 const toListParams = (filter: JobsFilter): ListJobsParams => ({
   limit: filter.pageSize,

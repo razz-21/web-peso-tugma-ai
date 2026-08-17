@@ -11,6 +11,7 @@
         [editable]="true"
         [uploading]="uploadingAvatar()"
         (fileSelected)="onAvatarSelected($event)"
+        (removeRequested)="onAvatarRemove()"
         (invalid)="onAvatarInvalid($event)"
       />
 
