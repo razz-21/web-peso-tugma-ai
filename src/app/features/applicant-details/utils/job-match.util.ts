@@ -100,6 +100,7 @@ export const toJobMatch = (
     active: recommendation.job?.status === 'active',
     skillsRequired: recommendation.job?.skills_required ?? [],
     experienceRequired: recommendation.job?.experience_required ?? null,
+    experiencePreferred: recommendation.job?.experience_preferred ?? null,
     educationRequired: recommendation.job?.minimum_education_attainment ?? [],
     courseRequired: recommendation.job?.course_program ?? null,
     ageRange: recommendation.job?.age_range ?? null,

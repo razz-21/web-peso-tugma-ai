@@ -145,14 +145,6 @@
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
-          @if (job.preferred_education.length) {
-            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
-            <ul class="job-details__skills" aria-label="Preferred education / certifications">
-              @for (education of job.preferred_education; track education) {
-                <li class="job-details__skill job-details__skill--preferred">{{ education }}</li>
-              }
-            </ul>
-          }
         </div>
 
         <div class="job-details__card job-details__section">
@@ -170,13 +162,16 @@
         <div class="job-details__card job-details__section">
           <h3 class="job-details__section-title">
             <mat-icon aria-hidden="true">work_history</mat-icon>
-            Experience
-            {{ job.experience_is_preferred ? '(preferred)' : 'required' }}
+            Experience required
           </h3>
           @if (job.experience_required) {
             <p class="job-details__body">{{ job.experience_required }}</p>
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+          @if (job.experience_preferred) {
+            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__body">{{ job.experience_preferred }}</p>
           }
         </div>
 

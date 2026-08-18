@@ -63,6 +63,7 @@ export const RecommendedJobJobSchema = z.object({
   no_of_vacancies: z.number().int().default(0),
   skills_required: z.array(z.string()).default([]),
   experience_required: z.string().nullable().default(null),
+  experience_preferred: z.string().nullable().default(null),
   minimum_education_attainment: z.array(z.string()).default([]),
   course_program: z.string().nullable().default(null),
   age_range: z.string().nullable().default(null),

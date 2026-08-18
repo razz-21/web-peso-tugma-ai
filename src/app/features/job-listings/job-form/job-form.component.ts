@@ -4,7 +4,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -82,10 +81,9 @@ type JobFormValue = {
   salary_per_month: number | null;
   location: string;
   minimum_education_attainment: string[];
-  preferred_education: string[];
   course_program: string;
   experience_required: string;
-  experience_is_preferred: boolean;
+  experience_preferred: string;
   description: string;
   age_range: string;
   sex: Sex | '';
@@ -100,10 +98,9 @@ const INITIAL_VALUE: JobFormValue = {
   salary_per_month: null,
   location: '',
   minimum_education_attainment: [],
-  preferred_education: [],
   course_program: '',
   experience_required: '',
-  experience_is_preferred: false,
+  experience_preferred: '',
   description: '',
   age_range: '',
   sex: '',
@@ -119,7 +116,6 @@ const INITIAL_VALUE: JobFormValue = {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatButtonToggleModule,
     MatChipsModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -181,10 +177,9 @@ export class JobFormComponent {
           salary_per_month: this.job.salary_per_month,
           location: this.job.location ?? '',
           minimum_education_attainment: this.job.minimum_education_attainment ?? [],
-          preferred_education: this.job.preferred_education ?? [],
           course_program: this.job.course_program ?? '',
           experience_required: this.job.experience_required ?? '',
-          experience_is_preferred: this.job.experience_is_preferred ?? false,
+          experience_preferred: this.job.experience_preferred ?? '',
           description: this.job.description ?? '',
           age_range: this.job.age_range ?? '',
           sex: this.job.sex ?? '',
@@ -267,6 +262,7 @@ export class JobFormComponent {
     const value = this.jobForm().value();
     const courseProgram = value.course_program.trim();
     const experience = value.experience_required.trim();
+    const experiencePreferred = value.experience_preferred.trim();
     const description = value.description.trim();
     const ageRange = value.age_range.trim();
     const location = value.location.trim();
@@ -280,10 +276,9 @@ export class JobFormComponent {
       salary_per_month: value.salary_per_month ?? null,
       location: location || null,
       minimum_education_attainment: value.minimum_education_attainment,
-      preferred_education: value.preferred_education,
       course_program: courseProgram || null,
       experience_required: experience || null,
-      experience_is_preferred: value.experience_is_preferred,
+      experience_preferred: experiencePreferred || null,
       skills_required: this.skills(),
       preferred_skills: this.preferredSkills(),
       description: description || null,

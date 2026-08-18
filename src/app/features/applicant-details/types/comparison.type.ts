@@ -58,6 +58,9 @@ export interface RequirementView {
   // Generic detail (experience / education / location).
   readonly requiredItems: readonly string[];
   readonly requiredText: string | null;
+  /** Preferred (nice-to-have) requirement text, shown under its own kicker below
+   * the required detail. Only experience uses it today; null elsewhere. */
+  readonly preferredText: string | null;
   readonly applicantItems: readonly string[];
   readonly applicantText: string | null;
 }

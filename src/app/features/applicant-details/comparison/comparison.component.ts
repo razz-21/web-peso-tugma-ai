@@ -198,21 +198,29 @@ export class ComparisonComponent {
       note: skillsNote,
       requiredItems: [],
       requiredText: null,
+      preferredText: null,
       applicantItems: [],
       applicantText: null,
     };
 
     // --- Experience --------------------------------------------------------
-    // Experience compares the job's `experience_required` against the
-    // applicant's work history (roles), mirroring the backend's work-only
-    // qualitative experience vector. Course of study is scored under Education.
+    // Experience compares the job's `experience_required` (and preferred, nice-to-
+    // have) against the applicant's work history (roles), mirroring the backend's
+    // work-only qualitative experience vector. Course of study is scored under
+    // Education.
     const experienceScore = breakdown.get('experience')?.value ?? 0;
     const experienceRequired = this.match.experienceRequired?.trim() ?? '';
+    const experiencePreferred = this.match.experiencePreferred?.trim() ?? '';
     const workPositions = this.applicant.work_experience
       .map((work) => work.position?.trim())
       .filter((position): position is string => Boolean(position));
+    // "Has data" keys off a stated requirement (either tier) plus work history.
     const experienceHasData =
-      experienceRequired.length > 0 && this.applicant.work_experience.length > 0;
+      (experienceRequired.length > 0 || experiencePreferred.length > 0) &&
+      this.applicant.work_experience.length > 0;
+    // Required text falls back only when the mandatory tier is unstated; the
+    // preferred tier renders separately under its own kicker (see the template).
+    const experienceText = experienceRequired || 'No specific experience required';
     const experienceStatus: RequirementStatus = experienceHasData
       ? statusFromScore(experienceScore)
       : 'unknown';
@@ -233,7 +241,8 @@ export class ComparisonComponent {
       additionalSkills: [],
       note: null,
       requiredItems: [],
-      requiredText: this.match.experienceRequired ?? 'No specific experience required',
+      requiredText: experienceText,
+      preferredText: experiencePreferred || null,
       applicantItems: workPositions,
       applicantText: workPositions.length === 0 ? 'No work experience on file' : null,
     };
@@ -278,6 +287,7 @@ export class ComparisonComponent {
       note: null,
       requiredItems: educationRequiredItems,
       requiredText: educationRequiredItems.length === 0 ? 'No minimum education' : null,
+      preferredText: null,
       applicantItems: applicantEducationItems,
       applicantText: applicantEducationItems.length === 0 ? 'Not indicated' : null,
     };
@@ -309,6 +319,7 @@ export class ComparisonComponent {
       note: null,
       requiredItems: [],
       requiredText: this.match.location ?? 'No location specified',
+      preferredText: null,
       applicantItems: this.applicant.preferred_work_location,
       applicantText:
         this.applicant.preferred_work_location.length === 0

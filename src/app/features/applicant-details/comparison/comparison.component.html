@@ -344,6 +344,13 @@
               } @else if (requirement.requiredText) {
                 <p class="comparison__col-text">{{ requirement.requiredText }}</p>
               }
+              @if (requirement.preferredText) {
+                <p class="comparison__col-kicker comparison__col-kicker--preferred">
+                  <mat-icon aria-hidden="true">{{ requirement.icon }}</mat-icon>
+                  Preferred
+                </p>
+                <p class="comparison__col-text">{{ requirement.preferredText }}</p>
+              }
             }
           </div>
 

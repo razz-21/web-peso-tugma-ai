@@ -378,6 +378,12 @@
       height: 1.15rem;
       font-size: 1.15rem;
     }
+
+    // Second kicker (e.g. preferred experience) sits below the required detail,
+    // so it needs top spacing to separate it from the text above.
+    &--preferred {
+      margin-top: 1rem;
+    }
   }
 
   &__sub-label {

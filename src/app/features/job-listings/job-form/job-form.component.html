@@ -207,16 +207,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Preferred education / certifications (optional)</mat-label>
-        <mat-select [formField]="jobForm.preferred_education" multiple>
-          @for (option of educationOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-        <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
         <mat-label>Course / Program</mat-label>
         <input
           matInput
@@ -236,19 +226,19 @@
           autocomplete="off"
           [formField]="jobForm.experience_required"
         ></textarea>
-        <mat-hint>e.g. 2 years in a related field</mat-hint>
+        <mat-hint>Mandatory — e.g. 2 years in a related field</mat-hint>
       </mat-form-field>
 
-      <div class="job-form__tier">
-        <span class="job-form__tier-label" id="experience-tier-label">Experience is</span>
-        <mat-button-toggle-group
-          [formField]="jobForm.experience_is_preferred"
-          aria-labelledby="experience-tier-label"
-        >
-          <mat-button-toggle [value]="false">Required</mat-button-toggle>
-          <mat-button-toggle [value]="true">Preferred</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Experience preferred (optional)</mat-label>
+        <textarea
+          matInput
+          rows="2"
+          autocomplete="off"
+          [formField]="jobForm.experience_preferred"
+        ></textarea>
+        <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
+      </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Eligibility</mat-label>

@@ -61,6 +61,8 @@ export interface JobMatch {
   /** Job requirement fields, for the applicant-vs-job comparison view. */
   readonly skillsRequired: readonly string[];
   readonly experienceRequired: string | null;
+  /** Job's preferred (nice-to-have) experience, for the applicant-vs-job comparison. */
+  readonly experiencePreferred: string | null;
   readonly educationRequired: readonly string[];
   /** Job's preferred course/program of study, for the education comparison. */
   readonly courseRequired: string | null;
