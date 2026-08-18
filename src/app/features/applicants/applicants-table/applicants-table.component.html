@@ -29,6 +29,21 @@
       <td mat-cell *matCellDef="let row">{{ row.educationLabel }}</td>
     </ng-container>
 
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+      <td mat-cell *matCellDef="let row">
+        <span
+          class="applicants-table__badge"
+          [class.applicants-table__badge--active]="row.isActive"
+          [class.applicants-table__badge--inactive]="!row.isActive"
+        >
+          <span class="applicants-table__badge-dot" aria-hidden="true"></span>
+          {{ row.statusLabel }}
+        </span>
+      </td>
+    </ng-container>
+
     <!-- Updated at -->
     <ng-container matColumnDef="updated_at">
       <th mat-header-cell *matHeaderCellDef scope="col">Updated at</th>

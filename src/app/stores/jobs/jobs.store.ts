@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { signalStore, withComputed, withState } from '@ngrx/signals';
 import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events';
@@ -36,8 +37,18 @@ const initialState: JobsState = {
   error: null,
 };
 
-const errorMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string): string => {
+  // FastAPI surfaces the reason in `error.error.detail` (e.g. "Cannot delete
+  // this job because it is used by ..."); prefer it over the generic
+  // HttpErrorResponse message. Fall back to the default when there is no detail.
+  if (error instanceof HttpErrorResponse) {
+    const detail = (error.error as { detail?: unknown } | null)?.detail;
+    if (typeof detail === 'string' && detail) {
+      return detail;
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+};
 
 const toListParams = (filter: JobsFilter): ListJobsParams => ({
   limit: filter.pageSize,
@@ -108,7 +119,7 @@ export const JobsStore = signalStore(
       error: null,
     })),
     on(jobsEvents.createJobSuccess, ({ payload }, state) => ({
-      jobs: [payload, ...state.jobs],
+      jobs: [payload, ...state.jobs].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createJobLoading: false,
       error: null,
@@ -147,17 +158,19 @@ export const JobsStore = signalStore(
       jobsService = inject(JobsService),
       snackBar = inject(MatSnackBar),
     ) => ({
-      loadJobs$: events.on(jobsEvents.loadJob, jobsEvents.deleteJobSuccess).pipe(
-        switchMap(() =>
-          from(jobsService.list(toListParams(store.filter()))).pipe(
-            mapResponse({
-              next: (list) => jobsEvents.loadJobSuccess(list),
-              error: (error: unknown) =>
-                jobsEvents.loadJobFailed(errorMessage(error, 'Failed to load jobs.')),
-            }),
+      loadJobs$: events
+        .on(jobsEvents.loadJob, jobsEvents.createJobSuccess, jobsEvents.deleteJobSuccess)
+        .pipe(
+          switchMap(() =>
+            from(jobsService.list(toListParams(store.filter()))).pipe(
+              mapResponse({
+                next: (list) => jobsEvents.loadJobSuccess(list),
+                error: (error: unknown) =>
+                  jobsEvents.loadJobFailed(errorMessage(error, 'Failed to load jobs.')),
+              }),
+            ),
           ),
         ),
-      ),
       loadJobFailed$: events.on(jobsEvents.loadJobFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });

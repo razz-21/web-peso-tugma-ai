@@ -14,6 +14,22 @@
     </span>
   </header>
 
+  @if (workspace(); as workspace) {
+    <section class="sidebar__workspace">
+      <app-avatar
+        class="sidebar__workspace-badge"
+        [name]="workspace.name"
+        [seed]="workspace.id"
+        [image]="workspace.avatar"
+        [size]="44"
+      />
+      <span class="sidebar__workspace-text">
+        <span class="sidebar__workspace-label">Workspace</span>
+        <span class="sidebar__workspace-name">{{ workspace.name }}</span>
+      </span>
+    </section>
+  }
+
   <mat-nav-list class="sidebar__nav">
     @for (item of navItems(); track item.link) {
       <a
@@ -36,12 +52,17 @@
       [matMenuTriggerFor]="userMenu"
       aria-label="Open account menu"
     >
-      <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
+      <app-avatar
+        class="sidebar__avatar"
+        [name]="user()?.fullname ?? ''"
+        [seed]="user()?.id ?? ''"
+        [image]="user()?.avatar ?? null"
+        [size]="44"
+      />
       <span class="sidebar__profile-text">
         <span class="sidebar__profile-name">{{ user()?.fullname }}</span>
         <span class="sidebar__profile-role">{{ roleLabel() }}</span>
       </span>
-      <mat-icon class="sidebar__profile-chevron" aria-hidden="true">chevron_right</mat-icon>
     </button>
 
     <mat-menu #userMenu="matMenu" xPosition="before">

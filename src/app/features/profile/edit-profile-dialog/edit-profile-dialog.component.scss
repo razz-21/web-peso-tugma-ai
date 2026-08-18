@@ -1,0 +1,35 @@
+.dialog__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: min(24rem, 80vw);
+}
+
+.dialog__hint {
+  margin: 0 0 0.5rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.9375rem;
+}
+
+.dialog__alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  font-size: 0.875rem;
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 1.125rem;
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}

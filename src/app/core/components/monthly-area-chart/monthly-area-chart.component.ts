@@ -47,6 +47,8 @@ export class MonthlyAreaChartComponent {
   readonly points = input.required<MonthlyAreaPoint[]>();
   /** Prefix for the chart's screen-reader description, e.g. "Registrations per month". */
   readonly ariaLabelPrefix = input('Monthly totals');
+  /** Noun shown in a point's tooltip, e.g. "Registrations" → "Registrations: 42". */
+  readonly valueLabel = input('Total');
   /** Y-axis grid step. */
   readonly axisStep = input(50);
 
@@ -80,7 +82,20 @@ export class MonthlyAreaChartComponent {
     layout: { padding: { top: 16 } },
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: '#1f2723',
+        titleColor: '#ffffff',
+        bodyColor: '#e6ebe2',
+        padding: 10,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: { size: 13, weight: 'bold' },
+        bodyFont: { size: 13 },
+        callbacks: {
+          label: (item) => `${this.valueLabel()}: ${item.formattedValue}`,
+        },
+      },
     },
     scales: {
       y: {

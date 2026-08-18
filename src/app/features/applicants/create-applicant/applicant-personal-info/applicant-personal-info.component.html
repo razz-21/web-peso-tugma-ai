@@ -41,9 +41,14 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Date of birth</mat-label>
-      <input matInput [matDatepicker]="dobPicker" [formField]="store.form.date_of_birth" />
+      <input
+        matInput
+        [matDatepicker]="dobPicker"
+        [max]="today"
+        [formField]="store.form.date_of_birth"
+      />
       <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
-      <mat-datepicker #dobPicker />
+      <mat-datepicker #dobPicker [startView]="'multi-year'" />
       @if (error(store.form.date_of_birth()); as msg) {
         <mat-error>{{ msg }}</mat-error>
       }

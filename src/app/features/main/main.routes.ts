@@ -85,6 +85,20 @@ export const mainRoutes: Routes = [
         loadComponent: () => import('../reports/reports.component').then((m) => m.ReportsComponent),
       },
       {
+        path: 'reports/peso-accomplishment',
+        loadComponent: () =>
+          import('../reports/peso-accomplishment/peso-accomplishment.component').then(
+            (m) => m.PesoAccomplishmentComponent,
+          ),
+      },
+      {
+        path: 'reports/referral-to-placement-funnel',
+        loadComponent: () =>
+          import('../reports/referral-funnel/referral-funnel.component').then(
+            (m) => m.ReferralFunnelComponent,
+          ),
+      },
+      {
         path: 'reports/job-solicited',
         loadComponent: () =>
           import('../reports/job-solicited/job-solicited.component').then(

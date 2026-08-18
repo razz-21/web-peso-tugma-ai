@@ -1,0 +1,36 @@
+.vacancies-dialog__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+
+  mat-icon {
+    flex-shrink: 0;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.vacancies-dialog__subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.vacancies-dialog__field {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  mat-progress-spinner {
+    margin-right: 0.5rem;
+  }
+}
+
+.vacancies-dialog__save-button-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

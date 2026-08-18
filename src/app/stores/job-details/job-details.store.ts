@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { signalStore, withState } from '@ngrx/signals';
 import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events';
@@ -22,8 +23,18 @@ const initialState: JobDetailsState = {
   error: null,
 };
 
-const errorMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string): string => {
+  // FastAPI surfaces the reason in `error.error.detail` (e.g. "Cannot delete
+  // this job because it is used by ..."); prefer it over the generic
+  // HttpErrorResponse message. Fall back to the default when there is no detail.
+  if (error instanceof HttpErrorResponse) {
+    const detail = (error.error as { detail?: unknown } | null)?.detail;
+    if (typeof detail === 'string' && detail) {
+      return detail;
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+};
 
 export const JobDetailsStore = signalStore(
   withState(initialState),
@@ -46,6 +57,16 @@ export const JobDetailsStore = signalStore(
       error: null,
     })),
     on(jobDetailsEvents.updateStatusFailed, ({ payload }) => ({
+      updating: false,
+      error: payload,
+    })),
+    on(jobDetailsEvents.updateVacancies, () => ({ updating: true, error: null })),
+    on(jobDetailsEvents.updateVacanciesSuccess, ({ payload }) => ({
+      job: payload,
+      updating: false,
+      error: null,
+    })),
+    on(jobDetailsEvents.updateVacanciesFailed, ({ payload }) => ({
       updating: false,
       error: payload,
     })),
@@ -81,17 +102,35 @@ export const JobDetailsStore = signalStore(
           ),
         ),
       ),
-      updateStatusSuccess$: events
-        .on(jobDetailsEvents.updateStatusSuccess)
-        .pipe(
-          tap(({ payload }) =>
-            snackBar.open(payload.status === 'active' ? 'Job activated' : 'Job closed', 'Close', {
-              duration: 3000,
+      updateStatusSuccess$: events.on(jobDetailsEvents.updateStatusSuccess).pipe(
+        tap(({ payload }) =>
+          snackBar.open(payload.status === 'active' ? 'Job activated' : 'Job closed', 'Close', {
+            duration: 3000,
+          }),
+        ),
+      ),
+      updateVacancies$: events.on(jobDetailsEvents.updateVacancies).pipe(
+        exhaustMap(({ payload }) =>
+          from(jobsService.update(payload.id, { no_of_vacancies: payload.no_of_vacancies })).pipe(
+            mapResponse({
+              next: (job) => jobDetailsEvents.updateVacanciesSuccess(job),
+              error: (error: unknown) =>
+                jobDetailsEvents.updateVacanciesFailed(
+                  errorMessage(error, 'Failed to update vacancies.'),
+                ),
             }),
           ),
         ),
+      ),
+      updateVacanciesSuccess$: events
+        .on(jobDetailsEvents.updateVacanciesSuccess)
+        .pipe(tap(() => snackBar.open('Vacancies updated', 'Close', { duration: 3000 }))),
       failures$: events
-        .on(jobDetailsEvents.loadJobDetailsFailed, jobDetailsEvents.updateStatusFailed)
+        .on(
+          jobDetailsEvents.loadJobDetailsFailed,
+          jobDetailsEvents.updateStatusFailed,
+          jobDetailsEvents.updateVacanciesFailed,
+        )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
     }),
   ),

@@ -19,10 +19,17 @@
   </mat-drawer>
 
   <mat-drawer-content class="company-details__content">
-    <a class="company-details__back" [routerLink]="routes.companies">
-      <mat-icon>arrow_back</mat-icon>
-      <span>Back to companies</span>
-    </a>
+    <div class="company-details__back">
+      <a
+        matIconButton
+        class="company-details__back-btn"
+        [routerLink]="routes.companies"
+        aria-label="Back to companies"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <span class="company-details__back-title">Back to companies</span>
+    </div>
 
     @if (store.loading() && !store.company()) {
       <div class="company-details__status" role="status">

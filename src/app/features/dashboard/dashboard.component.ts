@@ -1,15 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { injectDispatch } from '@ngrx/signals/events';
 import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
+import { MeStore } from '../../stores/me/me.store';
 import { DashboardRangeParams } from '../../core/models/dashboard.model';
 import { DashboardStore } from '../../stores/dashboard/dashboard.store';
 import { dashboardEvents } from '../../stores/dashboard/dashboard.events';
@@ -74,10 +68,13 @@ const toIsoDate = (date: Date): string => {
 })
 export class DashboardComponent implements OnInit {
   protected readonly store = inject(DashboardStore);
+  private readonly meStore = inject(MeStore);
   private readonly dispatch = injectDispatch(dashboardEvents);
 
-  // TODO: replace the hard-coded name with the authenticated user (auth store).
-  protected readonly userName = signal('Ernesto');
+  /** First word of the authenticated user's full name, used in the greeting. */
+  protected readonly userName = computed(
+    () => this.meStore.user()?.fullname.split(' ')[0] ?? 'there',
+  );
 
   protected readonly greeting = computed(() => {
     const hour = new Date().getHours();

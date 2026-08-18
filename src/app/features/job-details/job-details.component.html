@@ -18,6 +18,7 @@
         class="job-details__header-avatar"
         [name]="job.company?.company_name ?? job.title"
         [seed]="job.company?.id ?? job.id"
+        [image]="job.company?.avatar ?? null"
         [size]="64"
       />
       <div class="job-details__header-body">
@@ -83,12 +84,22 @@
         }
       </div>
 
-      <div class="job-details__card job-details__stat">
+      <div class="job-details__card job-details__stat job-details__stat--editable">
         <span class="job-details__stat-label">
           <mat-icon aria-hidden="true">groups</mat-icon>
           Vacancies
         </span>
         <span class="job-details__stat-value">{{ job.no_of_vacancies }} open</span>
+        <button
+          mat-icon-button
+          type="button"
+          class="job-details__stat-edit"
+          aria-label="Edit vacancies"
+          [disabled]="store.updating()"
+          (click)="onEditVacancies(job)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
       </div>
 
       <div class="job-details__card job-details__stat">
@@ -158,6 +169,10 @@
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
+          @if (job.experience_preferred) {
+            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__body">{{ job.experience_preferred }}</p>
+          }
         </div>
 
         <div class="job-details__card job-details__section">
@@ -178,7 +193,12 @@
           <div class="job-details__card job-details__side">
             <h3 class="job-details__side-title">Company</h3>
             <div class="job-details__company">
-              <app-avatar [name]="company.company_name" [seed]="company.id" [size]="44" />
+              <app-avatar
+                [name]="company.company_name"
+                [seed]="company.id"
+                [image]="company.avatar ?? null"
+                [size]="44"
+              />
               <div class="job-details__company-text">
                 <span class="job-details__company-name">{{ company.company_name }}</span>
                 <span class="job-details__company-type">{{
@@ -204,13 +224,21 @@
             Skills required
           </h3>
           @if (job.skills_required.length) {
-            <ul class="job-details__skills" aria-label="Skills required">
+            <ul class="job-details__skills" aria-label="Required skills">
               @for (skill of job.skills_required; track skill) {
                 <li class="job-details__skill">{{ skill }}</li>
               }
             </ul>
           } @else {
             <p class="job-details__body job-details__na">Not Indicated</p>
+          }
+          @if (job.preferred_skills.length) {
+            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <ul class="job-details__skills" aria-label="Preferred skills">
+              @for (skill of job.preferred_skills; track skill) {
+                <li class="job-details__skill job-details__skill--preferred">{{ skill }}</li>
+              }
+            </ul>
           }
         </div>
 

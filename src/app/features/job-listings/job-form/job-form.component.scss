@@ -86,6 +86,20 @@
     }
   }
 
+  // Required / Preferred tier toggle (e.g. beside the experience field).
+  &__tier {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__tier-label {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
   // Rich company select: avatar + name + type, in both the trigger and options.
   &__company {
     display: flex;

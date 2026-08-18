@@ -5,7 +5,11 @@
       <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
       <td mat-cell *matCellDef="let row">
         <div class="workspaces-table__workspace">
-          <app-avatar [name]="row.workspace.name" [seed]="row.workspace.id" />
+          <app-avatar
+            [name]="row.workspace.name"
+            [seed]="row.workspace.id"
+            [image]="row.workspace.avatar"
+          />
           <span class="workspaces-table__name">{{ row.workspace.name }}</span>
         </div>
       </td>

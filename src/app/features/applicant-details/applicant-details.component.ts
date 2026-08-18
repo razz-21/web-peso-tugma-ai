@@ -2,14 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   OnInit,
   computed,
   effect,
   inject,
   signal,
   viewChild,
-  viewChildren,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,50 +18,50 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Events, injectDispatch } from '@ngrx/signals/events';
-import { ApplicantGet } from '../../core/models/applicant.model';
+import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../core/models/applicant.model';
 import { JobGet } from '../../core/models/job.model';
-import { RecommendedJobStatus } from '../../core/models/recommended-job.model';
+import {
+  RECOMMENDED_JOB_STATUS_LABEL,
+  RecommendedJob,
+  RecommendedJobStatus,
+} from '../../core/models/recommended-job.model';
 import { DEFAULT_MATCHING_SCORE, MatchingScore } from '../../core/models/workspace.model';
 import { WorkspacesService } from '../../core/services/workspaces.service';
 import { MeStore } from '../../stores/me/me.store';
 import { APP_ROUTES, jobDetailsRoute } from '../../core/constants/routes.constant';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
-import { SkeletonComponent } from '../../core/components/skeleton/skeleton.component';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '../../core/components/confirm-dialog/confirm-dialog.component';
+import {
+  LoadingDialogComponent,
+  LoadingDialogData,
+} from '../../core/components/loading-dialog/loading-dialog.component';
 import { ApplicantDetailsStore } from '../../stores/applicant-details/applicant-details.store';
 import { applicantDetailsEvents } from '../../stores/applicant-details/applicant-details.events';
 import { applicantsEvents } from '../../stores/applicants/applicants.events';
 import { RecommendationsStore } from '../../stores/recommendations/recommendations.store';
 import { recommendationsEvents } from '../../stores/recommendations/recommendations.events';
-import { DetailFieldComponent } from './detail-field/detail-field.component';
-import { ReferredJobsComponent } from './referred-jobs/referred-jobs.component';
 import { MatchDetailsComponent } from './match-details/match-details.component';
+import { ApplicantJobsComponent } from './applicant-jobs/applicant-jobs.component';
+import { ApplicantInfoComponent } from './applicant-info/applicant-info.component';
+import { ApplicantFilesComponent } from './applicant-files/applicant-files.component';
 import { ComparisonComponent } from './comparison/comparison.component';
 import { ManualReferralComponent } from './manual-referral/manual-referral.component';
 import { ApplicantEditDialogComponent } from './applicant-edit-dialog/applicant-edit-dialog.component';
 import { JobMatch } from './types/job-match.type';
-import { SectionLink } from './types/applicant-details.type';
 import { ComparisonDialogData } from './types/comparison.type';
 import { ManualReferralDialogData } from './types/manual-referral.type';
 import { ReferralStatusChange } from './types/referred-jobs.type';
+import { isTerminalStatus } from './utils/referred-jobs.util';
 import { ApplicantEditDialogData, EditSectionId } from './types/applicant-edit-dialog.type';
+import { RankingMetrics } from './types/match-details.type';
 import { toJobMatch } from './utils/job-match.util';
-import { addressLines, sameAddress } from './utils/address.util';
-
-const SECTIONS: readonly SectionLink[] = [
-  { id: 'personal', label: 'Personal information', icon: 'person' },
-  { id: 'contact', label: 'Contact', icon: 'call' },
-  { id: 'address', label: 'Address', icon: 'location_on' },
-  { id: 'education', label: 'Educational background', icon: 'school' },
-  { id: 'skills', label: 'Skills & training', icon: 'edit' },
-  { id: 'work', label: 'Work experience', icon: 'work' },
-  { id: 'preferences', label: 'Job preferences', icon: 'star' },
-];
+import { EVALUATION_K, rankingMetricsAtK } from './utils/ranking-metrics.util';
 
 @Component({
   selector: 'app-applicant-details',
@@ -75,11 +73,12 @@ const SECTIONS: readonly SectionLink[] = [
     MatProgressSpinnerModule,
     MatSidenavModule,
     MatTabsModule,
+    MatTooltipModule,
     AvatarComponent,
-    SkeletonComponent,
-    DetailFieldComponent,
-    ReferredJobsComponent,
     MatchDetailsComponent,
+    ApplicantJobsComponent,
+    ApplicantInfoComponent,
+    ApplicantFilesComponent,
   ],
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',
@@ -88,7 +87,7 @@ const SECTIONS: readonly SectionLink[] = [
 })
 export class ApplicantDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
-  protected readonly sections = SECTIONS;
+  protected readonly statusLabels = APPLICANT_STATUS_LABELS;
   protected readonly store = inject(ApplicantDetailsStore);
   private readonly dispatch = injectDispatch(applicantDetailsEvents);
   private readonly applicantsDispatch = injectDispatch(applicantsEvents);
@@ -102,12 +101,14 @@ export class ApplicantDetailsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly datePipe = new DatePipe('en-US');
 
   /** The match-details drawer, closed once a referral it triggered succeeds. */
   private readonly matchDrawer = viewChild(MatDrawer);
   /** Recommendation id of an in-flight drawer referral (null when none pending). */
   private readonly pendingReferralId = signal<string | null>(null);
+
+  /** Blocking "please wait" loader shown while a referral / status update runs. */
+  private loadingDialogRef: MatDialogRef<LoadingDialogComponent> | null = null;
 
   /** Open manual-referral dialog, closed once its referral succeeds. */
   private manualReferralRef: MatDialogRef<ManualReferralComponent> | null = null;
@@ -123,14 +124,21 @@ export class ApplicantDetailsComponent implements OnInit {
    */
   private readonly matchingWeights = signal<MatchingScore>(DEFAULT_MATCHING_SCORE);
 
-  /** AI recommendations for this applicant, ranked by MatchScore (desc). */
-  protected readonly recommendations = computed<readonly JobMatch[]>(() => {
+  /** Map persisted recommendation rows to view models, tagging in-flight updates. */
+  private toMatches(rows: readonly RecommendedJob[]): JobMatch[] {
     const updating = new Set(this.recommendationsStore.updatingIds());
     const weights = this.matchingWeights();
-    return [...this.recommendationsStore.items()]
-      .map((recommendation) => toJobMatch(recommendation, updating.has(recommendation.id), weights))
-      .sort((a, b) => b.score - a.score);
-  });
+    return rows.map((row) => toJobMatch(row, updating.has(row.id), weights));
+  }
+
+  /**
+   * The untouched AI recommendations for the Recommended list, ranked by
+   * MatchScore (desc). Referred jobs are excluded server-side, so they never
+   * appear here — no frontend status filtering needed.
+   */
+  protected readonly recommendations = computed<readonly JobMatch[]>(() =>
+    this.toMatches(this.recommendationsStore.items()).sort((a, b) => b.score - a.score),
+  );
 
   protected readonly generating = computed(() => this.recommendationsStore.generating());
 
@@ -142,14 +150,15 @@ export class ApplicantDetailsComponent implements OnInit {
 
   /**
    * Every recommendation the officer has referred (status set), most-recently
-   * referred first, for the Referred jobs accordion. Sorted by `updatedAt` so a
+   * referred first, for the Referred jobs accordion. Sorted by `referredAt` so a
    * freshly referred job (whether newly created or an advanced recommendation)
-   * jumps to the top. Empty until someone is referred.
+   * jumps to the top and later lifecycle updates don't reshuffle the list. Empty
+   * until someone is referred.
    */
   protected readonly referrals = computed<readonly JobMatch[]>(() =>
-    this.recommendations()
-      .filter((match) => match.status !== null)
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
+    this.toMatches(this.recommendationsStore.referrals()).sort(
+      (a, b) => new Date(b.referredAt).getTime() - new Date(a.referredAt).getTime(),
+    ),
   );
 
   /** When the current recommendations were generated, shown in the card footer. */
@@ -163,19 +172,35 @@ export class ApplicantDetailsComponent implements OnInit {
 
   /** Recommendation id shown in the details drawer; the match is derived live. */
   protected readonly selectedId = signal<string | null>(null);
-  protected readonly selectedMatch = computed<JobMatch | null>(
-    () =>
-      this.recommendations().find((match) => match.recommendationId === this.selectedId()) ?? null,
-  );
+  protected readonly selectedMatch = computed<JobMatch | null>(() => {
+    const id = this.selectedId();
+    // Search both lists: a match referred from the drawer moves to `referrals`.
+    return (
+      this.recommendations().find((match) => match.recommendationId === id) ??
+      this.referrals().find((match) => match.recommendationId === id) ??
+      null
+    );
+  });
 
   protected selectMatch(match: JobMatch): void {
     this.selectedId.set(match.recommendationId);
   }
 
-  /** Section currently in view, highlighted in the Sections rail. */
-  protected readonly activeSection = signal<string>(SECTIONS[0].id);
-
-  private readonly sectionEls = viewChildren<ElementRef<HTMLElement>>('section');
+  /**
+   * Applicant-level Precision@K / Recall@K / F1@K / nDCG@K over the generated
+   * Top-K recommendations (K = 5, the manuscript's operational cut-off), judged
+   * against the officers' relevant / not-relevant feedback. Per Chapter 3 the
+   * metrics evaluate the system's Top-K generation, which is exactly the
+   * Recommended jobs list — `recommendations()`, already ranked by MatchScore.
+   *
+   * Referred jobs are intentionally excluded: they leave the Recommended list
+   * once referred, so folding them back in would let unassessed referrals occupy
+   * top-K slots and understate the metrics. Null until a recommendation exists.
+   */
+  protected readonly rankingMetrics = computed<RankingMetrics | null>(() => {
+    const ranked = this.recommendations();
+    return ranked.length === 0 ? null : rankingMetricsAtK(ranked, EVALUATION_K);
+  });
 
   protected readonly fullName = computed(() => {
     const a = this.applicant();
@@ -237,52 +262,6 @@ export class ApplicantDetailsComponent implements OnInit {
     () => this.applicant()?.educational_background?.highest_education_level || '—',
   );
 
-  // --- Detail section derived values --------------------------------------
-
-  protected readonly dobLabel = computed(() => {
-    const dob = this.applicant()?.date_of_birth;
-    if (!dob) {
-      return null;
-    }
-    const formatted = this.datePipe.transform(dob, 'MMM d, y');
-    const age = this.age();
-    return age === null ? formatted : `${formatted} (${age})`;
-  });
-
-  protected readonly heightLabel = computed(() => {
-    const height = this.applicant()?.height_in_cm;
-    return height === null || height === undefined ? null : `${height} cm`;
-  });
-
-  protected readonly weightLabel = computed(() => {
-    const weight = this.applicant()?.weight_in_kg;
-    return weight === null || weight === undefined ? null : `${weight} kg`;
-  });
-
-  protected readonly presentAddressLines = computed(() =>
-    addressLines(this.applicant()?.present_address ?? null),
-  );
-
-  protected readonly permanentSameAsPresent = computed(() => {
-    const a = this.applicant();
-    if (!a) {
-      return false;
-    }
-    return a.permanent_address === null || sameAddress(a.present_address, a.permanent_address);
-  });
-
-  protected readonly permanentAddressLines = computed(() => {
-    const a = this.applicant();
-    if (!a) {
-      return [];
-    }
-    return this.permanentSameAsPresent()
-      ? addressLines(a.present_address)
-      : addressLines(a.permanent_address);
-  });
-
-  protected readonly applicantId = computed(() => this.applicant()?.id.slice(0, 8) ?? '');
-
   constructor() {
     // Load the active workspace's `matching_score` weights so recommendation
     // scores reflect the officer's saved weighting. Re-runs if the user's
@@ -298,28 +277,33 @@ export class ApplicantDetailsComponent implements OnInit {
         .catch(() => this.matchingWeights.set(DEFAULT_MATCHING_SCORE));
     });
 
-    // Scroll-spy: highlight the section nearest the top of the viewport.
-    effect((onCleanup) => {
-      const els = this.sectionEls();
-      if (els.length === 0) {
-        return;
-      }
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const visible = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          if (visible[0]) {
-            this.activeSection.set(visible[0].target.id);
-          }
-        },
-        { rootMargin: '-88px 0px -60% 0px', threshold: 0 },
+    // Open a blocking "please wait" loader the moment a referral or referral-
+    // status update is dispatched: referring the applicant to a job (manual
+    // `refer`, or advancing a recommendation to `referred`), or changing a
+    // referred job's lifecycle status. The message reflects which action ran.
+    this.events
+      .on(recommendationsEvents.setStatus)
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ payload }) =>
+        payload.status === 'referred'
+          ? this.openLoading('Referring applicant', 'Sending the referral')
+          : this.openLoading('Updating referral', 'Saving the new status'),
       );
-      for (const el of els) {
-        observer.observe(el.nativeElement);
-      }
-      onCleanup(() => observer.disconnect());
-    });
+    this.events
+      .on(recommendationsEvents.refer)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.openLoading('Referring applicant', 'Sending the referral'));
+
+    // Dismiss the loader once the referral / status update settles (either way).
+    this.events
+      .on(
+        recommendationsEvents.setStatusSuccess,
+        recommendationsEvents.setStatusFailed,
+        recommendationsEvents.referSuccess,
+        recommendationsEvents.referFailed,
+      )
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.closeLoading());
 
     // Close the match-details drawer once the referral it started persists.
     this.events
@@ -354,11 +338,6 @@ export class ApplicantDetailsComponent implements OnInit {
     }
   }
 
-  protected scrollToSection(id: string): void {
-    this.activeSection.set(id);
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
   protected onEditSection(section: EditSectionId, label: string): void {
     const applicant = this.applicant();
     if (!applicant) {
@@ -378,9 +357,17 @@ export class ApplicantDetailsComponent implements OnInit {
     );
   }
 
+  protected onSelectMatch(match: JobMatch): void {
+    if (this.applicant()?.status === 'inactive') {
+      return;
+    }
+    this.selectMatch(match);
+    this.matchDrawer()?.open();
+  }
+
   protected onGenerate(): void {
     const applicant = this.applicant();
-    if (!applicant || this.generating()) {
+    if (!applicant || applicant.status === 'inactive' || this.generating()) {
       return;
     }
     this.recommendationsDispatch.generate({ applicantId: applicant.id, topK: 5 });
@@ -402,7 +389,37 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferralStatus(change: ReferralStatusChange): void {
-    this.onSetStatus(change.match, change.status);
+    if (this.applicant()?.status === 'inactive') {
+      return;
+    }
+    const { match, status } = change;
+    // Terminal statuses (Withdrawn / Not hired / Resigned) are final — once set,
+    // the referral can no longer be updated — so confirm before committing.
+    if (!isTerminalStatus(status)) {
+      this.onSetStatus(match, status);
+      return;
+    }
+    const label = RECOMMENDED_JOB_STATUS_LABEL[status];
+    const data: ConfirmDialogData = {
+      title: `Mark as ${label}?`,
+      message: `Are you sure you want to set <strong>${match.title}</strong> to <strong>${label}</strong>? This is final — you won't be able to update the status again.`,
+      confirmLabel: label,
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.onSetStatus(match, status);
+        }
+      });
   }
 
   /** Open a referred job's detail page. */
@@ -416,8 +433,8 @@ export class ApplicantDetailsComponent implements OnInit {
   protected readonly referredJobIds = computed<ReadonlySet<string>>(
     () =>
       new Set(
-        this.recommendations()
-          .filter((match) => match.status !== null && match.jobId)
+        this.referrals()
+          .filter((match) => match.jobId)
           .map((match) => match.jobId as string),
       ),
   );
@@ -425,7 +442,7 @@ export class ApplicantDetailsComponent implements OnInit {
   /** "Manual referral" opens the full-page screening dialog to pick a job to refer. */
   protected onNewReferral(): void {
     const applicant = this.applicant();
-    if (!applicant) {
+    if (!applicant || applicant.status === 'inactive') {
       return;
     }
     this.pendingManualReferral.set(false);
@@ -456,7 +473,7 @@ export class ApplicantDetailsComponent implements OnInit {
   /** Confirm, then manually refer the applicant to the chosen workspace job. */
   private onReferJob(job: JobGet): void {
     const applicant = this.applicant();
-    if (!applicant) {
+    if (!applicant || applicant.status === 'inactive') {
       return;
     }
     if (this.referredJobIds().has(job.id)) {
@@ -522,6 +539,12 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onReferApplicant(match: JobMatch): void {
+    if (this.applicant()?.status === 'inactive') {
+      this.snackBar.open('This applicant is inactive and cannot be referred to jobs.', 'Close', {
+        duration: 3000,
+      });
+      return;
+    }
     // A closed job can't take referrals — the drawer button is already disabled
     // for it, but guard here too in case the handler is reached another way.
     if (!match.active) {
@@ -573,6 +596,64 @@ export class ApplicantDetailsComponent implements OnInit {
     // Flag it as pending so the drawer closes once the update succeeds.
     this.pendingReferralId.set(match.recommendationId);
     this.recommendationsDispatch.setStatus({ id: match.recommendationId, status: 'referred' });
+  }
+
+  /** Show the blocking "please wait" loader (a no-op if one is already open). */
+  private openLoading(message: string, hint?: string): void {
+    if (this.loadingDialogRef) {
+      return;
+    }
+    this.loadingDialogRef = this.dialog.open<LoadingDialogComponent, LoadingDialogData>(
+      LoadingDialogComponent,
+      {
+        width: '380px',
+        maxWidth: '90vw',
+        disableClose: true,
+        restoreFocus: true,
+        ariaLabel: message,
+        data: { message, hint },
+      },
+    );
+  }
+
+  /** Dismiss the blocking loader once the referral / status update settles. */
+  private closeLoading(): void {
+    this.loadingDialogRef?.close();
+    this.loadingDialogRef = null;
+  }
+
+  protected onToggleStatus(applicant: ApplicantGet): void {
+    const deactivating = (applicant.status ?? 'active') === 'active';
+    const status = deactivating ? 'inactive' : 'active';
+    const name = this.fullName() || 'this applicant';
+
+    const data: ConfirmDialogData = deactivating
+      ? {
+          title: 'Deactivate applicant',
+          message: `Deactivate <strong>${name}</strong>? They will be marked as inactive and excluded from job recommendations.`,
+          confirmLabel: 'Deactivate applicant',
+          destructive: true,
+        }
+      : {
+          title: 'Activate applicant',
+          message: `Activate <strong>${name}</strong>? They will be marked as active again.`,
+          confirmLabel: 'Activate applicant',
+        };
+
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.dispatch.updateApplicant({ id: applicant.id, patch: { status } });
+        }
+      });
   }
 
   protected onDelete(applicant: ApplicantGet): void {

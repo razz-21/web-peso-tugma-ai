@@ -18,7 +18,7 @@ import {
 } from '../../../core/models/recommended-job.model';
 import { JobMatch } from '../types/job-match.type';
 import { ReferralRow, ReferralStatusChange, StatusOption } from '../types/referred-jobs.type';
-import { STATUS_TONE, buildSteps } from '../utils/referred-jobs.util';
+import { STATUS_TONE, buildSteps, isTerminalStatus } from '../utils/referred-jobs.util';
 
 /**
  * Referred-jobs card: lists every referral for an applicant as an accordion,
@@ -36,6 +36,8 @@ export class ReferredJobsComponent {
   readonly referrals = input<readonly JobMatch[]>([]);
   /** Shows placeholder rows during the initial referrals fetch. */
   readonly loading = input<boolean>(false);
+  /** When true, disables adding or modifying referrals (e.g. inactive applicant). */
+  readonly disabled = input<boolean>(false);
 
   /** Placeholder rows rendered while referrals load. */
   protected readonly skeletonRows = [0, 1] as const;
@@ -53,7 +55,17 @@ export class ReferredJobsComponent {
     { value: 'hired', label: 'Hired', icon: 'check' },
     { value: 'withdrawn', label: 'Withdrawn', icon: 'undo' },
     { value: 'not_hired', label: 'Not hired', icon: 'close', danger: true },
+    // Reachable only from 'hired' — filtered in by `optionsFor`.
+    { value: 'resigned', label: 'Resigned', icon: 'logout' },
   ];
+
+  /**
+   * Status options offered for a referral's current status. 'Resigned' only
+   * makes sense once 'hired', so it is hidden otherwise.
+   */
+  protected optionsFor(status: RecommendedJobStatus | null): readonly StatusOption[] {
+    return this.statusOptions.filter((option) => option.value !== 'resigned' || status === 'hired');
+  }
 
   protected readonly rows = computed<readonly ReferralRow[]>(() =>
     this.referrals().map((match, index) => this.toRow(match, index === 0)),
@@ -80,8 +92,8 @@ export class ReferredJobsComponent {
 
   private toRow(match: JobMatch, isLatest: boolean): ReferralRow {
     const status = match.status ?? 'referred';
-    const referredOn = this.datePipe.transform(match.createdAt, 'MMM d, y') ?? '—';
-    const referredShort = this.datePipe.transform(match.createdAt, 'MMM d') ?? '—';
+    const referredOn = this.datePipe.transform(match.referredAt, 'MMM d, y') ?? '—';
+    const referredShort = this.datePipe.transform(match.referredAt, 'MMM d') ?? '—';
     const salaryText = match.salary === null ? null : `₱${match.salary.toLocaleString('en-US')}/mo`;
     const companyName = match.company?.name ?? '—';
 
@@ -102,6 +114,9 @@ export class ReferredJobsComponent {
       statusTone: STATUS_TONE[status],
       referredOnLabel: referredOn,
       steps: buildSteps(status, referredShort),
+      // Terminal referrals (withdrawn / not hired / resigned) are final — the
+      // template disables "Update status" for them.
+      terminal: isTerminalStatus(match.status),
     };
   }
 }

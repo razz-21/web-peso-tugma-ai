@@ -230,7 +230,12 @@
                 [attr.aria-expanded]="open"
                 (click)="toggle(job.id)"
               >
-                <app-avatar [name]="job.companyName" [seed]="job.seed" [size]="44" />
+                <app-avatar
+                  [name]="job.companyName"
+                  [seed]="job.seed"
+                  [image]="job.job.company?.avatar ?? null"
+                  [size]="44"
+                />
                 <span class="manual-referral__job-info">
                   <span class="manual-referral__job-title">{{ job.title }}</span>
                   <span class="manual-referral__job-meta">
@@ -260,11 +265,11 @@
                   animate.leave="manual-referral__panel-anim--leave"
                 >
                   <div class="manual-referral__panel">
-                    <!-- Skills required -->
+                    <!-- Required skills -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">edit</mat-icon>
-                        Skills required
+                        Required skills
                       </span>
                       @if (job.skillsRequired.length > 0) {
                         <div class="manual-referral__skill-chips">
@@ -277,6 +282,18 @@
                       } @else {
                         <p class="manual-referral__criterion-text">No specific skills required.</p>
                       }
+                      @if (job.preferredSkills.length > 0) {
+                        <span class="manual-referral__criterion-sublabel"
+                          >Preferred (nice-to-have)</span
+                        >
+                        <div class="manual-referral__skill-chips">
+                          @for (skill of job.preferredSkills; track $index) {
+                            <span class="manual-referral__skill manual-referral__skill--preferred">
+                              {{ skill }}
+                            </span>
+                          }
+                        </div>
+                      }
                     </div>
 
                     <hr class="manual-referral__panel-divider" />
@@ -285,7 +302,7 @@
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">work</mat-icon>
-                        Experience
+                        Experience required
                       </span>
                       <p class="manual-referral__criterion-text">{{ job.experienceText }}</p>
                     </div>

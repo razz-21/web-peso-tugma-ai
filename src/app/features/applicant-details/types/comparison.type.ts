@@ -9,6 +9,29 @@ export interface ComparisonDialogData {
 
 export type RequirementStatus = 'met' | 'partial' | 'unmet' | 'unknown';
 
+/** Requirement tier of a skill: a must-have vs. a nice-to-have. */
+export type SkillTier = 'mandatory' | 'preferred';
+
+/** A job skill with its requirement tier, for matched / missing chips. */
+export interface SkillTierItem {
+  /** The job's skill (e.g. "Excel"). */
+  readonly name: string;
+  /** 'mandatory' (required) or 'preferred' (nice-to-have). */
+  readonly tier: SkillTier;
+}
+
+/** A required skill covered by a related (not exact) applicant skill. */
+export interface SkillChip {
+  /** The job's required skill (e.g. "Excel"). */
+  readonly required: string;
+  /** The applicant skill that covers it (e.g. "Google Sheets"). */
+  readonly via: string | null;
+  /** Best similarity as a 0–100 percentage. */
+  readonly similarity: number;
+  /** 'mandatory' (required) or 'preferred' (nice-to-have). */
+  readonly tier: SkillTier;
+}
+
 /** One requirement row (skills / experience / education / location). */
 export interface RequirementView {
   readonly key: string;
@@ -23,13 +46,21 @@ export interface RequirementView {
   readonly coverageColor: string;
   readonly isSkills: boolean;
   // Skills detail.
-  readonly matchedSkills: readonly string[];
-  readonly missingSkills: readonly string[];
+  readonly matchedSkills: readonly SkillTierItem[];
+  /** Required skills covered by a related (not exact) applicant skill. */
+  readonly relatedSkills: readonly SkillChip[];
+  readonly missingSkills: readonly SkillTierItem[];
+  /** Applicant skills covering a requirement (exact or related), for the
+   * "Matching" column. */
+  readonly matchingSkills: readonly string[];
   readonly additionalSkills: readonly string[];
   readonly note: string | null;
   // Generic detail (experience / education / location).
   readonly requiredItems: readonly string[];
   readonly requiredText: string | null;
+  /** Preferred (nice-to-have) requirement text, shown under its own kicker below
+   * the required detail. Only experience uses it today; null elsewhere. */
+  readonly preferredText: string | null;
   readonly applicantItems: readonly string[];
   readonly applicantText: string | null;
 }

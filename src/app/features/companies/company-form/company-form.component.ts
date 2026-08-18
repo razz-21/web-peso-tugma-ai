@@ -5,7 +5,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormField, email, form, maxLength, required } from '@angular/forms/signals';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormField, email, form, maxLength, pattern, required } from '@angular/forms/signals';
 import { Events, injectDispatch } from '@ngrx/signals/events';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, tap } from 'rxjs';
@@ -67,6 +68,7 @@ export class CompanyFormComponent {
   private readonly dialogRef = inject<MatDialogRef<CompanyFormComponent, CompanyGet>>(MatDialogRef);
   private readonly events = inject(Events);
   private readonly company = inject<CompanyGet | null>(MAT_DIALOG_DATA);
+  private readonly snackBar = inject(MatSnackBar);
   protected readonly companiesStore = inject(CompaniesStore);
 
   protected readonly isEdit = this.company !== null;
@@ -106,6 +108,10 @@ export class CompanyFormComponent {
       message: `Name must be ${COMPANY_NAME_MAX} characters or fewer`,
     });
 
+    pattern(p.contact_number, /^09\d{9}$/, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
+    });
+
     required(p.company_type, { message: 'Type is required' });
 
     email(p.email, { message: 'Enter a valid email address' });
@@ -133,20 +139,18 @@ export class CompanyFormComponent {
     this.fieldError(this.companyForm.description()),
   );
 
-  /** Reads the chosen image file as a base64 data URL and stores it as the avatar. */
-  protected onUpload(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) {
-      return;
-    }
+  /** Stores the cropped avatar (from app-avatar) as a base64 data URL in the form. */
+  protected onAvatarSelected(file: File): void {
     const reader = new FileReader();
     reader.onload = () => {
       const result = typeof reader.result === 'string' ? reader.result : '';
       this.data.update((current) => ({ ...current, avatar: result }));
     };
     reader.readAsDataURL(file);
-    input.value = '';
+  }
+
+  protected onAvatarInvalid(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
   }
 
   protected submit(event: Event): void {

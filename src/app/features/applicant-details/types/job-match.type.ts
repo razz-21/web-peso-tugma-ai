@@ -1,6 +1,7 @@
 import {
   RecommendationScores,
   RecommendedJobStatus,
+  SkillMatch,
 } from '../../../core/models/recommended-job.model';
 
 export interface JobMatchTag {
@@ -60,6 +61,8 @@ export interface JobMatch {
   /** Job requirement fields, for the applicant-vs-job comparison view. */
   readonly skillsRequired: readonly string[];
   readonly experienceRequired: string | null;
+  /** Job's preferred (nice-to-have) experience, for the applicant-vs-job comparison. */
+  readonly experiencePreferred: string | null;
   readonly educationRequired: readonly string[];
   /** Job's preferred course/program of study, for the education comparison. */
   readonly courseRequired: string | null;
@@ -85,11 +88,16 @@ export interface JobMatch {
   readonly createdAt: string;
   /** When this recommendation was last updated (ISO string); tracks referral time. */
   readonly updatedAt: string;
+  /** When the applicant was referred to this job (ISO string); orders the Referred panel. */
+  readonly referredAt: string;
   /** A relevance update is in flight for this recommendation. */
   readonly updating: boolean;
   readonly tags: readonly JobMatchTag[];
   readonly breakdown: readonly JobMatchDimension[];
   readonly keyMatched: readonly string[];
+  /** Per-required-skill coverage detail (matched / related / missing) for the
+   * compare modal. Empty on recommendations generated before this existed. */
+  readonly skillMatches: readonly SkillMatch[];
   /** Dense résumé embedding, for the vector-comparison chart. */
   readonly resumeVector: readonly number[];
   /** Dense job-requirements embedding, for the vector-comparison chart. */

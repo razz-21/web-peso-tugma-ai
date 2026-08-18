@@ -26,13 +26,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         [disabled]="submitting()"
         (click)="next.emit()"
       >
-        @if (submitting()) {
-          <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
-        }
-        <span>{{ submitting() ? 'Creating...' : isLast() ? 'Create applicant' : 'Next' }}</span>
-        @if (!submitting() && !isLast()) {
-          <mat-icon>arrow_forward</mat-icon>
-        }
+        <span class="wizard-footer__btn-content">
+          @if (submitting()) {
+            <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+          }
+          <span>{{ submitting() ? 'Creating...' : isLast() ? 'Create applicant' : 'Next' }}</span>
+          @if (!submitting() && !isLast()) {
+            <mat-icon>arrow_forward</mat-icon>
+          }
+        </span>
       </button>
     </footer>
   `,
@@ -53,6 +55,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
     .wizard-footer__btn {
       border-radius: 999px;
+    }
+
+    .wizard-footer__btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .wizard-footer__btn-content mat-progress-spinner {
+      display: block;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

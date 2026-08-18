@@ -18,6 +18,7 @@ export const JobCompanySchema = z.object({
   id: z.uuid(),
   company_name: z.string(),
   company_type: CompanyTypeSchema,
+  avatar: z.string().nullable().default(null),
 });
 
 /** Fields shared between read and write shapes. */
@@ -28,6 +29,11 @@ const JobFieldsSchema = z.object({
   course_program: z.string().nullable(),
   experience_required: z.string().nullable(),
   skills_required: z.array(z.string()),
+  // Preferred (nice-to-have) requirement tier. Defaults keep old payloads valid;
+  // the scorer treats these as a bounded bonus (never a disqualifier). See the
+  // backend's requirement-tiering scorer.
+  preferred_skills: z.array(z.string()).default([]),
+  experience_preferred: z.string().nullable().default(null),
   // Read-side allows 0: a job whose vacancies were all consumed by referrals
   // legitimately reads as 0. The write schema re-tightens this to `min(1)`.
   no_of_vacancies: z.number().int().min(0).max(JOB_VACANCIES_MAX),

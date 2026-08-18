@@ -1,8 +1,8 @@
 <section class="workspace-details">
   @if (canAccessWorkspaces()) {
     <a class="workspace-details__back" [routerLink]="routes.workspaces">
-      <mat-icon>arrow_back</mat-icon>
-      <span>Back to workspaces</span>
+      <mat-icon aria-hidden="true">arrow_back</mat-icon>
+      Back to workspaces
     </a>
   }
 
@@ -17,7 +17,13 @@
         class="workspace-details__avatar"
         [name]="workspace.name"
         [seed]="workspace.id"
+        [image]="workspace.avatar"
         [size]="72"
+        [editable]="true"
+        [uploading]="uploading()"
+        (fileSelected)="onAvatarSelected(workspace, $event)"
+        (removeRequested)="onAvatarRemove(workspace)"
+        (invalid)="onAvatarInvalid($event)"
       />
 
       <div class="workspace-details__heading">

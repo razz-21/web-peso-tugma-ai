@@ -15,6 +15,7 @@ type CompaniesState = {
   loading: boolean;
   createCompanyLoading: boolean;
   updateCompanyLoading: boolean;
+  uploadAvatarLoading: boolean;
   deleteCompanyLoading: boolean;
   error: string | null;
 };
@@ -32,6 +33,7 @@ const initialState: CompaniesState = {
   loading: false,
   createCompanyLoading: false,
   updateCompanyLoading: false,
+  uploadAvatarLoading: false,
   deleteCompanyLoading: false,
   error: null,
 };
@@ -108,7 +110,7 @@ export const CompaniesStore = signalStore(
       error: null,
     })),
     on(companiesEvents.createCompanySuccess, ({ payload }, state) => ({
-      companies: [payload, ...state.companies],
+      companies: [payload, ...state.companies].slice(0, state.filter.pageSize),
       total: state.total + 1,
       createCompanyLoading: false,
       error: null,
@@ -124,10 +126,27 @@ export const CompaniesStore = signalStore(
     on(companiesEvents.updateCompanySuccess, ({ payload }, state) => ({
       companies: state.companies.map((company) => (company.id === payload.id ? payload : company)),
       updateCompanyLoading: false,
+      uploadAvatarLoading: false,
       error: null,
     })),
     on(companiesEvents.updateCompanyFailed, ({ payload }) => ({
       updateCompanyLoading: false,
+      error: payload,
+    })),
+    on(companiesEvents.uploadCompanyAvatar, () => ({
+      uploadAvatarLoading: true,
+      error: null,
+    })),
+    on(companiesEvents.uploadCompanyAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
+    on(companiesEvents.removeCompanyAvatar, () => ({
+      uploadAvatarLoading: true,
+      error: null,
+    })),
+    on(companiesEvents.removeCompanyAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
       error: payload,
     })),
     on(companiesEvents.deleteCompany, () => ({ deleteCompanyLoading: true, error: null })),
@@ -148,7 +167,11 @@ export const CompaniesStore = signalStore(
       snackBar = inject(MatSnackBar),
     ) => ({
       loadCompanies$: events
-        .on(companiesEvents.loadCompany, companiesEvents.deleteCompanySuccess)
+        .on(
+          companiesEvents.loadCompany,
+          companiesEvents.createCompanySuccess,
+          companiesEvents.deleteCompanySuccess,
+        )
         .pipe(
           switchMap(() =>
             from(companiesService.list(toListParams(store.filter()))).pipe(
@@ -228,6 +251,48 @@ export const CompaniesStore = signalStore(
         }),
       ),
       updateCompanyFailed$: events.on(companiesEvents.updateCompanyFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      uploadCompanyAvatar$: events.on(companiesEvents.uploadCompanyAvatar).pipe(
+        exhaustMap(({ payload }) =>
+          from(companiesService.uploadAvatar(payload.id, payload.file)).pipe(
+            mapResponse({
+              // Reuse updateCompanySuccess so the list and details views both
+              // pick up the returned company (with its new avatar URL).
+              next: (company) => companiesEvents.updateCompanySuccess(company),
+              error: (error: unknown) =>
+                companiesEvents.uploadCompanyAvatarFailed(
+                  errorMessage(error, 'Failed to upload avatar.'),
+                ),
+            }),
+          ),
+        ),
+      ),
+      // Success reuses updateCompanySuccess (handled above): its snackbar and
+      // state patch already cover avatar changes, so no separate handler here.
+      uploadCompanyAvatarFailed$: events.on(companiesEvents.uploadCompanyAvatarFailed).pipe(
+        tap(({ payload }) => {
+          snackBar.open(payload, 'Close', { duration: 3000 });
+        }),
+      ),
+      removeCompanyAvatar$: events.on(companiesEvents.removeCompanyAvatar).pipe(
+        exhaustMap(({ payload }) =>
+          from(companiesService.removeAvatar(payload.id)).pipe(
+            mapResponse({
+              // Reuse updateCompanySuccess so the list and details views both
+              // pick up the returned company (now without an avatar).
+              next: (company) => companiesEvents.updateCompanySuccess(company),
+              error: (error: unknown) =>
+                companiesEvents.removeCompanyAvatarFailed(
+                  errorMessage(error, 'Failed to remove avatar.'),
+                ),
+            }),
+          ),
+        ),
+      ),
+      removeCompanyAvatarFailed$: events.on(companiesEvents.removeCompanyAvatarFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
         }),

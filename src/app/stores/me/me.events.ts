@@ -14,5 +14,13 @@ export const meEvents = eventGroup({
     updateMe: type<{ data: MePatch; message: string }>(),
     updateMeSuccess: type<{ user: UserGet; message: string }>(),
     updateMeFailed: type<string>(),
+
+    uploadAvatar: type<{ file: File }>(),
+    uploadAvatarSuccess: type<UserGet>(),
+    uploadAvatarFailed: type<string>(),
+
+    removeAvatar: type<void>(),
+    removeAvatarSuccess: type<UserGet>(),
+    removeAvatarFailed: type<string>(),
   },
 });

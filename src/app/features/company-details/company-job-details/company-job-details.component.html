@@ -65,7 +65,7 @@
     }
   </section>
 
-  <!-- Experience required -->
+  <!-- Experience -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">work_history</mat-icon>
@@ -75,6 +75,10 @@
       <p class="job-panel__body">{{ jobData.experience_required }}</p>
     } @else {
       <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+    @if (jobData.experience_preferred) {
+      <p class="job-panel__subgroup-title">Preferred (nice-to-have)</p>
+      <p class="job-panel__body">{{ jobData.experience_preferred }}</p>
     }
   </section>
 
@@ -98,13 +102,21 @@
       Skills required
     </h4>
     @if (jobData.skills_required.length) {
-      <ul class="job-panel__chips" aria-label="Skills required">
+      <ul class="job-panel__chips" aria-label="Required skills">
         @for (skill of jobData.skills_required; track skill) {
           <li class="job-panel__chip">{{ skill }}</li>
         }
       </ul>
     } @else {
       <p class="job-panel__body job-panel__na">Not Indicated</p>
+    }
+    @if (jobData.preferred_skills.length) {
+      <p class="job-panel__subgroup-title">Preferred (nice-to-have)</p>
+      <ul class="job-panel__chips" aria-label="Preferred skills">
+        @for (skill of jobData.preferred_skills; track skill) {
+          <li class="job-panel__chip job-panel__chip--preferred">{{ skill }}</li>
+        }
+      </ul>
     }
   </section>
 

@@ -299,9 +299,15 @@ export class ManualReferralComponent {
     );
 
     // --- Job requirement details ------------------------------------------
-    const experienceText = job.experience_required?.trim() || 'No experience required';
+    // Surface preferred (nice-to-have) experience inline, mirroring the education
+    // treatment below, so both tiers are visible in this compact screening card.
+    const experienceBase = job.experience_required?.trim() || 'No experience required';
+    const experiencePreferred = job.experience_preferred?.trim();
+    const experienceText = experiencePreferred
+      ? `${experienceBase} · Preferred: ${experiencePreferred}`
+      : experienceBase;
     // Education requirement covers the minimum attainment level(s) plus the
-    // preferred course of study, mirroring the backend's combined education score.
+    // course of study, mirroring the backend's combined education score.
     const educationParts = [...job.minimum_education_attainment];
     const courseRequired = job.course_program?.trim();
     if (courseRequired) {
@@ -340,6 +346,7 @@ export class ManualReferralComponent {
       referred,
       active: job.status === 'active',
       skillsRequired: job.skills_required,
+      preferredSkills: job.preferred_skills,
       experienceText,
       educationText,
       locationText,

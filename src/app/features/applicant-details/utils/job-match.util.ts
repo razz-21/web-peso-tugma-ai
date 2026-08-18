@@ -100,6 +100,7 @@ export const toJobMatch = (
     active: recommendation.job?.status === 'active',
     skillsRequired: recommendation.job?.skills_required ?? [],
     experienceRequired: recommendation.job?.experience_required ?? null,
+    experiencePreferred: recommendation.job?.experience_preferred ?? null,
     educationRequired: recommendation.job?.minimum_education_attainment ?? [],
     courseRequired: recommendation.job?.course_program ?? null,
     ageRange: recommendation.job?.age_range ?? null,
@@ -116,6 +117,7 @@ export const toJobMatch = (
     referredBy: recommendation.assessor,
     createdAt: recommendation.created_at,
     updatedAt: recommendation.updated_at,
+    referredAt: recommendation.referred_at,
     updating,
     // Surface the dimensions that scored well as quick chips. Semantic
     // similarity is always shown — it's the highest-weighted, headline AI
@@ -129,6 +131,7 @@ export const toJobMatch = (
       })),
     breakdown,
     keyMatched: recommendation.key_matched,
+    skillMatches: recommendation.skill_matches,
     resumeVector: recommendation.embedded_applicant,
     jobVector: recommendation.embedded_job,
   };

@@ -51,7 +51,7 @@ const TABLE_COLUMNS: ReportTableColumn[] = [
   { key: 'date_referred', label: 'Date Referred' },
   { key: 'contact_number', label: 'Contact Number' },
   { key: 'company_referred', label: 'Company Referred' },
-  { key: 'city_province_address', label: 'City/Province Address' },
+  { key: 'job_location', label: 'Location', wrap: true, maxWidth: '30rem' },
 ];
 
 const toTableRow = (row: ApplicantReferredRow): ReportTableRow => ({
@@ -68,8 +68,7 @@ const toTableRow = (row: ApplicantReferredRow): ReportTableRow => ({
   date_referred: formatReferralDate(row.date_referred),
   contact_number: row.contact_number ?? EM_DASH,
   company_referred: row.company_referred ?? EM_DASH,
-  // Intentionally blank — a placeholder column requested for the export layout.
-  city_province_address: '',
+  job_location: row.job_location ?? EM_DASH,
 });
 
 @Component({

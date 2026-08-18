@@ -7,6 +7,6 @@
  */
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://service.peso-tugma-ai.com/api',
+  apiBaseUrl: 'https://service-peso-tugmai.razz-dev.com/api',
   apiTimeoutMs: 30000,
 } as const;

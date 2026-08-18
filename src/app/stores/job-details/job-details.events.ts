@@ -12,5 +12,9 @@ export const jobDetailsEvents = eventGroup({
     updateStatus: type<{ id: string; status: JobStatus }>(),
     updateStatusSuccess: type<JobGet>(),
     updateStatusFailed: type<string>(),
+
+    updateVacancies: type<{ id: string; no_of_vacancies: number }>(),
+    updateVacanciesSuccess: type<JobGet>(),
+    updateVacanciesFailed: type<string>(),
   },
 });

@@ -5,9 +5,10 @@ import { RecommendedJob, RecommendedJobStatus } from '../../core/models/recommen
 export const recommendationsEvents = eventGroup({
   source: 'Recommendations',
   events: {
-    // Load the applicant's existing recommendations.
+    // Load the applicant's existing recommendations, split server-side into the
+    // untouched recommendations and the ones already referred.
     load: type<{ applicantId: string }>(),
-    loadSuccess: type<RecommendedJob[]>(),
+    loadSuccess: type<{ recommended: RecommendedJob[]; referred: RecommendedJob[] }>(),
     loadFailed: type<string>(),
 
     // (Re)generate the Top-K recommendations for the applicant.

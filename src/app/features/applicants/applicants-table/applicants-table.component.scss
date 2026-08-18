@@ -11,4 +11,31 @@
     font-weight: 600;
     color: var(--mat-sys-on-surface);
   }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--active {
+      background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+      color: var(--mat-sys-primary);
+    }
+
+    &--inactive {
+      background: color-mix(in srgb, var(--mat-sys-outline) 16%, transparent);
+      color: var(--mat-sys-outline);
+    }
+  }
+
+  &__badge-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
 }

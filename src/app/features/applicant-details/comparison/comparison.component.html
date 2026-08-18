@@ -22,7 +22,12 @@
         </p>
         <div class="comparison__party-head">
           @if (match.company; as company) {
-            <app-avatar [name]="company.name" [seed]="company.id" [size]="52" />
+            <app-avatar
+              [name]="company.name"
+              [seed]="company.id"
+              [image]="company.avatar"
+              [size]="52"
+            />
           } @else {
             <app-avatar [name]="match.title" [seed]="match.recommendationId" [size]="52" />
           }
@@ -266,16 +271,50 @@
 
             @if (requirement.isSkills) {
               <div class="comparison__chips">
-                @for (skill of requirement.matchedSkills; track skill) {
+                @for (skill of requirement.matchedSkills; track skill.name) {
                   <span class="comparison__chip comparison__chip--matched">
                     <mat-icon aria-hidden="true">check</mat-icon>
-                    {{ skill }}
+                    {{ skill.name }}
+                    @if (skill.tier === 'preferred') {
+                      <span class="comparison__chip-tier">preferred</span>
+                    }
                   </span>
                 }
-                @for (skill of requirement.missingSkills; track skill) {
-                  <span class="comparison__chip comparison__chip--missing">
+                @for (related of requirement.relatedSkills; track related.required) {
+                  <span
+                    class="comparison__chip comparison__chip--related"
+                    [attr.title]="
+                      related.via
+                        ? related.required + ' — related to ' + related.via
+                        : related.required + ' — related skill'
+                    "
+                  >
+                    <mat-icon aria-hidden="true">change_circle</mat-icon>
+                    <span class="comparison__chip-body">
+                      <span class="comparison__chip-name">
+                        {{ related.required }}
+                        @if (related.tier === 'preferred') {
+                          <span class="comparison__chip-tier">preferred</span>
+                        }
+                      </span>
+                      @if (related.via) {
+                        <span class="comparison__chip-via"
+                          >via {{ related.via }} ({{ related.similarity }}%)</span
+                        >
+                      }
+                    </span>
+                  </span>
+                }
+                @for (skill of requirement.missingSkills; track skill.name) {
+                  <span
+                    class="comparison__chip comparison__chip--missing"
+                    [class.comparison__chip--missing-preferred]="skill.tier === 'preferred'"
+                  >
                     <mat-icon aria-hidden="true">close</mat-icon>
-                    {{ skill }}
+                    {{ skill.name }}
+                    @if (skill.tier === 'preferred') {
+                      <span class="comparison__chip-tier">preferred</span>
+                    }
                   </span>
                 }
               </div>
@@ -305,6 +344,13 @@
               } @else if (requirement.requiredText) {
                 <p class="comparison__col-text">{{ requirement.requiredText }}</p>
               }
+              @if (requirement.preferredText) {
+                <p class="comparison__col-kicker comparison__col-kicker--preferred">
+                  <mat-icon aria-hidden="true">{{ requirement.icon }}</mat-icon>
+                  Preferred
+                </p>
+                <p class="comparison__col-text">{{ requirement.preferredText }}</p>
+              }
             }
           </div>
 
@@ -317,9 +363,9 @@
 
             @if (requirement.isSkills) {
               <p class="comparison__sub-label">Matching</p>
-              @if (requirement.matchedSkills.length > 0) {
+              @if (requirement.matchingSkills.length > 0) {
                 <div class="comparison__chips">
-                  @for (skill of requirement.matchedSkills; track skill) {
+                  @for (skill of requirement.matchingSkills; track skill) {
                     <span class="comparison__chip comparison__chip--matched-soft">{{ skill }}</span>
                   }
                 </div>

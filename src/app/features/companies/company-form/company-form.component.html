@@ -9,34 +9,21 @@
   <mat-dialog-content class="company-form">
     <!-- Logo -->
     <div class="company-form__logo-row">
-      @if (logoUrl()) {
-        <img
-          class="company-form__logo"
-          [src]="logoUrl()"
-          alt="Company logo preview"
-          width="64"
-          height="64"
-        />
-      } @else {
-        <app-avatar
-          class="company-form__logo"
-          [name]="logoSeed()"
-          [seed]="logoSeed()"
-          [size]="64"
-        />
-      }
+      <app-avatar
+        class="company-form__logo"
+        [name]="logoSeed()"
+        [seed]="logoSeed()"
+        [image]="logoUrl()"
+        [size]="64"
+        [editable]="true"
+        (fileSelected)="onAvatarSelected($event)"
+        (invalid)="onAvatarInvalid($event)"
+      />
       <div class="company-form__logo-info">
         <p class="company-form__logo-title">Company logo</p>
-        <p class="company-form__logo-hint">Generated from the name, or upload your own</p>
-        <button mat-stroked-button type="button" (click)="fileInput.click()">Upload image</button>
-        <input
-          #fileInput
-          type="file"
-          accept="image/*"
-          hidden
-          aria-hidden="true"
-          (change)="onUpload($event)"
-        />
+        <p class="company-form__logo-hint">
+          Generated from the name — tap the camera to upload your own
+        </p>
       </div>
     </div>
 

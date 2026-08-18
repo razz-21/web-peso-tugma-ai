@@ -1,0 +1,15 @@
+// Styles are scoped under the shared `applicant-details` block so this panel
+// reads as part of the same feature surface as its host.
+.applicant-details {
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  &__card {
+    border-radius: 1.25rem;
+    box-sizing: border-box;
+  }
+}

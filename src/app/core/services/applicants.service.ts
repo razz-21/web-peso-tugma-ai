@@ -30,6 +30,9 @@ export class ApplicantsService {
     if (params.q) {
       httpParams = httpParams.set('q', params.q);
     }
+    if (params.status) {
+      httpParams = httpParams.set('status', params.status);
+    }
 
     const body = await firstValueFrom(
       this.http.get<ApplicantList>(this.baseUrl, { params: httpParams }),

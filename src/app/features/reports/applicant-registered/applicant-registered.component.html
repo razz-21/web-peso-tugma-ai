@@ -64,7 +64,11 @@
       }
     </header>
     @if (report(); as report) {
-      <app-monthly-area-chart [points]="report.monthly" ariaLabelPrefix="Registrations per month" />
+      <app-monthly-area-chart
+        [points]="report.monthly"
+        ariaLabelPrefix="Registrations per month"
+        valueLabel="Registrations"
+      />
     } @else {
       <app-skeleton height="22rem" radius="0.75rem" />
     }

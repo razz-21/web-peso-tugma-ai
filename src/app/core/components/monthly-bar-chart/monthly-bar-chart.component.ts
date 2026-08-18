@@ -68,6 +68,8 @@ export class MonthlyBarChartComponent {
   readonly barColor = input(DEFAULT_BAR_COLOR);
   /** Prefix for the chart's screen-reader description, e.g. "Referrals per month". */
   readonly ariaLabelPrefix = input('Monthly totals');
+  /** Noun shown in a bar's tooltip, e.g. "Referrals" → "Referrals: 42". */
+  readonly valueLabel = input('Total');
   /** Y-axis grid step. */
   readonly axisStep = input(20);
 
@@ -102,7 +104,20 @@ export class MonthlyBarChartComponent {
     layout: { padding: { top: 28 } },
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: false },
+      tooltip: {
+        enabled: true,
+        backgroundColor: '#1f2723',
+        titleColor: '#ffffff',
+        bodyColor: '#e6ebe2',
+        padding: 10,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: { size: 13, weight: 'bold' },
+        bodyFont: { size: 13 },
+        callbacks: {
+          label: (item) => `${this.valueLabel()}: ${item.formattedValue}`,
+        },
+      },
     },
     scales: {
       y: {

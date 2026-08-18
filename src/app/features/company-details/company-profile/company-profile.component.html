@@ -1,20 +1,16 @@
 <div class="company-profile__head">
-  @if (company().avatar) {
-    <img
-      class="company-profile__logo"
-      [src]="company().avatar"
-      [alt]="company().company_name + ' logo'"
-      width="80"
-      height="80"
-    />
-  } @else {
-    <app-avatar
-      class="company-profile__logo"
-      [name]="company().company_name"
-      [seed]="company().id"
-      [size]="80"
-    />
-  }
+  <app-avatar
+    class="company-profile__logo"
+    [name]="company().company_name"
+    [seed]="company().id"
+    [image]="company().avatar"
+    [size]="80"
+    [editable]="true"
+    [uploading]="uploading()"
+    (fileSelected)="onAvatarSelected($event)"
+    (removeRequested)="onAvatarRemove()"
+    (invalid)="onAvatarInvalid($event)"
+  />
 
   <div class="company-profile__heading">
     <h1 class="company-profile__name">{{ company().company_name }}</h1>
@@ -59,6 +55,10 @@
     <div class="company-profile__list-row">
       <dt>Phone</dt>
       <dd>{{ company().contact_number || '—' }}</dd>
+    </div>
+    <div class="company-profile__list-row">
+      <dt>Email</dt>
+      <dd>{{ company().email || '—' }}</dd>
     </div>
   </dl>
 </div>

@@ -5,7 +5,11 @@
       <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
       <td mat-cell *matCellDef="let row">
         <div class="users-table__user">
-          <app-avatar [name]="row.user.fullname" [seed]="row.user.email" />
+          <app-avatar
+            [name]="row.user.fullname"
+            [seed]="row.user.email"
+            [image]="row.user.avatar"
+          />
           <span class="users-table__name">{{ row.user.fullname }}</span>
         </div>
       </td>

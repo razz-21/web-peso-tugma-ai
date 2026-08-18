@@ -142,6 +142,33 @@
     gap: 0.5rem;
   }
 
+  &__stat--editable {
+    position: relative;
+    // Keep the value clear of the absolutely-positioned edit button.
+    padding-right: 2.75rem;
+  }
+
+  &__stat-edit {
+    position: absolute;
+    top: 1.25rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--mat-sys-on-surface-variant);
+
+    mat-icon {
+      width: 1.125rem;
+      height: 1.125rem;
+      font-size: 1.125rem;
+      line-height: 1.125rem;
+    }
+
+    &:hover {
+      color: var(--mat-sys-primary);
+    }
+  }
+
   &__stat-label {
     display: flex;
     align-items: center;
@@ -227,6 +254,25 @@
     font-size: 0.9375rem;
     font-weight: 600;
     line-height: 1.2;
+
+    // Preferred (nice-to-have) items read muted — an outlined chip — so they are
+    // visually distinct from the solid required ones.
+    &--preferred {
+      background: transparent;
+      border: 1px dashed var(--mat-sys-outline);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  // Sub-heading separating a "Preferred (nice-to-have)" group from the required
+  // list within the same card.
+  &__subgroup-title {
+    margin: 0.875rem 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   // --- Sidebar ---

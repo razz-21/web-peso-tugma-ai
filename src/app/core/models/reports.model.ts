@@ -78,7 +78,7 @@ export const ApplicantReferredRowSchema = z.object({
   date_referred: z.string(),
   contact_number: z.string().nullable(),
   company_referred: z.string().nullable(),
-  city_province_address: z.string().nullable(),
+  job_location: z.string().nullable(),
 });
 
 export const ApplicantReferredReportSchema = z.object({
@@ -211,6 +211,43 @@ export type LabeledCount = z.infer<typeof LabeledCountSchema>;
 export type NewEstablishmentsCard = z.infer<typeof NewEstablishmentsCardSchema>;
 export type EstablishmentRow = z.infer<typeof EstablishmentRowSchema>;
 export type EstablishmentsRegisteredReport = z.infer<typeof EstablishmentsRegisteredReportSchema>;
+
+// --- Accomplishment --------------------------------------------------------
+
+/** The roll-up of all facilitation services for the selected window. */
+export const PesoAccomplishmentReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  job_seekers_registered: z.number().int(),
+  establishments_engaged: z.number().int(),
+  vacancies_solicited: z.number().int(),
+  applicants_referred: z.number().int(),
+  applicants_placed: z.number().int(),
+  /** `applicants_placed / applicants_referred` as a percentage. */
+  placement_rate: z.number(),
+});
+
+export type PesoAccomplishmentReport = z.infer<typeof PesoAccomplishmentReportSchema>;
+
+// --- Referral-to-Placement Funnel ------------------------------------------
+
+/** Conversion at each stage from referral through to hire, for the window. */
+export const ReferralFunnelReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  referred: z.number().int(),
+  interviewed: z.number().int(),
+  hired: z.number().int(),
+  did_not_convert: z.number().int(),
+  /** Share of the referred cohort that reached the interview stage or beyond. */
+  interviewed_pct: z.number(),
+  /** Share of the referred cohort that was hired. */
+  hired_pct: z.number(),
+  /** Share of the interviewed who were hired. */
+  interviewed_to_hired_pct: z.number(),
+});
+
+export type ReferralFunnelReport = z.infer<typeof ReferralFunnelReportSchema>;
 
 // --- Query params ----------------------------------------------------------
 

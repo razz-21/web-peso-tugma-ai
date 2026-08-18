@@ -378,6 +378,12 @@
       height: 1.15rem;
       font-size: 1.15rem;
     }
+
+    // Second kicker (e.g. preferred experience) sits below the required detail,
+    // so it needs top spacing to separate it from the text above.
+    &--preferred {
+      margin-top: 1rem;
+    }
   }
 
   &__sub-label {
@@ -425,10 +431,33 @@
       color: #33481a;
     }
 
+    &--related {
+      background: color-mix(in srgb, #9a7b1e 20%, var(--mat-sys-surface));
+      // Darkened amber for AA contrast against the tinted background.
+      color: #5f4a0f;
+      // Stack the skill name over its "via" note, so a long related-skill
+      // explanation reads on its own line instead of wrapping beside the name.
+      align-items: flex-start;
+      max-width: 100%;
+      border-radius: 1rem;
+
+      mat-icon {
+        // Nudge the icon onto the first text line now that the body can wrap.
+        margin-top: 0.1rem;
+      }
+    }
+
     &--missing {
       background: transparent;
       border: 1px dashed color-mix(in srgb, var(--mat-sys-error) 55%, transparent);
       color: var(--mat-sys-error);
+    }
+
+    // A missing *preferred* skill is only a nice-to-have, so it reads muted (a
+    // neutral outline) rather than the strong error styling of a missing must-have.
+    &--missing-preferred {
+      border-color: color-mix(in srgb, var(--mat-sys-outline) 60%, transparent);
+      color: var(--mat-sys-on-surface-variant);
     }
 
     &--matched-soft {
@@ -445,6 +474,35 @@
       background: var(--mat-sys-surface-container-high);
       color: var(--mat-sys-on-surface);
     }
+  }
+
+  &__chip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0; // allow the via note to wrap instead of overflowing the chip
+  }
+
+  &__chip-name {
+    font-weight: 600;
+  }
+
+  // Small tier tag inside a skill chip ("preferred" / "(preferred)"), so a
+  // nice-to-have skill is visually distinct from a must-have.
+  &__chip-tier {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+  }
+
+  &__chip-via {
+    font-weight: 500;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    opacity: 0.85;
+    overflow-wrap: anywhere;
   }
 
   // --- Coverage bar --------------------------------------------------------

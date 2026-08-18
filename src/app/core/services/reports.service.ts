@@ -13,6 +13,10 @@ import {
   EstablishmentsRegisteredReportSchema,
   JobSolicitedReport,
   JobSolicitedReportSchema,
+  PesoAccomplishmentReport,
+  PesoAccomplishmentReportSchema,
+  ReferralFunnelReport,
+  ReferralFunnelReportSchema,
   ReportRangeParams,
 } from '../models/reports.model';
 
@@ -77,5 +81,23 @@ export class ReportsService {
       }),
     );
     return EstablishmentsRegisteredReportSchema.parse(body);
+  }
+
+  async pesoAccomplishment(params: ReportRangeParams = {}): Promise<PesoAccomplishmentReport> {
+    const body = await firstValueFrom(
+      this.http.get<PesoAccomplishmentReport>(`${this.baseUrl}/peso-accomplishment`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return PesoAccomplishmentReportSchema.parse(body);
+  }
+
+  async referralToPlacementFunnel(params: ReportRangeParams = {}): Promise<ReferralFunnelReport> {
+    const body = await firstValueFrom(
+      this.http.get<ReferralFunnelReport>(`${this.baseUrl}/referral-to-placement-funnel`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return ReferralFunnelReportSchema.parse(body);
   }
 }

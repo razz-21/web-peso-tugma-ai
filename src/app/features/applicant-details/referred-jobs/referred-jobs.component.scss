@@ -113,6 +113,7 @@
     align-items: center;
     gap: 1rem;
     width: 100%;
+    box-sizing: border-box;
     padding: 1.25rem 1.75rem;
     border: none;
     background: transparent;
@@ -250,6 +251,12 @@
   &__status--not-hired {
     background: var(--mat-sys-error-container);
     color: var(--mat-sys-on-error-container);
+  }
+
+  &__status--resigned {
+    // Neutral amber — a terminal state that was, unlike "not hired", a success.
+    background: color-mix(in srgb, #9a7b1e 22%, var(--mat-sys-surface));
+    color: #5f4a0f;
   }
 
   &__chevron {

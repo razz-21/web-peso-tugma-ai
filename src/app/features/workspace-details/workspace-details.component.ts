@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { injectDispatch } from '@ngrx/signals/events';
 import { WorkspaceGet } from '../../core/models/workspace.model';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
@@ -25,6 +26,7 @@ import { MeStore } from '../../stores/me/me.store';
 import { WorkspaceDetailsStore } from '../../stores/workspace-details/workspace-details.store';
 import { workspaceDetailsEvents } from '../../stores/workspace-details/workspace-details.events';
 import { workspacesEvents } from '../../stores/workspaces/workspaces.events';
+import { WorkspacesStore } from '../../stores/workspaces/workspaces.store';
 import { WorkspaceFormComponent } from '../workspaces/workspace-form/workspace-form.component';
 import { WorkspaceOverviewComponent } from './workspace-overview/workspace-overview.component';
 import { MatchScoringComponent } from './match-scoring/match-scoring.component';
@@ -54,6 +56,8 @@ export class WorkspaceDetailsComponent implements OnInit {
   protected readonly routes = APP_ROUTES;
   protected readonly store = inject(WorkspaceDetailsStore);
   private readonly meStore = inject(MeStore);
+  /** True while an avatar upload is in flight (shared workspaces store). */
+  protected readonly uploading = inject(WorkspacesStore).uploadAvatarLoading;
 
   /** Only super admins can browse the workspaces list, so only they see the back link. */
   protected readonly canAccessWorkspaces = computed(
@@ -64,6 +68,7 @@ export class WorkspaceDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
@@ -71,6 +76,18 @@ export class WorkspaceDetailsComponent implements OnInit {
     if (id) {
       this.dispatch.loadWorkspaceDetails({ id });
     }
+  }
+
+  protected onAvatarSelected(workspace: WorkspaceGet, file: File): void {
+    this.workspacesDispatch.uploadWorkspaceAvatar({ id: workspace.id, file });
+  }
+
+  protected onAvatarRemove(workspace: WorkspaceGet): void {
+    this.workspacesDispatch.removeWorkspaceAvatar({ id: workspace.id });
+  }
+
+  protected onAvatarInvalid(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
   }
 
   protected onEdit(workspace: WorkspaceGet): void {

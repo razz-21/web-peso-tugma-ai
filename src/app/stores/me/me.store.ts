@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { signalStore, withState } from '@ngrx/signals';
 import { Events, on, withEventHandlers, withReducer } from '@ngrx/signals/events';
@@ -7,11 +8,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserGet } from '../../core/models/user.model';
 import { MeService } from '../../core/services/me.service';
 import { meEvents } from './me.events';
+import { workspacesEvents } from '../workspaces/workspaces.events';
 
 type MeState = {
   user: UserGet | null;
   loading: boolean;
   saving: boolean;
+  uploadAvatarLoading: boolean;
   error: string | null;
 };
 
@@ -19,11 +22,22 @@ const initialState: MeState = {
   user: null,
   loading: false,
   saving: false,
+  uploadAvatarLoading: false,
   error: null,
 };
 
-const errorMessage = (error: unknown, fallback: string): string =>
-  error instanceof Error ? error.message : fallback;
+const errorMessage = (error: unknown, fallback: string): string => {
+  // FastAPI surfaces the reason in `error.error.detail`; prefer it over the
+  // generic HttpErrorResponse message so users see e.g. "Current password is
+  // incorrect" instead of "Failed to update your profile."
+  if (error instanceof HttpErrorResponse) {
+    const detail = (error.error as { detail?: unknown } | null)?.detail;
+    if (typeof detail === 'string' && detail) {
+      return detail;
+    }
+  }
+  return error instanceof Error ? error.message : fallback;
+};
 
 export const MeStore = signalStore(
   { providedIn: 'root' },
@@ -47,7 +61,41 @@ export const MeStore = signalStore(
       error: null,
     })),
     on(meEvents.updateMeFailed, ({ payload }) => ({ saving: false, error: payload })),
+    on(meEvents.uploadAvatar, () => ({ uploadAvatarLoading: true, error: null })),
+    on(meEvents.uploadAvatarSuccess, ({ payload }) => ({
+      user: payload,
+      uploadAvatarLoading: false,
+      error: null,
+    })),
+    on(meEvents.uploadAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
+    on(meEvents.removeAvatar, () => ({ uploadAvatarLoading: true, error: null })),
+    on(meEvents.removeAvatarSuccess, ({ payload }) => ({
+      user: payload,
+      uploadAvatarLoading: false,
+      error: null,
+    })),
+    on(meEvents.removeAvatarFailed, ({ payload }) => ({
+      uploadAvatarLoading: false,
+      error: payload,
+    })),
     on(meEvents.resetMe, () => initialState),
+    // Keep the embedded workspace ref (shown in the sidebar) in sync when the
+    // user's own workspace is edited elsewhere — e.g. an avatar upload or rename.
+    on(workspacesEvents.updateWorkspaceSuccess, ({ payload }, state) => {
+      const user = state.user;
+      if (user?.workspace == null || user.workspace.id !== payload.id) {
+        return {};
+      }
+      return {
+        user: {
+          ...user,
+          workspace: { id: payload.id, name: payload.name, avatar: payload.avatar },
+        },
+      };
+    }),
   ),
   withEventHandlers(
     (
@@ -81,8 +129,41 @@ export const MeStore = signalStore(
       updateMeSuccess$: events
         .on(meEvents.updateMeSuccess)
         .pipe(tap(({ payload }) => snackBar.open(payload.message, 'Close', { duration: 3000 }))),
+      uploadAvatar$: events.on(meEvents.uploadAvatar).pipe(
+        switchMap(({ payload }) =>
+          from(meService.uploadAvatar(payload.file)).pipe(
+            mapResponse({
+              next: (user) => meEvents.uploadAvatarSuccess(user),
+              error: (error: unknown) =>
+                meEvents.uploadAvatarFailed(errorMessage(error, 'Failed to upload avatar.')),
+            }),
+          ),
+        ),
+      ),
+      uploadAvatarSuccess$: events
+        .on(meEvents.uploadAvatarSuccess)
+        .pipe(tap(() => snackBar.open('Avatar updated successfully', 'Close', { duration: 3000 }))),
+      removeAvatar$: events.on(meEvents.removeAvatar).pipe(
+        switchMap(() =>
+          from(meService.removeAvatar()).pipe(
+            mapResponse({
+              next: (user) => meEvents.removeAvatarSuccess(user),
+              error: (error: unknown) =>
+                meEvents.removeAvatarFailed(errorMessage(error, 'Failed to remove avatar.')),
+            }),
+          ),
+        ),
+      ),
+      removeAvatarSuccess$: events
+        .on(meEvents.removeAvatarSuccess)
+        .pipe(tap(() => snackBar.open('Avatar removed successfully', 'Close', { duration: 3000 }))),
       failures$: events
-        .on(meEvents.loadMeFailed, meEvents.updateMeFailed)
+        .on(
+          meEvents.loadMeFailed,
+          meEvents.updateMeFailed,
+          meEvents.uploadAvatarFailed,
+          meEvents.removeAvatarFailed,
+        )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
     }),
   ),

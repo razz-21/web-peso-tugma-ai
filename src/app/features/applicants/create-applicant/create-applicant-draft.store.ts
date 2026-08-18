@@ -1,5 +1,13 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
-import { disabled, email, form, maxLength, pattern, required } from '@angular/forms/signals';
+import {
+  applyEach,
+  disabled,
+  email,
+  form,
+  maxLength,
+  pattern,
+  required,
+} from '@angular/forms/signals';
 import { ApplicantPost, ResumeExtraction } from '../../../core/models/applicant.model';
 import {
   ApplicantDraft,
@@ -34,7 +42,7 @@ type PrefillKey =
   | 'eligibility';
 
 const NAME_MAX = 100;
-const MOBILE_PATTERN = /^[0-9+()\-\s]{7,20}$/;
+const MOBILE_PATTERN = /^09\d{9}$/;
 /** Digits only, up to 5 characters (e.g. graduation year). */
 const YEAR_PATTERN = /^\d{0,5}$/;
 
@@ -110,6 +118,10 @@ export class CreateApplicantDraftStore {
   readonly form = form(this.data, (p) => {
     disabled(p.permanent_address, () => this.sameAsPresent());
 
+    applyEach(p.preferred_occupation_industry, (item) => {
+      required(item.occupation, { message: 'Occupation is required' });
+    });
+
     required(p.firstname, { message: 'First name is required' });
     maxLength(p.firstname, NAME_MAX, { message: `Must be ${NAME_MAX} characters or fewer` });
 
@@ -126,8 +138,12 @@ export class CreateApplicantDraftStore {
     email(p.email_address, { message: 'Enter a valid email address' });
 
     required(p.primary_mobile_number, { message: 'Primary mobile number is required' });
-    pattern(p.primary_mobile_number, MOBILE_PATTERN, { message: 'Enter a valid mobile number' });
-    pattern(p.secondary_mobile_number, MOBILE_PATTERN, { message: 'Enter a valid mobile number' });
+    pattern(p.primary_mobile_number, MOBILE_PATTERN, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
+    });
+    pattern(p.secondary_mobile_number, MOBILE_PATTERN, {
+      message: 'Enter a valid 11-digit PH mobile number (e.g. 09123456789)',
+    });
 
     required(p.present_address.province, { message: 'Province is required' });
     required(p.present_address.municipality_city, { message: 'Municipality/City is required' });
@@ -319,8 +335,12 @@ export class CreateApplicantDraftStore {
     this.removeAt('preferred_occupation_industry', index);
   }
 
-  addWorkLocation(): void {
-    this.push('preferred_work_location', '');
+  addWorkLocation(value: string): void {
+    const location = value.trim();
+    if (location.length === 0) {
+      return;
+    }
+    this.push('preferred_work_location', location);
   }
 
   removeWorkLocation(index: number): void {

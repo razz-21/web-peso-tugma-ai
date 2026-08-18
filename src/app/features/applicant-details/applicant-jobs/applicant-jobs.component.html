@@ -1,0 +1,218 @@
+<div class="applicant-details__panel">
+  <!-- Referred jobs card -->
+  <app-referred-jobs
+    class="applicant-details__card"
+    [disabled]="disabled()"
+    [loading]="loading()"
+    [referrals]="referrals()"
+    (statusChange)="referralStatus.emit($event)"
+    (compare)="viewComparison.emit($event)"
+    (viewJob)="viewJob.emit($event)"
+    (newReferral)="newReferral.emit()"
+  />
+
+  <!-- Recommended jobs card -->
+  <article
+    id="recommend"
+    class="applicant-details__card applicant-details__recommend"
+    [attr.aria-busy]="generating()"
+  >
+    <div class="applicant-details__recommend-head">
+      <div class="applicant-details__recommend-heading">
+        <h2 class="applicant-details__recommend-title">
+          <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+          Recommended jobs
+        </h2>
+        <p class="applicant-details__recommend-subtitle">
+          Matched job openings based on this applicant's preferences, educational background,
+          skills, and location.
+        </p>
+      </div>
+      <button
+        matButton="filled"
+        type="button"
+        class="applicant-details__generate"
+        [disabled]="generating() || disabled()"
+        [attr.title]="disabled() ? 'Activate applicant to generate recommendations' : null"
+        (click)="generate.emit()"
+      >
+        <mat-icon>auto_awesome</mat-icon>
+        Generate recommendations
+      </button>
+    </div>
+
+    <div class="applicant-details__recommend-body">
+      @if (loading()) {
+        <ol class="applicant-details__matches" aria-hidden="true">
+          @for (row of skeletonRows; track row) {
+            <li class="applicant-details__match applicant-details__match--skeleton">
+              <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+              <div class="applicant-details__match-body">
+                <app-skeleton variant="text" width="55%" height="1.1rem" />
+                <app-skeleton variant="text" width="38%" />
+                <div class="applicant-details__match-tags">
+                  <app-skeleton width="4.5rem" height="1.5rem" radius="999px" />
+                  <app-skeleton width="5.5rem" height="1.5rem" radius="999px" />
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+      } @else {
+        @if (generating()) {
+          <div class="applicant-details__generating" role="status" aria-live="polite">
+            <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+            <p>Generating matches...</p>
+          </div>
+        }
+
+        @if (recommendations().length === 0) {
+          <div class="applicant-details__empty">
+            <span class="applicant-details__empty-icon" aria-hidden="true">
+              <mat-icon>auto_awesome</mat-icon>
+            </span>
+            <h3 class="applicant-details__empty-title">No recommendations yet</h3>
+            <p class="applicant-details__empty-text">
+              Generate five job matches ranked by fit. Each match is scored on preferred occupation,
+              educational background, skills, location, and semantic similarity.
+            </p>
+            <button
+              matButton="tonal"
+              type="button"
+              [disabled]="generating() || disabled()"
+              (click)="generate.emit()"
+            >
+              <mat-icon>auto_awesome</mat-icon>
+              Generate 5 matches
+            </button>
+          </div>
+        } @else {
+          <ol class="applicant-details__matches">
+            @for (match of recommendations(); track match.recommendationId; let i = $index) {
+              <li
+                class="applicant-details__match"
+                [class.applicant-details__match--disabled]="disabled()"
+                role="button"
+                tabindex="0"
+                [attr.aria-disabled]="disabled()"
+                [attr.aria-label]="'View match details for ' + match.title"
+                (click)="selectMatch.emit(match)"
+                (keydown.enter)="selectMatch.emit(match)"
+              >
+                <span class="applicant-details__match-rank">{{ i + 1 }}</span>
+                <div
+                  class="applicant-details__ring"
+                  [style.--score]="match.score"
+                  [style.--ring-color]="match.color"
+                >
+                  <span class="applicant-details__ring-value">{{ match.score }}%</span>
+                </div>
+                <div class="applicant-details__match-body">
+                  <div class="applicant-details__match-heading">
+                    <h3 class="applicant-details__match-title">{{ match.title }}</h3>
+                    @if (match.statusLabel; as statusLabel) {
+                      <span
+                        class="applicant-details__match-status"
+                        [class]="'applicant-details__match-status--' + match.status"
+                      >
+                        <span class="applicant-details__match-status-dot" aria-hidden="true"></span>
+                        {{ statusLabel }}
+                      </span>
+                    }
+                  </div>
+                  <p class="applicant-details__match-meta">
+                    @for (segment of match.metaSegments; track $index; let first = $first) {
+                      @if (!first) {
+                        <span class="applicant-details__dot" aria-hidden="true">·</span>
+                      }
+                      <span>{{ segment }}</span>
+                    }
+                    @if (match.isRelevant) {
+                      <span class="applicant-details__relevant-chip">
+                        <mat-icon aria-hidden="true">check_circle</mat-icon>
+                        Relevant
+                      </span>
+                    }
+                  </p>
+                  <div class="applicant-details__match-tags">
+                    @for (tag of match.tags; track tag.label) {
+                      <span class="applicant-details__match-tag">
+                        <mat-icon aria-hidden="true">{{ tag.icon }}</mat-icon>
+                        {{ tag.label }}
+                      </span>
+                    }
+                  </div>
+                </div>
+                <mat-icon class="applicant-details__match-chevron" aria-hidden="true">
+                  chevron_right
+                </mat-icon>
+              </li>
+            }
+          </ol>
+        }
+      }
+    </div>
+
+    <!-- Ranking metrics — evaluated per applicant over the generated Top-K
+         recommendations, using the officers' relevant / not-relevant judgments as
+         ground truth (Chapter 3, Evaluation Metrics). -->
+    @if (metrics(); as metrics) {
+      @if (recommendations().length > 0) {
+        <section class="applicant-details__metrics" aria-label="Recommendation ranking metrics">
+          <div class="applicant-details__metrics-head">
+            <h3 class="applicant-details__metrics-title">
+              <mat-icon aria-hidden="true">insights</mat-icon>
+              Ranking metrics
+            </h3>
+            <span class="applicant-details__metrics-k">K = {{ metrics.k }}</span>
+          </div>
+          <p class="applicant-details__metrics-note">
+            Evaluated over the Top-{{ metrics.k }} recommendations using the officers' relevant /
+            not-relevant assessments as ground truth.
+          </p>
+          <ul class="applicant-details__metric-grid">
+            @for (row of metricRows(); track row.key) {
+              <li class="applicant-details__metric">
+                <span class="applicant-details__metric-value">
+                  {{ row.value | percent: '1.0-1' }}
+                </span>
+                <span class="applicant-details__metric-label">
+                  {{ row.label }}
+                  <button
+                    type="button"
+                    class="applicant-details__metric-help"
+                    [attr.aria-label]="row.label + ' — ' + row.tooltip"
+                    [matTooltip]="row.tooltip"
+                    matTooltipPosition="above"
+                    matTooltipClass="applicant-details__metric-tooltip"
+                  >
+                    <mat-icon aria-hidden="true">help_outline</mat-icon>
+                  </button>
+                </span>
+                <span class="applicant-details__metric-hint">{{ row.hint }}</span>
+              </li>
+            }
+          </ul>
+          @if (metrics.assessedCount === 0) {
+            <p class="applicant-details__metrics-empty" role="note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              <span>
+                Assess the recommendations as relevant or not relevant to populate these metrics.
+              </span>
+            </p>
+          }
+        </section>
+      }
+    }
+
+    @if (recommendations().length > 0) {
+      <div class="applicant-details__recommend-footer">
+        <span class="applicant-details__recommend-note">
+          <mat-icon aria-hidden="true">info</mat-icon>
+          Generated · {{ generatedAt() | date: 'MMM d, y' }} ·
+          {{ generatedAt() | date: 'h:mm a' }} · Review before referring
+        </span>
+      </div>
+    }
+  </article>
+</div>
