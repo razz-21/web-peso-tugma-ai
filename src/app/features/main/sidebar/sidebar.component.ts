@@ -18,14 +18,6 @@ type NavItem = {
   link: string;
 };
 
-const initialsOf = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('') || '?';
-
 @Component({
   selector: 'app-sidebar',
   imports: [
@@ -77,7 +69,6 @@ export class SidebarComponent {
       { label: 'Workspaces', icon: 'computer_arrow_up', link: workspacesLink },
     ];
   });
-  protected readonly initials = computed(() => initialsOf(this.user()?.fullname ?? ''));
   protected readonly roleLabel = computed(() => {
     const role = this.user()?.role;
     return role ? ROLE_LABELS[role] : '';

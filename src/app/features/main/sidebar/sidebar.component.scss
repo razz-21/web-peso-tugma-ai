@@ -138,17 +138,7 @@
 }
 
 .sidebar__avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex: 0 0 auto;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  background: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
 }
 
 .sidebar__profile-text {

@@ -219,9 +219,9 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    position: sticky;
-    top: 1rem;
-    align-self: start;
+    // Stretch to the article's full height so the sticky nav below can travel
+    // the whole scroll range instead of being clipped to the rail's content box.
+    align-self: stretch;
   }
 
   &__nav,
@@ -229,6 +229,12 @@
     padding: 1.25rem;
     background: var(--mat-sys-surface);
     border: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  // Pin the Sections nav to the top on scroll; Overview scrolls away with content.
+  &__nav {
+    position: sticky;
+    top: 1rem;
   }
 
   &__rail-title {
@@ -342,8 +348,12 @@
     }
 
     &__rail {
-      position: static;
+      align-self: start;
       flex-direction: column-reverse;
+    }
+
+    &__nav {
+      position: static;
     }
   }
 

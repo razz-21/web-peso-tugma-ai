@@ -98,10 +98,14 @@
     }
 
     // Let the sticky rail inside the Information panel resolve against the
-    // page scroll container: Material's tab body defaults to clipping overflow,
-    // which would rescope (and break) `position: sticky`.
+    // page scroll container (mat-drawer-content). Material's tab layers each
+    // clip/scroll overflow, and any scrollable ancestor rescopes (and breaks)
+    // `position: sticky`. The active tab body sets `overflow-y: auto`, making
+    // it a scroll container of its own, so it must be neutralised too.
     ::ng-deep .mat-mdc-tab-body-wrapper,
-    ::ng-deep .mat-mdc-tab-body-content {
+    ::ng-deep .mat-mdc-tab-body-content,
+    ::ng-deep .mat-mdc-tab-body,
+    ::ng-deep .mat-mdc-tab-body.mat-mdc-tab-body-active {
       overflow: visible;
     }
   }

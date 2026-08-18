@@ -29,6 +29,10 @@ import {
   JobFormComponent,
   JobFormData,
 } from '../../features/job-listings/job-form/job-form.component';
+import {
+  VacanciesDialogComponent,
+  VacanciesDialogData,
+} from './vacancies-dialog/vacancies-dialog.component';
 
 @Component({
   selector: 'app-job-details',
@@ -127,6 +131,21 @@ export class JobDetailsComponent implements OnInit {
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.dispatch.loadJobDetails({ id: job.id }));
+  }
+
+  protected onEditVacancies(job: JobGet): void {
+    // The store updates `job` on updateVacanciesSuccess, so the card reflects the
+    // new count reactively — no reload needed here.
+    this.dialog.open<VacanciesDialogComponent, VacanciesDialogData, boolean>(
+      VacanciesDialogComponent,
+      {
+        width: '420px',
+        maxWidth: '95vw',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        data: { job },
+      },
+    );
   }
 
   protected onDelete(job: JobGet): void {

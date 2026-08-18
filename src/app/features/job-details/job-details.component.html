@@ -84,12 +84,22 @@
         }
       </div>
 
-      <div class="job-details__card job-details__stat">
+      <div class="job-details__card job-details__stat job-details__stat--editable">
         <span class="job-details__stat-label">
           <mat-icon aria-hidden="true">groups</mat-icon>
           Vacancies
         </span>
         <span class="job-details__stat-value">{{ job.no_of_vacancies }} open</span>
+        <button
+          mat-icon-button
+          type="button"
+          class="job-details__stat-edit"
+          aria-label="Edit vacancies"
+          [disabled]="store.updating()"
+          (click)="onEditVacancies(job)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
       </div>
 
       <div class="job-details__card job-details__stat">

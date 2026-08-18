@@ -52,7 +52,13 @@
       [matMenuTriggerFor]="userMenu"
       aria-label="Open account menu"
     >
-      <span class="sidebar__avatar" aria-hidden="true">{{ initials() }}</span>
+      <app-avatar
+        class="sidebar__avatar"
+        [name]="user()?.fullname ?? ''"
+        [seed]="user()?.id ?? ''"
+        [image]="user()?.avatar ?? null"
+        [size]="44"
+      />
       <span class="sidebar__profile-text">
         <span class="sidebar__profile-name">{{ user()?.fullname }}</span>
         <span class="sidebar__profile-role">{{ roleLabel() }}</span>

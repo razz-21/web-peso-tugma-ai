@@ -16,6 +16,19 @@
     color: var(--mat-sys-on-surface);
   }
 
+  &__vacancies {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
   &__status {
     display: inline-flex;
     align-items: center;
