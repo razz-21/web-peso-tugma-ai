@@ -44,6 +44,7 @@ export type ApplicantDraft = {
   lastname: string;
   middlename: string;
   suffix: string;
+  date_registered: Date | null;
   date_of_birth: Date | null;
   sex: Sex | '';
   civil_status: string;
@@ -104,6 +105,8 @@ export const INITIAL_DRAFT: ApplicantDraft = {
   lastname: '',
   middlename: '',
   suffix: '',
+  // Seeded with today when a fresh draft is created (see the draft store).
+  date_registered: null,
   date_of_birth: null,
   sex: '',
   civil_status: '',
@@ -159,6 +162,16 @@ export const toDateString = (value: Date | null): string | undefined => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Format a datepicker value as an ISO datetime at UTC midnight of the picked
+ * calendar date, or undefined when unset. Keeps the officer's chosen day stable
+ * regardless of timezone (unlike `Date.toISOString()`, which can shift the date).
+ */
+export const toDateTimeString = (value: Date | null): string | undefined => {
+  const date = toDateString(value);
+  return date ? `${date}T00:00:00+00:00` : undefined;
+};
+
 const hasAddress = (address: DraftAddress): boolean =>
   Boolean(
     clean(address.province) ||
@@ -184,6 +197,7 @@ export const draftToPayload = (draft: ApplicantDraft, sameAsPresent: boolean): A
     lastname: draft.lastname.trim(),
     middlename: clean(draft.middlename),
     suffix: clean(draft.suffix),
+    created_at: toDateTimeString(draft.date_registered),
     date_of_birth: toDateString(draft.date_of_birth),
     sex: draft.sex === '' ? undefined : draft.sex,
     civil_status: clean(draft.civil_status),
@@ -292,6 +306,7 @@ export const applicantToDraft = (applicant: ApplicantGet): ApplicantDraft => ({
   lastname: applicant.lastname,
   middlename: applicant.middlename ?? '',
   suffix: applicant.suffix ?? '',
+  date_registered: parseDate(applicant.created_at),
   date_of_birth: parseDate(applicant.date_of_birth),
   sex: applicant.sex ?? '',
   civil_status: applicant.civil_status ?? '',

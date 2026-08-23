@@ -283,9 +283,7 @@
                         <p class="manual-referral__criterion-text">No specific skills required.</p>
                       }
                       @if (job.preferredSkills.length > 0) {
-                        <span class="manual-referral__criterion-sublabel"
-                          >Preferred (nice-to-have)</span
-                        >
+                        <span class="manual-referral__criterion-sublabel">Preferred</span>
                         <div class="manual-referral__skill-chips">
                           @for (skill of job.preferredSkills; track $index) {
                             <span class="manual-referral__skill manual-referral__skill--preferred">

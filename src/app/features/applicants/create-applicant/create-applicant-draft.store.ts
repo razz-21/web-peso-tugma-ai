@@ -94,26 +94,21 @@ const STEP_FIELDS: Record<WizardStepKey, (keyof ApplicantDraft)[]> = {
   work: ['work_experience'],
   skills: ['technical_skills'],
   trainings: ['trainings'],
-  confirmation: [],
+  confirmation: ['date_registered'],
 };
 
-/**
- * Dialog-scoped state for the Create applicant wizard. Owns one Signal Form over
- * the entire applicant draft so each step reads/writes its slice while values
- * persist across step navigation. Provided at the wizard component.
- */
 @Injectable()
 export class CreateApplicantDraftStore {
-  /** When true, the permanent address mirrors the present address and is locked. */
   readonly sameAsPresent = signal(false);
 
-  /** Resume PDF staged on the Upload step, uploaded after the applicant is created. */
   readonly resumeFile = signal<File | null>(null);
 
-  /** Draft fields that were prefilled from the resume — the officer should review these. */
   readonly prefilledFields = signal<ReadonlySet<PrefillKey>>(new Set());
 
-  private readonly data = signal<ApplicantDraft>(structuredClone(INITIAL_DRAFT));
+  private readonly data = signal<ApplicantDraft>({
+    ...structuredClone(INITIAL_DRAFT),
+    date_registered: new Date(),
+  });
 
   readonly form = form(this.data, (p) => {
     disabled(p.permanent_address, () => this.sameAsPresent());

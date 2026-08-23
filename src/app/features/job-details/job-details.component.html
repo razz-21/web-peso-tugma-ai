@@ -170,7 +170,7 @@
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
           @if (job.experience_preferred) {
-            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__subgroup-title">Preferred</p>
             <p class="job-details__body">{{ job.experience_preferred }}</p>
           }
         </div>
@@ -233,7 +233,7 @@
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
           @if (job.preferred_skills.length) {
-            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__subgroup-title">Preferred</p>
             <ul class="job-details__skills" aria-label="Preferred skills">
               @for (skill of job.preferred_skills; track skill) {
                 <li class="job-details__skill job-details__skill--preferred">{{ skill }}</li>

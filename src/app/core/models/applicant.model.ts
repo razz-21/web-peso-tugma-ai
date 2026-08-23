@@ -178,6 +178,7 @@ export const ApplicantPostSchema = z.object({
   eligibility: z.array(EligibilitySchema).optional(),
   work_experience: z.array(WorkExperienceSchema).optional(),
   technical_skills: z.array(z.string()).optional(),
+  created_at: z.string().optional(),
 });
 
 /** Payload for PATCH /applicants/:id — every field optional (partial update). */

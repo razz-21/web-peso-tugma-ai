@@ -1,5 +1,19 @@
 <div class="confirm">
   <p class="confirm__lead">Review the details below, then create the applicant.</p>
+
+  <mat-form-field appearance="outline" class="confirm__date">
+    <mat-label>Date registered</mat-label>
+    <input
+      matInput
+      [matDatepicker]="registeredPicker"
+      [max]="today"
+      [formField]="store.form.date_registered"
+    />
+    <mat-datepicker-toggle matIconSuffix [for]="registeredPicker" />
+    <mat-datepicker #registeredPicker />
+    <mat-hint>Defaults to today. Change to backdate this registration.</mat-hint>
+  </mat-form-field>
+
   <dl class="confirm__list">
     @for (row of rows(); track row.label) {
       <div class="confirm__row">
