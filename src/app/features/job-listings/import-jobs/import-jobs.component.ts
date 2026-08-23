@@ -8,18 +8,18 @@ const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv'] as const;
 const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 /** Static template shipped in assets, offered via "Download template". */
-const TEMPLATE_PATH = 'assets/templates/PESOTugmai Import Applicant Template.xlsx';
-const TEMPLATE_FILENAME = 'PESOTugmai Import Applicant Template.xlsx';
+const TEMPLATE_PATH = 'assets/templates/PESOTugmai Import Company Job Template.xlsx';
+const TEMPLATE_FILENAME = 'PESOTugmai Import Company Job Template.xlsx';
 
 @Component({
-  selector: 'app-import-applicants',
+  selector: 'app-import-jobs',
   imports: [MatButtonModule, MatIconModule],
-  templateUrl: './import-applicants.component.html',
-  styleUrl: './import-applicants.component.scss',
+  templateUrl: './import-jobs.component.html',
+  styleUrl: './import-jobs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImportApplicantsComponent {
-  private readonly dialogRef = inject<MatDialogRef<ImportApplicantsComponent, File>>(MatDialogRef);
+export class ImportJobsComponent {
+  private readonly dialogRef = inject<MatDialogRef<ImportJobsComponent, File>>(MatDialogRef);
 
   protected readonly maxSizeLabel = '5 MB';
 

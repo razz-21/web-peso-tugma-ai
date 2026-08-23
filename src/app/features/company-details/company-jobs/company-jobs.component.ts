@@ -17,12 +17,22 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { injectDispatch } from '@ngrx/signals/events';
 import { CompanyGet } from '../../../core/models/company.model';
 import { JobGet } from '../../../core/models/job.model';
 import { CompanyDetailsStore } from '../../../stores/company-details/company-details.store';
 import { companyDetailsEvents } from '../../../stores/company-details/company-details.events';
 import { JobFormComponent, JobFormData } from '../../job-listings/job-form/job-form.component';
+import { ImportJobsComponent } from '../../job-listings/import-jobs/import-jobs.component';
+import {
+  ImportJobReviewComponent,
+  ImportJobReviewData,
+} from '../../job-listings/import-jobs/import-job-review.component';
+import {
+  readImportRows,
+  toJobReviewRows,
+} from '../../job-listings/import-jobs/import-job-review.model';
 import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
 import {
   ConfirmDialogComponent,
@@ -57,6 +67,7 @@ export class CompanyJobsComponent {
   // sync, and deletes handled there).
   private readonly store = inject(CompanyDetailsStore);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dispatch = injectDispatch(companyDetailsEvents);
 
@@ -94,6 +105,75 @@ export class CompanyJobsComponent {
 
   protected onCreate(): void {
     this.openForm({ lockedCompany: this.company() });
+  }
+
+  protected onImport(): void {
+    const dialogRef = this.dialog.open<ImportJobsComponent, unknown, File>(ImportJobsComponent, {
+      panelClass: 'import-jobs-dialog',
+      width: '640px',
+      maxWidth: '92vw',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+      ariaLabel: 'Import jobs',
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((file) => {
+        if (file) {
+          void this.openReview(file);
+        }
+      });
+  }
+
+  private async openReview(file: File): Promise<void> {
+    let rows;
+    try {
+      rows = toJobReviewRows(await readImportRows(file));
+    } catch {
+      this.snackBar.open('Could not read the import file.', 'Dismiss', { duration: 5000 });
+      return;
+    }
+
+    if (rows.length === 0) {
+      this.snackBar.open('No jobs found. Fill in the template before importing.', 'Dismiss', {
+        duration: 6000,
+      });
+      return;
+    }
+
+    const company = this.company();
+    const reviewRef = this.dialog.open<ImportJobReviewComponent, ImportJobReviewData>(
+      ImportJobReviewComponent,
+      {
+        panelClass: 'import-job-review-dialog',
+        width: '100vw',
+        maxWidth: '100vw',
+        height: '100vh',
+        maxHeight: '100vh',
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
+        ariaLabel: 'Review imported jobs',
+        data: {
+          companyId: company.id,
+          companyName: company.company_name,
+          rows,
+          // Existing titles so the review can flag/skip duplicates for this company.
+          existingTitles: this.store.jobs().map((job) => job.title),
+        },
+      },
+    );
+
+    reviewRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result) {
+          // Jobs were created by the review dialog — refresh this company's list.
+          this.dispatch.loadCompanyJobs({ companyId: company.id });
+        }
+      });
   }
 
   protected onEdit(job: JobGet): void {

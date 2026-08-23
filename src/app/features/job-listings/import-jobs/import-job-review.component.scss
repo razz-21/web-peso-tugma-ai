@@ -1,19 +1,24 @@
+@use '@angular/material' as mat;
+
 // Shared column track so the header and every body row line up. The table
 // scrolls horizontally on narrow viewports rather than crushing the columns.
-// Long-text/value columns (Address, Skills, Company, Job vacancy) hold a wider
-// minimum so their fields aren't cramped; the short selects stay compact.
+// The wide, editable columns hold a 16rem minimum; the short numeric/select
+// columns stay compact.
 $cols:
-  minmax(14rem, 1.4fr) // Applicant
-  minmax(8rem, 0.7fr) // Gender
-  minmax(10rem, 0.8fr) // Civil status
-  minmax(15rem, 1.1fr) // Address
-  minmax(16rem, 1.5fr) // Skills
-  minmax(16rem, 1.4fr) // Company
-  minmax(15rem, 1.2fr) // Job vacancy
-  minmax(11rem, 0.9fr) // Status
-  minmax(11rem, 0.7fr); // Registered
-
-@use '@angular/material' as mat;
+  minmax(18rem, 2fr) // Title (title + description + location)
+  minmax(100px, 0.6fr) // Age range
+  minmax(10rem, 0.6fr) // Sex
+  minmax(10rem, 0.7fr) // Civil status
+  minmax(92px, 0.5fr) // Vacancies
+  minmax(126px, 0.7fr) // Salary
+  minmax(16rem, 1fr) // Min. education
+  minmax(16rem, 1fr) // Course / program
+  minmax(16rem, 1fr) // Skills required
+  minmax(16rem, 1fr) // Preferred skills
+  minmax(16rem, 1fr) // Experience required
+  minmax(16rem, 1fr) // Experience preferred
+  minmax(16rem, 0.8fr) // Date created
+  minmax(12rem, 0.7fr); // Action
 
 :host {
   display: block;
@@ -59,45 +64,25 @@ $cols:
   color: var(--mat-sys-on-surface-variant);
 }
 
+.review__company {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+  border-radius: 1.5rem;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.review__company-name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .review__topbar-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-}
-
-.review__skip {
-  color: var(--mat-sys-primary);
-}
-
-// --- Apply-to-all bar -------------------------------------------------------
-
-.review__applybar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-  background: var(--mat-sys-surface-container-lowest);
-}
-
-.review__apply-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.review__apply-field {
-  width: 240px;
-}
-
-.review__apply-btn {
-  margin-left: 0.25rem;
-}
-
-.review__counter {
-  margin-left: auto;
-  font-size: 0.85rem;
-  color: var(--mat-sys-on-surface-variant);
 }
 
 // --- Table ------------------------------------------------------------------
@@ -113,11 +98,18 @@ $cols:
   grid-template-columns: $cols;
   gap: 0.75rem;
   align-items: center;
-  // Floor at the sum of the column minimums so wide tracks never shrink; the
-  // table scrolls horizontally instead of cramping the fields.
-  min-width: 122rem;
+  // Floor at the sum of the column minimums (the 16rem/12rem/10rem columns + the
+  // title column + the compact ones + gaps) so tracks never shrink; it scrolls.
+  min-width: 195rem;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+// A duplicate row (title already exists) reads as a warning: a soft red wash and
+// a red left accent, so it's clearly flagged as one that will be skipped.
+.review__row--dupe {
+  background: color-mix(in srgb, var(--mat-sys-error) 8%, var(--mat-sys-surface-container-lowest));
+  box-shadow: inset 3px 0 0 0 var(--mat-sys-error);
 }
 
 .review__row--head {
@@ -136,58 +128,43 @@ $cols:
   }
 }
 
-.review__row--assigned {
-  box-shadow: inset 3px 0 0 0 var(--mat-sys-primary);
-}
-
 .review__cell {
   min-width: 0;
 }
 
-// Applicant identity cell.
-.review__applicant {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-width: 0;
-  padding-left: 0.5rem;
-}
-
-.review__avatar {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  background: var(--mat-sys-secondary-container);
-  color: var(--mat-sys-on-secondary-container);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.review__applicant-text {
+// Combined, read-only Title cell: title with description + location beneath.
+.review__title-cell {
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: 0.15rem;
+  padding: 0 0.5rem 0 0.5rem;
 }
 
-.review__name {
+.review__title-name {
   font-weight: 600;
   color: var(--mat-sys-on-surface);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.review__edu,
-.review__course {
+.review__title-sub {
   font-size: 0.78rem;
   color: var(--mat-sys-on-surface-variant);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.review__title-loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    font-size: 0.95rem;
+  }
 }
 
 // Compact form controls inside cells.
@@ -196,38 +173,36 @@ $cols:
   font-size: 0.82rem;
 }
 
-// Searchable company select — option + trigger content (avatar + name + type).
-.review__company {
+// --- Action cell ------------------------------------------------------------
+
+.review__actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
+  gap: 0.4rem;
 }
 
-.review__company-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  min-width: 0;
-}
-
-.review__company-name {
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.review__company-type {
+.review__dupe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 1rem;
+  background: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
   font-size: 0.72rem;
-  color: var(--mat-sys-on-surface-variant);
+  font-weight: 600;
+  white-space: nowrap;
+
+  mat-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    font-size: 0.95rem;
+  }
 }
 
-// The company options are taller (avatar + two lines), so give them room.
-::ng-deep .mat-mdc-option:has(.review__company) {
-  height: auto;
-  min-height: 3rem;
+.review__delete {
+  flex: none;
+  color: var(--mat-sys-error);
 }
 
 // --- Skills -----------------------------------------------------------------
@@ -289,27 +264,6 @@ $cols:
     outline: none;
   }
 }
-
-// --- Status -----------------------------------------------------------------
-
-.review__status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.review__status-dot {
-  flex: none;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--mat-sys-outline-variant);
-}
-
-.review__status-dot--on {
-  background: var(--mat-sys-primary);
-}
-
 
 // --- Footer -----------------------------------------------------------------
 

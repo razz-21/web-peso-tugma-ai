@@ -169,6 +169,38 @@ body {
   }
 }
 
+// Import jobs dialog: a compact, centered card with generous rounding (mirrors
+// the import-applicants dialog). See import-jobs.component.
+.import-jobs-dialog {
+  .mat-mdc-dialog-surface {
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-container {
+    padding: 0;
+  }
+}
+
+// Import job review dialog: a full-window, edge-to-edge surface whose own top
+// bar / table / footer manage all internal spacing (see import-job-review).
+.import-job-review-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  .mat-mdc-dialog-container {
+    --mat-dialog-container-max-width: 100vw;
+    padding: 0;
+  }
+}
+
 // Import review dialog: a full-window, edge-to-edge surface whose own top bar /
 // apply-bar / table / footer manage all internal spacing (see import-review).
 .import-review-dialog {

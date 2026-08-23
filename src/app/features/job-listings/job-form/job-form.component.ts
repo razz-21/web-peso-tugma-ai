@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -27,6 +28,7 @@ import {
   Sex,
 } from '../../../core/models/job.model';
 import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
+import { COURSE_PROGRAM_GROUPS } from '../../../core/constants/courses.constant';
 import { CompaniesService } from '../../../core/services/companies.service';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { jobsEvents } from '../../../stores/jobs/jobs.events';
@@ -138,6 +140,7 @@ const INITIAL_VALUE: JobFormValue = {
 @Component({
   selector: 'app-job-form',
   imports: [
+    MatAutocompleteModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -227,6 +230,21 @@ export class JobFormComponent {
   );
 
   protected readonly companyTypeLabels = COMPANY_TYPE_LABELS;
+
+  /**
+   * Course/program suggestions filtered by what's typed. Empty groups are
+   * dropped. The field stays free-text, so off-list courses are still allowed.
+   */
+  protected readonly filteredCourseGroups = computed(() => {
+    const query = this.data().course_program.trim().toLowerCase();
+    if (!query) {
+      return COURSE_PROGRAM_GROUPS;
+    }
+    return COURSE_PROGRAM_GROUPS.map((group) => ({
+      category: group.category,
+      courses: group.courses.filter((course) => course.toLowerCase().includes(query)),
+    })).filter((group) => group.courses.length > 0);
+  });
 
   /** Skills are edited as chips, so they live outside the signal form. Required
    * (mandatory) and preferred (nice-to-have) skills are two separate lists. */

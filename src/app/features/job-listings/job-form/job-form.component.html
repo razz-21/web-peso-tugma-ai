@@ -212,10 +212,20 @@
           matInput
           type="text"
           autocomplete="off"
-          placeholder="e.g. BS Information Technology"
+          placeholder="e.g. Bachelor of Science in Information Technology"
           [formField]="jobForm.course_program"
+          [matAutocomplete]="courseAuto"
         />
-        <mat-hint>Preferred course or program of study</mat-hint>
+        <mat-autocomplete #courseAuto="matAutocomplete">
+          @for (group of filteredCourseGroups(); track group.category) {
+            <mat-optgroup [label]="group.category">
+              @for (course of group.courses; track course) {
+                <mat-option [value]="course">{{ course }}</mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-autocomplete>
+        <mat-hint>Type to search, or enter a course not listed</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

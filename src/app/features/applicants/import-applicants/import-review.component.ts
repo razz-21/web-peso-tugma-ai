@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,6 +35,7 @@ export interface ImportReviewData {
   selector: 'app-import-review',
   imports: [
     MatButtonModule,
+    MatDatepickerModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
@@ -79,6 +81,9 @@ export class ImportReviewComponent {
 
   // Inline skill editing.
   protected readonly skillEditingRowId = signal<string | null>(null);
+
+  /** Upper bound for the registered datepicker — can't register in the future. */
+  protected readonly today = new Date();
 
   protected readonly total = computed(() => this.rows().length);
   protected readonly assignedCount = computed(
@@ -164,6 +169,10 @@ export class ImportReviewComponent {
 
   protected onStatusChange(id: string, value: string): void {
     this.patchRow(id, { status: value });
+  }
+
+  protected onRegisteredChange(id: string, value: Date | null): void {
+    this.patchRow(id, { registered: value });
   }
 
   protected onCompanyChange(id: string, companyId: string): void {

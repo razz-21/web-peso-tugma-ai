@@ -1,0 +1,323 @@
+<div class="review">
+  <header class="review__topbar">
+    <button matIconButton type="button" aria-label="Close" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="review__titles">
+      <h2 class="review__title">Review imported jobs</h2>
+      <p class="review__subtitle">{{ total() }} jobs imported · review and edit before saving</p>
+    </div>
+
+    <span class="review__company" aria-label="Company">
+      <app-avatar [name]="companyName" [seed]="companyName" [size]="24" />
+      <span class="review__company-name">{{ companyName }}</span>
+    </span>
+  </header>
+
+  <div class="review__table" role="table" aria-label="Imported jobs">
+    <div class="review__row review__row--head" role="row">
+      <span class="review__cell" role="columnheader">Title</span>
+      <span class="review__cell" role="columnheader">Age Range</span>
+      <span class="review__cell" role="columnheader">Sex</span>
+      <span class="review__cell" role="columnheader">Civil Status</span>
+      <span class="review__cell" role="columnheader">Vacancies</span>
+      <span class="review__cell" role="columnheader">Salary / mo</span>
+      <span class="review__cell" role="columnheader">Min. Education</span>
+      <span class="review__cell" role="columnheader">Course / Program</span>
+      <span class="review__cell" role="columnheader">Skills Required</span>
+      <span class="review__cell" role="columnheader">Preferred Skills</span>
+      <span class="review__cell" role="columnheader">Experience Required</span>
+      <span class="review__cell" role="columnheader">Experience Preferred</span>
+      <span class="review__cell" role="columnheader">Date Created</span>
+      <span class="review__cell" role="columnheader">Action</span>
+    </div>
+
+    @for (row of rows(); track row.id) {
+      <div class="review__row" [class.review__row--dupe]="isDuplicate(row)" role="row">
+        <div class="review__cell review__title-cell" role="cell">
+          <span class="review__title-name">{{ row.title }}</span>
+          @if (row.description) {
+            <span class="review__title-sub">{{ row.description }}</span>
+          }
+          @if (row.location) {
+            <span class="review__title-loc">
+              <mat-icon aria-hidden="true">place</mat-icon>
+              {{ row.location }}
+            </span>
+          }
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              placeholder="e.g. 21 – 35"
+              [attr.aria-label]="'Age range for ' + row.title"
+              [value]="row.ageRange"
+              (change)="onAgeRangeChange(row.id, $any($event.target).value)"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              [attr.aria-label]="'Sex for ' + row.title"
+              [value]="row.sex"
+              (selectionChange)="onSexChange(row.id, $event.value)"
+            >
+              <mat-option [value]="''">Not specified</mat-option>
+              @for (option of sexOptions; track option) {
+                <mat-option [value]="option">{{ sexLabels[option] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              multiple
+              placeholder="Any"
+              [panelWidth]="null"
+              [attr.aria-label]="'Civil status for ' + row.title"
+              [value]="row.civilStatus"
+              (selectionChange)="onCivilStatusChange(row.id, $event.value)"
+            >
+              @for (status of civilStatuses; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              type="number"
+              min="1"
+              inputmode="numeric"
+              [attr.aria-label]="'Vacancies for ' + row.title"
+              [value]="row.vacancies"
+              (change)="onVacanciesChange(row.id, $any($event.target).value)"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <span matTextPrefix>₱&nbsp;</span>
+            <input
+              matInput
+              type="number"
+              min="0"
+              inputmode="numeric"
+              [attr.aria-label]="'Salary for ' + row.title"
+              [value]="row.salary"
+              (change)="onSalaryChange(row.id, $any($event.target).value)"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              multiple
+              placeholder="—"
+              [panelWidth]="null"
+              [attr.aria-label]="'Minimum education for ' + row.title"
+              [value]="row.minEducation"
+              (selectionChange)="onEducationChange(row.id, $event.value)"
+            >
+              @for (option of educationOptions; track option) {
+                <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              placeholder="—"
+              [attr.aria-label]="'Course or program for ' + row.title"
+              [value]="row.courseProgram"
+              (change)="onCourseChange(row.id, $any($event.target).value)"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell review__skills" role="cell">
+          @for (skill of row.skills; track skill) {
+            <span class="review__chip">
+              {{ skill }}
+              <button
+                type="button"
+                class="review__chip-remove"
+                [attr.aria-label]="'Remove ' + skill"
+                (click)="removeSkill(row.id, skill)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          }
+
+          @if (skillEditingRowId() === row.id) {
+            <input
+              #skillInput
+              type="text"
+              class="review__skill-input"
+              placeholder="Add skill"
+              autocomplete="off"
+              autofocus
+              [attr.aria-label]="'Add skill for ' + row.title"
+              (keydown.enter)="commitSkill(row.id, skillInput)"
+              (keydown.escape)="cancelAddSkill()"
+              (blur)="commitSkill(row.id, skillInput)"
+            />
+          } @else {
+            <button
+              type="button"
+              class="review__chip review__chip--add"
+              [attr.aria-label]="'Add skill for ' + row.title"
+              (click)="startAddSkill(row.id)"
+            >
+              + skill
+            </button>
+          }
+        </div>
+
+        <div class="review__cell review__skills" role="cell">
+          @for (skill of row.preferredSkills; track skill) {
+            <span class="review__chip">
+              {{ skill }}
+              <button
+                type="button"
+                class="review__chip-remove"
+                [attr.aria-label]="'Remove ' + skill"
+                (click)="removePreferredSkill(row.id, skill)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          }
+
+          @if (preferredSkillEditingRowId() === row.id) {
+            <input
+              #prefSkillInput
+              type="text"
+              class="review__skill-input"
+              placeholder="Add skill"
+              autocomplete="off"
+              autofocus
+              [attr.aria-label]="'Add preferred skill for ' + row.title"
+              (keydown.enter)="commitPreferredSkill(row.id, prefSkillInput)"
+              (keydown.escape)="cancelAddPreferredSkill()"
+              (blur)="commitPreferredSkill(row.id, prefSkillInput)"
+            />
+          } @else {
+            <button
+              type="button"
+              class="review__chip review__chip--add"
+              [attr.aria-label]="'Add preferred skill for ' + row.title"
+              (click)="startAddPreferredSkill(row.id)"
+            >
+              + skill
+            </button>
+          }
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <textarea
+              matInput
+              rows="2"
+              autocomplete="off"
+              placeholder="e.g. 2 years"
+              [attr.aria-label]="'Experience required for ' + row.title"
+              [value]="row.experienceRequired"
+              (change)="onExperienceRequiredChange(row.id, $any($event.target).value)"
+            ></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <textarea
+              matInput
+              rows="2"
+              autocomplete="off"
+              placeholder="—"
+              [attr.aria-label]="'Experience preferred for ' + row.title"
+              [value]="row.experiencePreferred"
+              (change)="onExperiencePreferredChange(row.id, $any($event.target).value)"
+            ></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              [matDatepicker]="createdPicker"
+              [max]="today"
+              [attr.aria-label]="'Date created for ' + row.title"
+              [value]="row.dateCreated"
+              (dateChange)="onDateCreatedChange(row.id, $event.value)"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="createdPicker" />
+            <mat-datepicker #createdPicker />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell review__actions" role="cell">
+          @if (isDuplicate(row)) {
+            <span
+              class="review__dupe"
+              title="A job with this title already exists — it will be skipped"
+            >
+              <mat-icon aria-hidden="true">info</mat-icon>
+              Already exists
+            </span>
+          }
+          <button
+            matIconButton
+            type="button"
+            class="review__delete"
+            [attr.aria-label]="'Remove ' + row.title"
+            (click)="removeRow(row.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <footer class="review__footer">
+    <p class="review__footer-summary">
+      <strong>{{ creatableCount() }}</strong> {{ creatableCount() === 1 ? 'job' : 'jobs' }} ready to
+      create
+      @if (duplicateCount() > 0) {
+        · {{ duplicateCount() }} already {{ duplicateCount() === 1 ? 'exists' : 'exist' }} (skipped)
+      }
+    </p>
+    <div class="review__footer-actions">
+      <button matButton type="button" [disabled]="saving()" (click)="cancel()">Cancel</button>
+      <button
+        matButton="filled"
+        type="button"
+        [disabled]="saving() || creatableCount() === 0"
+        (click)="save()"
+      >
+        Save jobs
+      </button>
+    </div>
+  </footer>
+</div>

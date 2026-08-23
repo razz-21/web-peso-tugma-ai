@@ -3,6 +3,9 @@ import {
   ApplicantPost,
   ReferralStatus,
 } from '../../../core/models/applicant.model';
+import { headerAccessor, readImportRows, splitList } from '../../../core/utils/spreadsheet.util';
+
+export { readImportRows };
 
 /**
  * One imported applicant awaiting review before it is saved. CSV-derived fields
@@ -25,8 +28,8 @@ export interface ImportReviewRow {
   address: string;
   skills: string[];
   contactNumber: string;
-  /** Raw registered date string from the CSV (displayed as-is). */
-  registered: string;
+  /** Registered date (editable; defaults to today when the file omits it). */
+  registered: Date | null;
   companyId: string | null;
   jobId: string | null;
   status: string | null;
@@ -44,17 +47,28 @@ const STATUS_TO_REFERRAL: Record<AssignmentStatus, ReferralStatus> = {
   'Not hired': 'not_hired',
 };
 
-/**
- * Parse a registered-date cell (ISO `2026-06-21`, `6/21/2026`, etc.) into an ISO
- * datetime string, or null when blank/unparseable so the server dates it now.
- */
-function toIsoDate(raw: string): string | null {
+/** Parse a date cell (ISO `2026-06-21`, `6/21/2026`, etc.), or null when unset. */
+function parseDate(raw: string): Date | null {
   const trimmed = raw.trim();
   if (!trimmed) {
     return null;
   }
   const parsed = new Date(trimmed);
-  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/**
+ * Format a picked date as an ISO datetime at UTC midnight of that calendar day,
+ * or null when unset — keeps the chosen day stable regardless of timezone.
+ */
+function toDateTimeString(value: Date | null): string | null {
+  if (!value || Number.isNaN(value.getTime())) {
+    return null;
+  }
+  const year = value.getFullYear().toString().padStart(4, '0');
+  const month = (value.getMonth() + 1).toString().padStart(2, '0');
+  const day = value.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T00:00:00+00:00`;
 }
 
 /**
@@ -89,97 +103,7 @@ export function toImportItem(row: ImportReviewRow, assign: boolean): ApplicantIm
     ? (row.status && STATUS_TO_REFERRAL[row.status as AssignmentStatus]) || 'referred'
     : null;
 
-  return { applicant, job_id: jobId, status, date_registered: toIsoDate(row.registered) };
-}
-
-/**
- * Parse CSV text into rows of fields. Handles RFC 4180 quoting: double-quoted
- * fields, escaped quotes (`""`), and commas/newlines inside quotes.
- */
-export function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let field = '';
-  let row: string[] = [];
-  let inQuotes = false;
-
-  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-
-  for (let i = 0; i < normalized.length; i++) {
-    const char = normalized[i];
-
-    if (inQuotes) {
-      if (char === '"') {
-        if (normalized[i + 1] === '"') {
-          field += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        field += char;
-      }
-      continue;
-    }
-
-    if (char === '"') {
-      inQuotes = true;
-    } else if (char === ',') {
-      row.push(field);
-      field = '';
-    } else if (char === '\n') {
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = '';
-    } else {
-      field += char;
-    }
-  }
-
-  // Flush the trailing field/row (files often omit a final newline).
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-/**
- * Read an uploaded import file into a grid of string cells. Excel workbooks
- * (.xlsx/.xls) are parsed with SheetJS (first sheet); .csv falls back to the
- * lightweight parser. Dates are emitted as text so they display as entered.
- */
-export async function readImportRows(file: File): Promise<string[][]> {
-  const isCsv = file.name.toLowerCase().endsWith('.csv');
-  if (isCsv) {
-    return parseCsv(await file.text());
-  }
-
-  // Load SheetJS on demand so it only ships when an import actually runs.
-  const XLSX = await import('xlsx');
-  const buffer = await file.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type: 'array', cellDates: false });
-  const firstSheetName = workbook.SheetNames[0];
-  if (!firstSheetName) {
-    return [];
-  }
-  const sheet = workbook.Sheets[firstSheetName];
-  const grid = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
-    header: 1,
-    blankrows: false,
-    defval: '',
-    raw: false,
-  });
-  return grid.map((row) => row.map((cell) => (cell == null ? '' : String(cell))));
-}
-
-/** Split a multi-value cell into trimmed parts (comma/semicolon/pipe separated). */
-function splitList(value: string): string[] {
-  return value
-    .split(/[;,|]/)
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0);
+  return { applicant, job_id: jobId, status, date_registered: toDateTimeString(row.registered) };
 }
 
 function initialsOf(firstname: string, lastname: string): string {
@@ -204,11 +128,6 @@ const COLUMN_ALIASES: Record<string, readonly string[]> = {
   contact_number: ['contact_number', 'contact number', 'contact', 'mobile', 'phone'],
 };
 
-/** Normalize a header cell for tolerant matching (collapse spaces, drop punctuation). */
-function normalizeHeader(cell: string): string {
-  return cell.trim().toLowerCase().replace(/\s+/g, ' ');
-}
-
 /**
  * Map parsed CSV rows to review rows using the header to resolve columns, so the
  * order in the file can vary. Rows missing both a first and last name are
@@ -219,21 +138,7 @@ export function toReviewRows(parsed: string[][]): ImportReviewRow[] {
     return [];
   }
 
-  const header = parsed[0].map(normalizeHeader);
-  const index = (field: string): number => {
-    const aliases = COLUMN_ALIASES[field] ?? [field];
-    for (const alias of aliases) {
-      const i = header.indexOf(alias);
-      if (i >= 0) {
-        return i;
-      }
-    }
-    return -1;
-  };
-  const at = (cells: string[], field: string): string => {
-    const i = index(field);
-    return i >= 0 ? (cells[i] ?? '').trim() : '';
-  };
+  const at = headerAccessor(parsed[0], COLUMN_ALIASES);
 
   const rows: ImportReviewRow[] = [];
   for (let r = 1; r < parsed.length; r++) {
@@ -265,7 +170,8 @@ export function toReviewRows(parsed: string[][]): ImportReviewRow[] {
       address: at(cells, 'address'),
       skills: splitList(at(cells, 'skills')),
       contactNumber: at(cells, 'contact_number'),
-      registered: at(cells, 'date_registered'),
+      // Default to today when the file omits a registered date.
+      registered: parseDate(at(cells, 'date_registered')) ?? new Date(),
       companyId: null,
       jobId: null,
       status: null,

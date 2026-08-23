@@ -261,8 +261,6 @@ export const WorkspacesStore = signalStore(
         exhaustMap(({ payload }) =>
           from(workspacesService.uploadAvatar(payload.id, payload.file)).pipe(
             mapResponse({
-              // Reuse updateWorkspaceSuccess so the list and details views both
-              // pick up the returned workspace (with its new avatar URL).
               next: (workspace) => workspacesEvents.updateWorkspaceSuccess(workspace),
               error: (error: unknown) =>
                 workspacesEvents.uploadWorkspaceAvatarFailed(
@@ -272,8 +270,6 @@ export const WorkspacesStore = signalStore(
           ),
         ),
       ),
-      // Success reuses updateWorkspaceSuccess (handled above): its snackbar and
-      // state patch already cover avatar changes, so no separate handler here.
       uploadWorkspaceAvatarFailed$: events.on(workspacesEvents.uploadWorkspaceAvatarFailed).pipe(
         tap(({ payload }) => {
           snackBar.open(payload, 'Close', { duration: 3000 });
@@ -283,8 +279,6 @@ export const WorkspacesStore = signalStore(
         exhaustMap(({ payload }) =>
           from(workspacesService.removeAvatar(payload.id)).pipe(
             mapResponse({
-              // Reuse updateWorkspaceSuccess so the list and details views both
-              // pick up the returned workspace (now without an avatar).
               next: (workspace) => workspacesEvents.updateWorkspaceSuccess(workspace),
               error: (error: unknown) =>
                 workspacesEvents.removeWorkspaceAvatarFailed(

@@ -322,7 +322,20 @@
           </mat-form-field>
         </div>
 
-        <span class="review__cell review__registered" role="cell">{{ row.registered }}</span>
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              [matDatepicker]="registeredPicker"
+              [max]="today"
+              [attr.aria-label]="'Registered date for ' + row.fullName"
+              [value]="row.registered"
+              (dateChange)="onRegisteredChange(row.id, $event.value)"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="registeredPicker" />
+            <mat-datepicker #registeredPicker />
+          </mat-form-field>
+        </div>
       </div>
     }
   </div>

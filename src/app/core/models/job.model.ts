@@ -92,6 +92,18 @@ export type JobPost = z.infer<typeof JobPostSchema>;
 export type JobPatch = z.infer<typeof JobPatchSchema>;
 export type JobList = z.infer<typeof JobListSchema>;
 
+/** Payload for POST /jobs/import — a batch of postings to create at once. */
+export interface JobImportRequest {
+  jobs: JobPost[];
+}
+
+/** Summary of a bulk job import: how many were created. */
+export const JobImportResultSchema = z.object({
+  created: z.number().int().nonnegative(),
+  jobs: z.array(JobGetSchema),
+});
+export type JobImportResult = z.infer<typeof JobImportResultSchema>;
+
 export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   active: 'Active',
   closed: 'Closed',
