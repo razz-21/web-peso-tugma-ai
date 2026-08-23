@@ -61,6 +61,9 @@ export const JobGetSchema = JobSchema;
 export const JobPostSchema = JobFieldsSchema.extend({
   no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
   company_id: z.uuid(),
+  // Creation date (ISO). Lets an officer backdate a posting to a previous
+  // creation instead of "today"; omitted → the server stamps it now.
+  created_at: z.string().optional(),
 });
 
 export const JobPatchSchema = JobPostSchema.partial();

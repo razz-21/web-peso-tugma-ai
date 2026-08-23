@@ -295,6 +295,21 @@
         </mat-chip-grid>
         <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
       </mat-form-field>
+
+      <!-- Creation date -->
+      <h3 class="job-form__section">Registration</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Date created</mat-label>
+        <input
+          matInput
+          [matDatepicker]="createdPicker"
+          [max]="today"
+          [formField]="jobForm.date_created"
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="createdPicker" />
+        <mat-datepicker #createdPicker />
+        <mat-hint>Defaults to today. Change to backdate this job posting.</mat-hint>
+      </mat-form-field>
     </div>
   </mat-dialog-content>
 </form>
