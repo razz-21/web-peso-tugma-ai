@@ -87,7 +87,6 @@ export class ComparisonComponent {
     const breakdown = new Map(this.match.breakdown.map((dimension) => [dimension.key, dimension]));
     const skillScore = breakdown.get('skills')?.value ?? 0;
 
-    // --- Skills ------------------------------------------------------------
     const required = this.match.skillsRequired;
     const applicantSkills = this.applicant.technical_skills;
     const requiredSet = new Set(required.map(norm));
@@ -203,7 +202,6 @@ export class ComparisonComponent {
       applicantText: null,
     };
 
-    // --- Experience --------------------------------------------------------
     // Experience compares the job's `experience_required` (and preferred, nice-to-
     // have) against the applicant's work history (roles), mirroring the backend's
     // work-only qualitative experience vector. Course of study is scored under
@@ -247,7 +245,6 @@ export class ComparisonComponent {
       applicantText: workPositions.length === 0 ? 'No work experience on file' : null,
     };
 
-    // --- Education ---------------------------------------------------------
     // Education compares the job's minimum attainment *and* preferred course of
     // study against the applicant's highest level and course, matching the
     // backend's combined level + course education score.
@@ -292,7 +289,6 @@ export class ComparisonComponent {
       applicantText: applicantEducationItems.length === 0 ? 'Not indicated' : null,
     };
 
-    // --- Location ----------------------------------------------------------
     const locationScore = breakdown.get('location_preference')?.value ?? 0;
     const locationRequired = this.match.location?.trim() ?? '';
     const applicantHasLocation =

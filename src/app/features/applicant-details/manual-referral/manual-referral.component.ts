@@ -298,7 +298,6 @@ export class ManualReferralComponent {
       (segment): segment is string => Boolean(segment),
     );
 
-    // --- Job requirement details ------------------------------------------
     // Surface preferred (nice-to-have) experience inline, mirroring the education
     // treatment below, so both tiers are visible in this compact screening card.
     const experienceBase = job.experience_required?.trim() || 'No experience required';

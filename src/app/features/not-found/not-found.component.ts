@@ -83,7 +83,5 @@ export class NotFoundComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    // Probe the session so a direct hit to an unknown URL still resolves auth.
-    // this.dispatch.loadMe();
   }
 }

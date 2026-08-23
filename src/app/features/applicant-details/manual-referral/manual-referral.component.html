@@ -1,5 +1,4 @@
 <div class="manual-referral">
-  <!-- Top bar -->
   <header class="manual-referral__topbar">
     <button
       mat-icon-button
@@ -20,9 +19,7 @@
   </header>
 
   <div class="manual-referral__body">
-    <!-- Referring applicant summary -->
     <aside class="manual-referral__rail" aria-label="Referring applicant">
-      <!-- Referring header -->
       <section class="manual-referral__card manual-referral__referring">
         <p class="manual-referral__kicker">
           <mat-icon aria-hidden="true">person</mat-icon>
@@ -46,7 +43,6 @@
         </div>
       </section>
 
-      <!-- Quick stats -->
       <section class="manual-referral__card manual-referral__stats" aria-label="Applicant summary">
         @for (stat of stats(); track stat.label) {
           <div class="manual-referral__stat">
@@ -65,7 +61,6 @@
         }
       </section>
 
-      <!-- Job preferences -->
       <section class="manual-referral__card">
         <h3 class="manual-referral__card-title">
           <mat-icon aria-hidden="true">star</mat-icon>
@@ -102,7 +97,6 @@
         }
       </section>
 
-      <!-- Skills -->
       <section class="manual-referral__card">
         <div class="manual-referral__card-head">
           <h3 class="manual-referral__card-title">
@@ -124,7 +118,6 @@
         }
       </section>
 
-      <!-- Work experience -->
       <section class="manual-referral__card">
         <div class="manual-referral__card-head">
           <h3 class="manual-referral__card-title">
@@ -152,7 +145,6 @@
         }
       </section>
 
-      <!-- Education -->
       <section class="manual-referral__card">
         <h3 class="manual-referral__card-title">
           <mat-icon aria-hidden="true">school</mat-icon>
@@ -172,7 +164,6 @@
         }
       </section>
 
-      <!-- Eligibility -->
       @if (eligibilities().length > 0) {
         <section class="manual-referral__card">
           <h3 class="manual-referral__card-title">
@@ -193,7 +184,6 @@
       }
     </aside>
 
-    <!-- Screened jobs -->
     <main class="manual-referral__main">
       <div class="manual-referral__toolbar">
         <div class="manual-referral__search">
@@ -265,7 +255,6 @@
                   animate.leave="manual-referral__panel-anim--leave"
                 >
                   <div class="manual-referral__panel">
-                    <!-- Required skills -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">edit</mat-icon>
@@ -296,7 +285,6 @@
 
                     <hr class="manual-referral__panel-divider" />
 
-                    <!-- Experience -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">work</mat-icon>
@@ -307,7 +295,6 @@
 
                     <hr class="manual-referral__panel-divider" />
 
-                    <!-- Education -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">school</mat-icon>
@@ -318,7 +305,6 @@
 
                     <hr class="manual-referral__panel-divider" />
 
-                    <!-- Location -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">location_on</mat-icon>
@@ -329,7 +315,6 @@
 
                     <hr class="manual-referral__panel-divider" />
 
-                    <!-- Salary -->
                     <div class="manual-referral__criterion">
                       <span class="manual-referral__criterion-label">
                         <mat-icon aria-hidden="true">payments</mat-icon>
@@ -340,7 +325,6 @@
 
                     <hr class="manual-referral__panel-divider" />
 
-                    <!-- Primary requirements -->
                     <div class="manual-referral__criterion">
                       <div class="manual-referral__criterion-head">
                         <span class="manual-referral__criterion-label">

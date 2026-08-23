@@ -178,8 +178,6 @@ export class CreateApplicantDraftStore {
     this.data.set(structuredClone(draft));
   }
 
-  // --- Resume upload + extraction ------------------------------------------
-
   /** Stage the resume PDF (uploaded after the applicant is created). */
   setResumeFile(file: File): void {
     this.resumeFile.set(file);
@@ -319,8 +317,6 @@ export class CreateApplicantDraftStore {
   buildPayload(): ApplicantPost {
     return this.payload();
   }
-
-  // --- Repeatable sections -------------------------------------------------
 
   addOccupationIndustry(): void {
     this.push('preferred_occupation_industry', { ...EMPTY_OCCUPATION_INDUSTRY });

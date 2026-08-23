@@ -16,8 +16,6 @@ export const MonthlyCountSchema = z.object({
 
 export type MonthlyCount = z.infer<typeof MonthlyCountSchema>;
 
-// --- Job Solicited ---------------------------------------------------------
-
 /** Headline "Vacancies solicited" metric with a period-over-period badge. */
 export const VacanciesSolicitedCardSchema = z.object({
   value: z.number().int(),
@@ -61,8 +59,6 @@ export type TopOccupation = z.infer<typeof TopOccupationSchema>;
 export type JobSolicitedRow = z.infer<typeof JobSolicitedRowSchema>;
 export type JobSolicitedReport = z.infer<typeof JobSolicitedReportSchema>;
 
-// --- Applicant Referred ----------------------------------------------------
-
 /** One row of the Applicant Referred report table — a single referral. */
 export const ApplicantReferredRowSchema = z.object({
   name: z.string().nullable(),
@@ -94,8 +90,6 @@ export const ApplicantReferredReportSchema = z.object({
 
 export type ApplicantReferredRow = z.infer<typeof ApplicantReferredRowSchema>;
 export type ApplicantReferredReport = z.infer<typeof ApplicantReferredReportSchema>;
-
-// --- Applicant Placed ------------------------------------------------------
 
 /** The position accounting for the most placements in the window. */
 export const TopPlacedPositionSchema = z.object({
@@ -135,8 +129,6 @@ export type TopPlacedPosition = z.infer<typeof TopPlacedPositionSchema>;
 export type ApplicantPlacedRow = z.infer<typeof ApplicantPlacedRowSchema>;
 export type ApplicantPlacedReport = z.infer<typeof ApplicantPlacedReportSchema>;
 
-// --- Applicant Registered --------------------------------------------------
-
 /** Headline "New registrants" metric with a period-over-period badge. */
 export const NewRegistrantsCardSchema = z.object({
   value: z.number().int(),
@@ -170,8 +162,6 @@ export const ApplicantRegisteredReportSchema = z.object({
 export type NewRegistrantsCard = z.infer<typeof NewRegistrantsCardSchema>;
 export type ApplicantRegisteredRow = z.infer<typeof ApplicantRegisteredRowSchema>;
 export type ApplicantRegisteredReport = z.infer<typeof ApplicantRegisteredReportSchema>;
-
-// --- Establishments Registered ---------------------------------------------
 
 /** A category label with its count (one bar of a breakdown). */
 export const LabeledCountSchema = z.object({
@@ -212,8 +202,6 @@ export type NewEstablishmentsCard = z.infer<typeof NewEstablishmentsCardSchema>;
 export type EstablishmentRow = z.infer<typeof EstablishmentRowSchema>;
 export type EstablishmentsRegisteredReport = z.infer<typeof EstablishmentsRegisteredReportSchema>;
 
-// --- Accomplishment --------------------------------------------------------
-
 /** The roll-up of all facilitation services for the selected window. */
 export const PesoAccomplishmentReportSchema = z.object({
   start_date: z.string(),
@@ -228,8 +216,6 @@ export const PesoAccomplishmentReportSchema = z.object({
 });
 
 export type PesoAccomplishmentReport = z.infer<typeof PesoAccomplishmentReportSchema>;
-
-// --- Referral-to-Placement Funnel ------------------------------------------
 
 /** Conversion at each stage from referral through to hire, for the window. */
 export const ReferralFunnelReportSchema = z.object({
@@ -248,8 +234,6 @@ export const ReferralFunnelReportSchema = z.object({
 });
 
 export type ReferralFunnelReport = z.infer<typeof ReferralFunnelReportSchema>;
-
-// --- Query params ----------------------------------------------------------
 
 /** Shared query params for the report endpoints (all optional). */
 export interface ReportRangeParams {

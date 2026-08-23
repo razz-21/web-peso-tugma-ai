@@ -1,6 +1,5 @@
 <div class="app-table">
   <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
-    <!-- Name -->
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
       <td mat-cell *matCellDef="let row">
@@ -11,25 +10,21 @@
       </td>
     </ng-container>
 
-    <!-- Email -->
     <ng-container matColumnDef="email">
       <th mat-header-cell *matHeaderCellDef scope="col">Email</th>
       <td mat-cell *matCellDef="let row">{{ row.applicant.email_address || '—' }}</td>
     </ng-container>
 
-    <!-- Preferred occupation -->
     <ng-container matColumnDef="occupation">
       <th mat-header-cell *matHeaderCellDef scope="col">Preferred occupation</th>
       <td mat-cell *matCellDef="let row">{{ row.occupationLabel }}</td>
     </ng-container>
 
-    <!-- Highest education level -->
     <ng-container matColumnDef="education">
       <th mat-header-cell *matHeaderCellDef scope="col">Highest education</th>
       <td mat-cell *matCellDef="let row">{{ row.educationLabel }}</td>
     </ng-container>
 
-    <!-- Status -->
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
       <td mat-cell *matCellDef="let row">
@@ -44,7 +39,6 @@
       </td>
     </ng-container>
 
-    <!-- Updated at -->
     <ng-container matColumnDef="updated_at">
       <th mat-header-cell *matHeaderCellDef scope="col">Updated at</th>
       <td mat-cell *matCellDef="let row">
@@ -52,7 +46,6 @@
       </td>
     </ng-container>
 
-    <!-- Actions -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
       <td mat-cell *matCellDef="let row">

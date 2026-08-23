@@ -10,7 +10,6 @@
       <p>Loading user...</p>
     </div>
   } @else if (store.user(); as user) {
-    <!-- Header card -->
     <div class="card user-details__header">
       <app-avatar
         class="user-details__avatar"
@@ -35,7 +34,6 @@
       </div>
     </div>
 
-    <!-- Personal information -->
     <form class="card" (submit)="saveProfile($event)">
       <header class="card__head">
         <h2 class="card__title">Personal information</h2>
@@ -74,7 +72,6 @@
       </div>
     </form>
 
-    <!-- Security -->
     <form class="card" (submit)="updatePassword($event)">
       <header class="card__head">
         <h2 class="card__title">Security</h2>
@@ -114,7 +111,6 @@
       </div>
     </form>
 
-    <!-- Danger zone -->
     <div class="card user-details__danger">
       <div>
         <p class="user-details__danger-title">

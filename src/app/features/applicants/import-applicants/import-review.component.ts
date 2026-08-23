@@ -119,8 +119,6 @@ export class ImportReviewComponent {
     return companyId !== null && this.jobsLoading().has(companyId);
   }
 
-  // --- Searchable company select --------------------------------------------
-
   protected readonly companyTypeLabels = COMPANY_TYPE_LABELS;
   /** Shared filter for whichever company panel is open (only one at a time). */
   protected readonly companySearch = signal('');
@@ -148,8 +146,6 @@ export class ImportReviewComponent {
       this.companySearch.set('');
     }
   }
-
-  // --- Per-row field edits ---------------------------------------------------
 
   private patchRow(id: string, patch: Partial<ImportReviewRow>): void {
     this.rows.update((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
@@ -185,8 +181,6 @@ export class ImportReviewComponent {
     this.patchRow(id, { jobId });
   }
 
-  // --- Inline skills ---------------------------------------------------------
-
   protected removeSkill(id: string, skill: string): void {
     this.rows.update((rows) =>
       rows.map((row) =>
@@ -218,8 +212,6 @@ export class ImportReviewComponent {
     this.skillEditingRowId.set(null);
   }
 
-  // --- Bulk apply ------------------------------------------------------------
-
   protected onBulkCompanyChange(companyId: string): void {
     this.bulkCompanyId.set(companyId);
     this.bulkJobId.set(null);
@@ -245,8 +237,6 @@ export class ImportReviewComponent {
       }),
     );
   }
-
-  // --- Footer actions --------------------------------------------------------
 
   /** Save applicants, applying each row's job assignment (referral). */
   protected save(): void {

@@ -85,8 +85,6 @@ export class ImportJobReviewComponent {
     this.rows.update((rows) => rows.filter((row) => row.id !== id));
   }
 
-  // --- Per-row field edits ---------------------------------------------------
-
   private patchRow(id: string, patch: Partial<ImportJobReviewRow>): void {
     this.rows.update((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
   }
@@ -138,8 +136,6 @@ export class ImportJobReviewComponent {
     this.patchRow(id, { dateCreated: value });
   }
 
-  // --- Inline skills ---------------------------------------------------------
-
   protected removeSkill(id: string, skill: string): void {
     this.rows.update((rows) =>
       rows.map((row) =>
@@ -170,8 +166,6 @@ export class ImportJobReviewComponent {
   protected cancelAddSkill(): void {
     this.skillEditingRowId.set(null);
   }
-
-  // --- Inline preferred skills ----------------------------------------------
 
   protected removePreferredSkill(id: string, skill: string): void {
     this.rows.update((rows) =>
@@ -205,8 +199,6 @@ export class ImportJobReviewComponent {
   protected cancelAddPreferredSkill(): void {
     this.preferredSkillEditingRowId.set(null);
   }
-
-  // --- Footer actions --------------------------------------------------------
 
   protected save(): void {
     void this.submit();
