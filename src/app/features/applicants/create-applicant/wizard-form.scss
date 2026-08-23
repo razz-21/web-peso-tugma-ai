@@ -22,6 +22,12 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+// Span the full grid width — used for fields with long values (e.g. course
+// names) that would otherwise truncate inside a single column.
+.wform__grid-item--full {
+  grid-column: 1 / -1;
+}
+
 .wform__section {
   margin: 1rem 0 0.5rem;
   font-size: 0.95rem;

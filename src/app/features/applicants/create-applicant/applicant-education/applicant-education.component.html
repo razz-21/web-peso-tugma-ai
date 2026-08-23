@@ -41,19 +41,33 @@
       />
       @if (error(education.last_attended()); as msg) {
         <mat-error>{{ msg }}</mat-error>
-      } @else {
-        <mat-hint>Fill this in if you did not graduate.</mat-hint>
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="wform__grid-item--full">
       <mat-label>School / University</mat-label>
       <input matInput type="text" autocomplete="off" [formField]="education.school_university" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="wform__grid-item--full">
       <mat-label>Course / Program</mat-label>
-      <input matInput type="text" autocomplete="off" [formField]="education.course_program" />
+      <input
+        matInput
+        type="text"
+        autocomplete="off"
+        [formField]="education.course_program"
+        [matAutocomplete]="courseAuto"
+      />
+      <mat-autocomplete #courseAuto="matAutocomplete">
+        @for (group of filteredCourseGroups(); track group.category) {
+          <mat-optgroup [label]="group.category">
+            @for (course of group.courses; track course) {
+              <mat-option [value]="course">{{ course }}</mat-option>
+            }
+          </mat-optgroup>
+        }
+      </mat-autocomplete>
+      <mat-hint>Type to search, or enter a course not listed.</mat-hint>
     </mat-form-field>
   </div>
 </div>

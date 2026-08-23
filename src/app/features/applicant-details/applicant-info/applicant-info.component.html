@@ -55,8 +55,8 @@
           </header>
           <div class="applicant-details__fields">
             <div class="applicant-details__field applicant-details__field--wide">
-              <span class="detail-field__label">Email address</span>
-              @if (applicant.email_address) {
+              <app-detail-field label="Email address" [value]="applicant.email_address" />
+              <!-- @if (applicant.email_address) {
                 <a class="applicant-details__email" [href]="'mailto:' + applicant.email_address">
                   {{ applicant.email_address }}
                 </a>
@@ -65,7 +65,7 @@
                   <mat-icon aria-hidden="true">error_outline</mat-icon>
                   Not indicated
                 </span>
-              }
+              } -->
             </div>
             <app-detail-field
               label="Primary mobile number"

@@ -1,0 +1,341 @@
+<div class="review">
+  <header class="review__topbar">
+    <button matIconButton type="button" aria-label="Close" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="review__titles">
+      <h2 class="review__title">Review imported applicants</h2>
+      <p class="review__subtitle">{{ total() }} applicants imported · assign each to a job</p>
+    </div>
+  </header>
+
+  <div class="review__applybar">
+    <span class="review__apply-label">Apply to all:</span>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__apply-field">
+      <mat-select
+        placeholder="Company"
+        panelClass="review__company-panel"
+        disableOptionCentering
+        aria-label="Company to apply to all"
+        [value]="bulkCompanyId()"
+        (selectionChange)="onBulkCompanyChange($event.value)"
+        (openedChange)="onCompanyOpened($event)"
+      >
+        <div class="review__company-search" (keydown)="$event.stopPropagation()">
+          <mat-icon aria-hidden="true">search</mat-icon>
+          <input
+            type="text"
+            autocomplete="off"
+            placeholder="Search companies"
+            aria-label="Search companies"
+            [value]="companySearch()"
+            (input)="onCompanySearch($event)"
+          />
+        </div>
+
+        @if (companyById(bulkCompanyId()); as selected) {
+          <mat-select-trigger>
+            <span class="review__company">
+              <app-avatar [name]="selected.company_name" [seed]="selected.id" [size]="24" />
+              <span class="review__company-text">
+                <span class="review__company-name">{{ selected.company_name }}</span>
+              </span>
+            </span>
+          </mat-select-trigger>
+        }
+
+        @if (companiesLoading()) {
+          <mat-option disabled>Loading companies…</mat-option>
+        } @else if (companies().length === 0) {
+          <mat-option disabled>{{
+            companiesError() ? 'Could not load companies' : 'No companies available'
+          }}</mat-option>
+        } @else if (filteredCompanies().length === 0) {
+          <p class="review__company-empty">No companies match your search.</p>
+        }
+        @for (company of filteredCompanies(); track company.id) {
+          <mat-option [value]="company.id">
+            <span class="review__company">
+              <app-avatar [name]="company.company_name" [seed]="company.id" [size]="24" />
+              <span class="review__company-text">
+                <span class="review__company-name">{{ company.company_name }}</span>
+                <span class="review__company-type">
+                  {{ companyTypeLabels[company.company_type] }}
+                </span>
+              </span>
+            </span>
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__apply-field">
+      <mat-select
+        placeholder="Job"
+        aria-label="Job to apply to all"
+        [disabled]="!bulkCompanyId()"
+        [value]="bulkJobId()"
+        (selectionChange)="bulkJobId.set($event.value)"
+      >
+        @if (isJobsLoading(bulkCompanyId())) {
+          <mat-option disabled>Loading jobs…</mat-option>
+        } @else if (bulkCompanyId() && jobsFor(bulkCompanyId()).length === 0) {
+          <mat-option disabled>No open jobs</mat-option>
+        }
+        @for (job of jobsFor(bulkCompanyId()); track job.id) {
+          <mat-option [value]="job.id">{{ job.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__apply-field">
+      <mat-select
+        placeholder="Status"
+        aria-label="Status to apply to all"
+        [value]="bulkStatus()"
+        (selectionChange)="bulkStatus.set($event.value)"
+      >
+        @for (status of statuses; track status) {
+          <mat-option [value]="status">{{ status }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button matButton="tonal" type="button" class="review__apply-btn" (click)="applyToAll()">
+      <mat-icon>check</mat-icon>
+      Apply
+    </button>
+
+    <span class="review__counter">{{ assignedCount() }} of {{ total() }} assigned</span>
+  </div>
+
+  <div class="review__table" role="table" aria-label="Imported applicants">
+    <div class="review__row review__row--head" role="row">
+      <span class="review__cell" role="columnheader">Applicant</span>
+      <span class="review__cell" role="columnheader">Gender</span>
+      <span class="review__cell" role="columnheader">Civil Status</span>
+      <span class="review__cell" role="columnheader">Address</span>
+      <span class="review__cell" role="columnheader">Skills</span>
+      <span class="review__cell" role="columnheader">Company</span>
+      <span class="review__cell" role="columnheader">Job Vacancy</span>
+      <span class="review__cell" role="columnheader">Status</span>
+      <span class="review__cell" role="columnheader">Registered</span>
+    </div>
+
+    @for (row of rows(); track row.id) {
+      <div class="review__row" [class.review__row--assigned]="row.jobId" role="row">
+        <div class="review__applicant" role="cell">
+          <span class="review__avatar" aria-hidden="true">{{ row.initials }}</span>
+          <div class="review__applicant-text">
+            <span class="review__name">{{ row.fullName }}</span>
+            @if (row.educationLevel) {
+              <span class="review__edu">{{ row.educationLevel }}</span>
+            }
+            @if (row.courseProgram) {
+              <span class="review__course">{{ row.courseProgram }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              [attr.aria-label]="'Gender for ' + row.fullName"
+              [value]="row.gender"
+              (selectionChange)="onGenderChange(row.id, $event.value)"
+            >
+              @for (gender of genders; track gender) {
+                <mat-option [value]="gender">{{ gender }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              multiple
+              [panelWidth]="null"
+              [attr.aria-label]="'Civil status for ' + row.fullName"
+              [value]="row.civilStatus"
+              (selectionChange)="onCivilStatusChange(row.id, $event.value)"
+            >
+              @for (status of civilStatuses; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <input
+              matInput
+              type="text"
+              autocomplete="off"
+              [attr.aria-label]="'Address for ' + row.fullName"
+              [value]="row.address"
+              (change)="onAddressChange(row.id, $any($event.target).value)"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell review__skills" role="cell">
+          @for (skill of row.skills; track skill) {
+            <span class="review__chip">
+              {{ skill }}
+              <button
+                type="button"
+                class="review__chip-remove"
+                [attr.aria-label]="'Remove ' + skill"
+                (click)="removeSkill(row.id, skill)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          }
+
+          @if (skillEditingRowId() === row.id) {
+            <input
+              #skillInput
+              type="text"
+              class="review__skill-input"
+              placeholder="Add skill"
+              autocomplete="off"
+              autofocus
+              [attr.aria-label]="'Add skill for ' + row.fullName"
+              (keydown.enter)="commitSkill(row.id, skillInput)"
+              (keydown.escape)="cancelAddSkill()"
+              (blur)="commitSkill(row.id, skillInput)"
+            />
+          } @else {
+            <button
+              type="button"
+              class="review__chip review__chip--add"
+              [attr.aria-label]="'Add skill for ' + row.fullName"
+              (click)="startAddSkill(row.id)"
+            >
+              + skill
+            </button>
+          }
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              placeholder="Select company"
+              panelClass="review__company-panel"
+              disableOptionCentering
+              [attr.aria-label]="'Company for ' + row.fullName"
+              [value]="row.companyId"
+              (selectionChange)="onCompanyChange(row.id, $event.value)"
+              (openedChange)="onCompanyOpened($event)"
+            >
+              <div class="review__company-search" (keydown)="$event.stopPropagation()">
+                <mat-icon aria-hidden="true">search</mat-icon>
+                <input
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Search companies"
+                  aria-label="Search companies"
+                  [value]="companySearch()"
+                  (input)="onCompanySearch($event)"
+                />
+              </div>
+
+              @if (companyById(row.companyId); as selected) {
+                <mat-select-trigger>
+                  <span class="review__company">
+                    <app-avatar [name]="selected.company_name" [seed]="selected.id" [size]="24" />
+                    <span class="review__company-text">
+                      <span class="review__company-name">{{ selected.company_name }}</span>
+                    </span>
+                  </span>
+                </mat-select-trigger>
+              }
+
+              @if (companiesLoading()) {
+                <mat-option disabled>Loading companies…</mat-option>
+              } @else if (companies().length === 0) {
+                <mat-option disabled>{{
+                  companiesError() ? 'Could not load companies' : 'No companies available'
+                }}</mat-option>
+              } @else if (filteredCompanies().length === 0) {
+                <p class="review__company-empty">No companies match your search.</p>
+              }
+              @for (company of filteredCompanies(); track company.id) {
+                <mat-option [value]="company.id">
+                  <span class="review__company">
+                    <app-avatar [name]="company.company_name" [seed]="company.id" [size]="24" />
+                    <span class="review__company-text">
+                      <span class="review__company-name">{{ company.company_name }}</span>
+                      <span class="review__company-type">
+                        {{ companyTypeLabels[company.company_type] }}
+                      </span>
+                    </span>
+                  </span>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell" role="cell">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              [placeholder]="row.companyId ? 'Select job' : 'Choose company first'"
+              [attr.aria-label]="'Job vacancy for ' + row.fullName"
+              [disabled]="!row.companyId"
+              [value]="row.jobId"
+              (selectionChange)="onJobChange(row.id, $event.value)"
+            >
+              @if (isJobsLoading(row.companyId)) {
+                <mat-option disabled>Loading jobs…</mat-option>
+              } @else if (row.companyId && jobsFor(row.companyId).length === 0) {
+                <mat-option disabled>No open jobs</mat-option>
+              }
+              @for (job of jobsFor(row.companyId); track job.id) {
+                <mat-option [value]="job.id">{{ job.title }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="review__cell review__status" role="cell">
+          <span
+            class="review__status-dot"
+            [class.review__status-dot--on]="row.status"
+            aria-hidden="true"
+          ></span>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="review__field">
+            <mat-select
+              placeholder="Set status"
+              [attr.aria-label]="'Status for ' + row.fullName"
+              [value]="row.status"
+              (selectionChange)="onStatusChange(row.id, $event.value)"
+            >
+              @for (status of statuses; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <span class="review__cell review__registered" role="cell">{{ row.registered }}</span>
+      </div>
+    }
+  </div>
+
+  <footer class="review__footer">
+    <p class="review__footer-summary">
+      {{ assignedCount() }} assigned · {{ registeredOnlyCount() }} will be saved as registered only
+    </p>
+    <div class="review__footer-actions">
+      <button matButton type="button" [disabled]="saving()" (click)="cancel()">Cancel</button>
+      <button matButton="filled" type="button" [disabled]="saving()" (click)="save()">
+        Save assignments
+      </button>
+    </div>
+  </footer>
+</div>
