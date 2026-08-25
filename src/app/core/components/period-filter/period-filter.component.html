@@ -1,26 +1,43 @@
-<div class="date-range">
+<div class="period-filter">
   <button
     type="button"
-    class="date-range__trigger"
-    (click)="picker.open()"
-    [attr.aria-label]="triggerAriaLabel()"
+    class="period-filter__presets"
+    [matMenuTriggerFor]="presetMenu"
+    aria-label="Quick date presets"
   >
-    <mat-icon class="date-range__icon" aria-hidden="true">calendar_today</mat-icon>
-    <span class="date-range__label">{{ label() }}</span>
-    <mat-icon class="date-range__chevron" aria-hidden="true">expand_more</mat-icon>
+    <mat-icon aria-hidden="true">tune</mat-icon>
+    <mat-icon class="period-filter__presets-chevron" aria-hidden="true">expand_more</mat-icon>
   </button>
+  <mat-menu #presetMenu="matMenu">
+    @for (preset of presets; track preset.label) {
+      <button type="button" mat-menu-item (click)="applyPreset(preset)">{{ preset.label }}</button>
+    }
+  </mat-menu>
 
-  <!-- Off-flow range picker anchored under the trigger. -->
-  <mat-form-field class="date-range__picker-field" appearance="outline" subscriptSizing="dynamic">
-    <mat-date-range-input [rangePicker]="picker">
-      <input matStartDate [formControl]="customStart" placeholder="Start" />
-      <input
-        matEndDate
-        [formControl]="customEnd"
-        placeholder="End"
-        (dateChange)="applyCustomRange()"
-      />
-    </mat-date-range-input>
-    <mat-date-range-picker #picker />
-  </mat-form-field>
+  <div class="date-range">
+    <button
+      type="button"
+      class="date-range__trigger"
+      (click)="picker.open()"
+      [attr.aria-label]="triggerAriaLabel()"
+    >
+      <mat-icon class="date-range__icon" aria-hidden="true">calendar_today</mat-icon>
+      <span class="date-range__label">{{ label() }}</span>
+      <mat-icon class="date-range__chevron" aria-hidden="true">expand_more</mat-icon>
+    </button>
+
+    <!-- Off-flow range picker anchored under the trigger. -->
+    <mat-form-field class="date-range__picker-field" appearance="outline" subscriptSizing="dynamic">
+      <mat-date-range-input [rangePicker]="picker">
+        <input matStartDate [formControl]="customStart" placeholder="Start" />
+        <input
+          matEndDate
+          [formControl]="customEnd"
+          placeholder="End"
+          (dateChange)="applyCustomRange()"
+        />
+      </mat-date-range-input>
+      <mat-date-range-picker #picker />
+    </mat-form-field>
+  </div>
 </div>

@@ -92,6 +92,13 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'reports/employment-summary',
+        loadComponent: () =>
+          import('../reports/employment-summary/employment-summary.component').then(
+            (m) => m.EmploymentSummaryComponent,
+          ),
+      },
+      {
         path: 'reports/referral-to-placement-funnel',
         loadComponent: () =>
           import('../reports/referral-funnel/referral-funnel.component').then(

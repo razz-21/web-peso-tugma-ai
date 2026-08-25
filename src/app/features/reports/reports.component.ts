@@ -41,6 +41,14 @@ export class ReportsComponent {
           description: 'The roll-up of all facilitation services for the period.',
           route: `${APP_ROUTES.reports}/peso-accomplishment`,
         },
+        {
+          id: 'employment-summary',
+          icon: 'insights',
+          tone: 'teal',
+          title: 'Employment Summary Report',
+          description: 'A one-glance snapshot of employment facilitation for the period.',
+          route: `${APP_ROUTES.reports}/employment-summary`,
+        },
       ],
     },
     {

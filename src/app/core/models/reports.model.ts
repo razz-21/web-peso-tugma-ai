@@ -235,6 +235,53 @@ export const ReferralFunnelReportSchema = z.object({
 
 export type ReferralFunnelReport = z.infer<typeof ReferralFunnelReportSchema>;
 
+/** A headline metric with a period-over-period badge (percentage change). */
+export const SummaryMetricSchema = z.object({
+  value: z.number().int(),
+  /** Percentage change vs the preceding equal-length window; `null` when there
+   *  is no baseline to compare against (the badge is then hidden). */
+  change_pct: z.number().nullable(),
+});
+
+export type SummaryMetric = z.infer<typeof SummaryMetricSchema>;
+
+/** One row of the "Top 10 job vacancies" table — an open listing and the
+ *  establishment that posted it. */
+export const TopVacancyRowSchema = z.object({
+  job_title: z.string(),
+  company: z.string().nullable(),
+  /** Company logo (data URL / image URL); `null` falls back to initials. */
+  company_avatar: z.string().nullable(),
+  vacancies: z.number().int(),
+  location: z.string().nullable(),
+});
+
+export type TopVacancyRow = z.infer<typeof TopVacancyRowSchema>;
+
+/** A one-glance snapshot of employment facilitation for the selected window:
+ *  headline cards plus the employment-status, placement-rate, and
+ *  unemployed-by-gender breakdowns, with a current top-vacancies snapshot. */
+export const EmploymentSummaryReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  vacancies_solicited: SummaryMetricSchema,
+  registered_applicants: SummaryMetricSchema,
+  placed_applicants: SummaryMetricSchema,
+  /** Registered-in-window cohort size; `employed + unemployed`. */
+  registered_total: z.number().int(),
+  employed: z.number().int(),
+  unemployed: z.number().int(),
+  referred: z.number().int(),
+  placed: z.number().int(),
+  /** `placed / referred` as a percentage. */
+  placement_rate: z.number(),
+  unemployed_male: z.number().int(),
+  unemployed_female: z.number().int(),
+  top_vacancies: z.array(TopVacancyRowSchema),
+});
+
+export type EmploymentSummaryReport = z.infer<typeof EmploymentSummaryReportSchema>;
+
 /** Shared query params for the report endpoints (all optional). */
 export interface ReportRangeParams {
   /** Inclusive window start, `YYYY-MM-DD`. */

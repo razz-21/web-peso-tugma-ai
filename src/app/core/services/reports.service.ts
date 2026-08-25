@@ -9,6 +9,8 @@ import {
   ApplicantReferredReportSchema,
   ApplicantRegisteredReport,
   ApplicantRegisteredReportSchema,
+  EmploymentSummaryReport,
+  EmploymentSummaryReportSchema,
   EstablishmentsRegisteredReport,
   EstablishmentsRegisteredReportSchema,
   JobSolicitedReport,
@@ -81,6 +83,15 @@ export class ReportsService {
       }),
     );
     return EstablishmentsRegisteredReportSchema.parse(body);
+  }
+
+  async employmentSummary(params: ReportRangeParams = {}): Promise<EmploymentSummaryReport> {
+    const body = await firstValueFrom(
+      this.http.get<EmploymentSummaryReport>(`${this.baseUrl}/employment-summary`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return EmploymentSummaryReportSchema.parse(body);
   }
 
   async pesoAccomplishment(params: ReportRangeParams = {}): Promise<PesoAccomplishmentReport> {

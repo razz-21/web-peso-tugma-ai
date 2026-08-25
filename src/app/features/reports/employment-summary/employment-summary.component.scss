@@ -1,0 +1,323 @@
+.employment-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.875rem;
+    background: #dcecd0;
+    color: #43681f;
+
+    mat-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.25rem;
+  }
+
+  &__donuts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1.25rem;
+  }
+
+  // The headline cards carry a period-over-period badge pinned to the top-right,
+  // with the icon top-left (see ../report-shared.scss for the base `.stat-card`).
+  .stat-card {
+    position: relative;
+  }
+
+  .stat-card__delta--badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.375rem;
+    border-radius: 999px;
+    background: #edf3e2;
+    color: #5b6152;
+    font-size: 0.8125rem;
+
+    &.stat-card__delta--up {
+      background: #dcf0c6;
+      color: #4d7c1f;
+    }
+  }
+}
+
+.status-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2.5rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  &__item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+  }
+
+  &__pct {
+    font-weight: 700;
+    color: #4d7c1f;
+  }
+}
+
+.vacancy-scroll {
+  overflow-x: auto;
+}
+
+.vacancy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    color: var(--mat-sys-on-surface);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__no {
+    width: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__title {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__vac {
+    width: 8rem;
+  }
+
+  &__location {
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+  }
+}
+
+.vacancy-company {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  white-space: nowrap;
+}
+
+.vacancy-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.625rem;
+  background: #d7f0c0;
+  color: #3f6b1c;
+  font-weight: 700;
+}
+
+.vacancy-empty {
+  margin: 0;
+  padding: 1.5rem 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.donut-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+  background: var(--mat-sys-surface-container-lowest);
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+  }
+
+  &__label {
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__count {
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__percent {
+    min-width: 3ch;
+    text-align: right;
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.donut-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.donut-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.75rem;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+
+    mat-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      font-size: 1.25rem;
+    }
+
+    &--teal {
+      background: #c5e8e6;
+      color: #146c68;
+    }
+
+    &--green {
+      background: #d7f0c0;
+      color: #4d7c1f;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+}
