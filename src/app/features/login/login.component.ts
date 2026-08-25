@@ -21,7 +21,6 @@ type LoginData = {
   selector: 'app-login',
   imports: [
     FormField,
-    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
