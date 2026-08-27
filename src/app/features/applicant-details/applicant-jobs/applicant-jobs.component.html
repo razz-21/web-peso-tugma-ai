@@ -4,10 +4,12 @@
     [disabled]="disabled()"
     [loading]="loading()"
     [referrals]="referrals()"
+    [canDelete]="canDelete()"
     (statusChange)="referralStatus.emit($event)"
     (compare)="viewComparison.emit($event)"
     (viewJob)="viewJob.emit($event)"
     (newReferral)="newReferral.emit()"
+    (deleteReferral)="deleteReferral.emit($event)"
   />
 
   <article

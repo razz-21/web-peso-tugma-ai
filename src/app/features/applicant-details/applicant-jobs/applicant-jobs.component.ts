@@ -34,6 +34,8 @@ import { ReferralStatusChange } from '../types/referred-jobs.type';
 export class ApplicantJobsComponent {
   /** When true, referrals/recommendations are read-only (e.g. inactive applicant). */
   readonly disabled = input<boolean>(false);
+  /** Whether the current user may delete referrals (admins / super admins only). */
+  readonly canDelete = input<boolean>(false);
   /** True during the initial recommendations/referrals fetch. */
   readonly loading = input<boolean>(false);
   /** True while a fresh set of recommendations is being generated. */
@@ -54,6 +56,7 @@ export class ApplicantJobsComponent {
   readonly viewComparison = output<JobMatch>();
   readonly viewJob = output<JobMatch>();
   readonly newReferral = output<void>();
+  readonly deleteReferral = output<JobMatch>();
   readonly generate = output<void>();
   readonly selectMatch = output<JobMatch>();
 

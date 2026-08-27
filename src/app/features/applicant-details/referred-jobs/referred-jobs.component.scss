@@ -434,6 +434,14 @@
     gap: 0.75rem;
   }
 
+  // Destructive action: tint the outlined "Delete" button with the error color so
+  // it reads as distinct from the neutral Compare / View job actions.
+  &__delete {
+    --mat-outlined-button-label-text-color: var(--mat-sys-error);
+    --mat-outlined-button-icon-color: var(--mat-sys-error);
+    color: var(--mat-sys-error);
+  }
+
   @media (max-width: 640px) {
     &__head,
     &__summary,

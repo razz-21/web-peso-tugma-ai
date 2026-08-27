@@ -30,5 +30,10 @@ export const recommendationsEvents = eventGroup({
     setStatus: type<{ id: string; status: RecommendedJobStatus }>(),
     setStatusSuccess: type<RecommendedJob>(),
     setStatusFailed: type<{ id: string; message: string }>(),
+
+    // Delete a referral outright (admins / super admins only).
+    deleteReferral: type<{ id: string }>(),
+    deleteReferralSuccess: type<{ id: string }>(),
+    deleteReferralFailed: type<{ id: string; message: string }>(),
   },
 });

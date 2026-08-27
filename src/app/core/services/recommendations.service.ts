@@ -77,4 +77,12 @@ export class RecommendationsService {
     );
     return RecommendedJobSchema.parse(body);
   }
+
+  /**
+   * Delete a referral (recommendation) outright. Restricted server-side to
+   * admins / super admins — officers receive a 403.
+   */
+  async delete(id: string): Promise<void> {
+    await firstValueFrom(this.http.delete<void>(`${this.baseUrl}/${id}`));
+  }
 }
