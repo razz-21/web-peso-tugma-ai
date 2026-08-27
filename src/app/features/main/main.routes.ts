@@ -127,6 +127,13 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'reports/unemployed-applicants-education',
+        loadComponent: () =>
+          import('../reports/unemployed-applicants-education/unemployed-applicants-education.component').then(
+            (m) => m.UnemployedApplicantsEducationComponent,
+          ),
+      },
+      {
         path: 'reports/applicant-registered',
         loadComponent: () =>
           import('../reports/applicant-registered/applicant-registered.component').then(

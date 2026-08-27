@@ -20,6 +20,8 @@ import {
   ReferralFunnelReport,
   ReferralFunnelReportSchema,
   ReportRangeParams,
+  UnemployedByEducationReport,
+  UnemployedByEducationReportSchema,
 } from '../models/reports.model';
 
 @Injectable({ providedIn: 'root' })
@@ -101,6 +103,17 @@ export class ReportsService {
       }),
     );
     return PesoAccomplishmentReportSchema.parse(body);
+  }
+
+  async unemployedByEducation(
+    params: ReportRangeParams = {},
+  ): Promise<UnemployedByEducationReport> {
+    const body = await firstValueFrom(
+      this.http.get<UnemployedByEducationReport>(`${this.baseUrl}/unemployed-by-education`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return UnemployedByEducationReportSchema.parse(body);
   }
 
   async referralToPlacementFunnel(params: ReportRangeParams = {}): Promise<ReferralFunnelReport> {

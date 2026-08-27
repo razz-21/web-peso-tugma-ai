@@ -86,6 +86,14 @@ export class ReportsComponent {
           description: 'Conversion at each stage from referral through to hire, with drop-off.',
           route: `${APP_ROUTES.reports}/referral-to-placement-funnel`,
         },
+        {
+          id: 'unemployed-applicants-education',
+          icon: 'school',
+          tone: 'amber',
+          title: 'Unemployed Applicants by Education',
+          description: 'Course / program profile of the unemployed applicant pool.',
+          route: `${APP_ROUTES.reports}/unemployed-applicants-education`,
+        },
       ],
     },
     {

@@ -1,0 +1,157 @@
+<section class="unemployed-education">
+  <a class="report-back" [routerLink]="reportsLink">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    Back to reports
+  </a>
+
+  <header class="unemployed-education__header">
+    <div class="unemployed-education__heading">
+      <span class="unemployed-education__icon">
+        <mat-icon aria-hidden="true">school</mat-icon>
+      </span>
+      <div class="unemployed-education__titles">
+        <h1 class="unemployed-education__title">Unemployed Applicants by Education</h1>
+        <p class="unemployed-education__subtitle">
+          Course / program profile of the unemployed applicant pool.
+        </p>
+      </div>
+    </div>
+
+    <div class="unemployed-education__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="unemployed-education__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <span class="stat-card__icon" [class]="'stat-card__icon--' + card.tone">
+            <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
+          </span>
+          <p class="stat-card__label">{{ card.label }}</p>
+          <p class="stat-card__value" [class.stat-card__value--compact]="card.compact">
+            {{ card.value }}
+          </p>
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="60%" />
+          <app-skeleton variant="text" width="45%" height="2.25rem" />
+        </article>
+      }
+    }
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Top courses among unemployed applicants</h2>
+      <p class="chart-card__subtitle">Course / program most represented in the unemployed pool</p>
+    </header>
+
+    @if (report(); as report) {
+      @if (report.top_courses.length) {
+        <app-horizontal-bar-chart
+          [points]="chartPoints()"
+          [barColors]="chartColors()"
+          ariaLabelPrefix="Top courses among unemployed applicants"
+          valueLabel="Applicants"
+          [axisStep]="20"
+        />
+
+        <footer class="unemployed-education__note">
+          <span>
+            Top 3 courses make up
+            <strong>{{ roundPct(report.top3_share_pct) }}</strong> of degree-holding unemployed
+          </span>
+          <span>
+            <strong>{{ format(report.with_course) }}</strong> of
+            {{ format(report.total_unemployed) }} unemployed hold or are pursuing a course
+          </span>
+        </footer>
+      } @else {
+        <p class="unemployed-education__empty">
+          No unemployed applicants with a recorded course in this period.
+        </p>
+      }
+    } @else {
+      <app-skeleton height="26rem" radius="0.75rem" />
+    }
+  </article>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Unemployed by education level</h2>
+      <p class="chart-card__subtitle">Highest educational attainment of unemployed applicants</p>
+    </header>
+
+    @if (report(); as report) {
+      @if (report.by_education_level.length) {
+        <app-monthly-bar-chart
+          [points]="educationPoints()"
+          barColor="#2f5d54"
+          ariaLabelPrefix="Unemployed by education level"
+          valueLabel="Applicants"
+          [axisStep]="100"
+        />
+      } @else {
+        <p class="unemployed-education__empty">
+          No unemployed applicants with a recorded education level in this period.
+        </p>
+      }
+    } @else {
+      <app-skeleton height="22rem" radius="0.75rem" />
+    }
+  </article>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Course breakdown</h2>
+      <p class="chart-card__subtitle">Full ranking with share of degree-holding unemployed</p>
+    </header>
+
+    @if (report(); as report) {
+      @if (courseRows().length) {
+        <table class="course-table">
+          <thead>
+            <tr>
+              <th scope="col" class="course-table__no">No</th>
+              <th scope="col">Course / Program</th>
+              <th scope="col" class="course-table__num">Unemployed</th>
+              <th scope="col" class="course-table__share">Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of courseRows(); track row.rank) {
+              <tr>
+                <td class="course-table__no">{{ row.rank }}</td>
+                <td class="course-table__course">{{ row.label }}</td>
+                <td class="course-table__num">{{ format(row.count) }}</td>
+                <td class="course-table__share">
+                  <div class="share">
+                    <span class="share__track">
+                      <span class="share__fill" [style.width.%]="row.sharePct"></span>
+                    </span>
+                    <span class="share__value">{{ row.sharePct }}%</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="unemployed-education__empty">
+          No unemployed applicants with a recorded course in this period.
+        </p>
+      }
+    } @else {
+      <app-skeleton height="20rem" radius="0.75rem" />
+    }
+  </article>
+</section>

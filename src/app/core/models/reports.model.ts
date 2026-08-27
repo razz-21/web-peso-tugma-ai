@@ -282,6 +282,24 @@ export const EmploymentSummaryReportSchema = z.object({
 
 export type EmploymentSummaryReport = z.infer<typeof EmploymentSummaryReportSchema>;
 
+/** The "Unemployed Applicants by Education" report: the unemployed cohort for
+ *  the selected window, profiled by course / program. `top_courses` ranks the
+ *  courses by headcount (top 10); `with_course` is the count who hold or are
+ *  pursuing a course and is the denominator behind `top3_share_pct`. */
+export const UnemployedByEducationReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  total_unemployed: z.number().int(),
+  most_common_course: z.string().nullable(),
+  college_graduates: z.number().int(),
+  with_course: z.number().int(),
+  top3_share_pct: z.number(),
+  top_courses: z.array(LabeledCountSchema),
+  by_education_level: z.array(LabeledCountSchema),
+});
+
+export type UnemployedByEducationReport = z.infer<typeof UnemployedByEducationReportSchema>;
+
 /** Shared query params for the report endpoints (all optional). */
 export interface ReportRangeParams {
   /** Inclusive window start, `YYYY-MM-DD`. */
