@@ -143,7 +143,26 @@ export class CreateApplicantDraftStore {
     required(p.present_address.province, { message: 'Province is required' });
     required(p.present_address.municipality_city, { message: 'Municipality/City is required' });
     required(p.present_address.baranggay, { message: 'Barangay is required' });
-    required(p.present_address.house_no_street, { message: 'House no. / Street is required' });
+
+    // Cascade gating: a child address dropdown stays disabled until its parent is
+    // chosen. The reusable address-fields component clears children on parent
+    // change; keeping the disabled logic here lets Signal Forms drive it reactively.
+    disabled(
+      p.present_address.municipality_city,
+      ({ valueOf }) => !valueOf(p.present_address.province),
+    );
+    disabled(
+      p.present_address.baranggay,
+      ({ valueOf }) => !valueOf(p.present_address.municipality_city),
+    );
+    disabled(
+      p.permanent_address.municipality_city,
+      ({ valueOf }) => !valueOf(p.permanent_address.province),
+    );
+    disabled(
+      p.permanent_address.baranggay,
+      ({ valueOf }) => !valueOf(p.permanent_address.municipality_city),
+    );
 
     pattern(p.educational_background.year_graduated, YEAR_PATTERN, {
       message: 'Enter numbers only (up to 5 digits)',

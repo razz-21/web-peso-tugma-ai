@@ -128,56 +128,7 @@
     @case ('address') {
       <fieldset class="edit-dialog__fieldset">
         <legend class="edit-dialog__legend">Present address</legend>
-        <div class="edit-dialog__grid">
-          <mat-form-field appearance="outline">
-            <mat-label>House no. / Street</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.present_address.house_no_street"
-            />
-            @if (error(store.form.present_address.house_no_street()); as msg) {
-              <mat-error>{{ msg }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Barangay</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.present_address.baranggay"
-            />
-            @if (error(store.form.present_address.baranggay()); as msg) {
-              <mat-error>{{ msg }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Municipality / City</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.present_address.municipality_city"
-            />
-            @if (error(store.form.present_address.municipality_city()); as msg) {
-              <mat-error>{{ msg }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Province</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.present_address.province"
-            />
-            @if (error(store.form.present_address.province()); as msg) {
-              <mat-error>{{ msg }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
+        <app-address-fields [group]="store.form.present_address" />
       </fieldset>
 
       <fieldset class="edit-dialog__fieldset">
@@ -189,44 +140,7 @@
         >
           Same as present address
         </mat-checkbox>
-        <div class="edit-dialog__grid">
-          <mat-form-field appearance="outline">
-            <mat-label>House no. / Street</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.permanent_address.house_no_street"
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Barangay</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.permanent_address.baranggay"
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Municipality / City</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.permanent_address.municipality_city"
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Province</mat-label>
-            <input
-              matInput
-              type="text"
-              autocomplete="off"
-              [formField]="store.form.permanent_address.province"
-            />
-          </mat-form-field>
-        </div>
+        <app-address-fields [group]="store.form.permanent_address" />
       </fieldset>
     }
 
