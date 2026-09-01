@@ -57,7 +57,7 @@
         color="primary"
         type="submit"
         class="login__submit"
-        [disabled]="submitting()"
+        [disabled]="submitting() || rateLimited()"
       >
         @if (submitting()) {
           <mat-progress-spinner diameter="24" mode="indeterminate" aria-label="Signing in" />

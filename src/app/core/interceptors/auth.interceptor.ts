@@ -1,9 +1,11 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, catchError, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { APP_ROUTES } from '../constants/routes.constant';
+import { retryAfterMessage } from '../utils/retry-after.util';
 import { AuthService } from '../services/auth.service';
 
 // Endpoints that obtain/clear the session — never retry these on a 401, or a
@@ -16,6 +18,7 @@ let refresh$: Observable<unknown> | null = null;
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+  const snackBar = inject(MatSnackBar);
 
   // Only touch our own API; leave third-party requests untouched.
   if (!req.url.startsWith(environment.apiBaseUrl)) {
@@ -31,7 +34,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(withCreds).pipe(
     catchError((error: unknown) => {
-      if (!(error instanceof HttpErrorResponse) || error.status !== 401) {
+      if (!(error instanceof HttpErrorResponse)) {
+        return throwError(() => error);
+      }
+
+      // 429 (rate limited): NEVER retry and NEVER trigger a token refresh —
+      // either would burn the caller's remaining allowance and could loop.
+      // Surface a snackbar reading `Retry-After` and rethrow so the caller can
+      // react too.
+      if (error.status === 429) {
+        snackBar.open(retryAfterMessage(error.headers.get('Retry-After')), 'Dismiss', {
+          duration: 6000,
+        });
+        return throwError(() => error);
+      }
+
+      if (error.status !== 401) {
         return throwError(() => error);
       }
 
