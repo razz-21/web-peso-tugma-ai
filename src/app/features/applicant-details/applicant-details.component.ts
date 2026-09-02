@@ -140,6 +140,16 @@ export class ApplicantDetailsComponent implements OnInit {
     this.toMatches(this.recommendationsStore.items()).sort((a, b) => b.score - a.score),
   );
 
+  /**
+   * Whether the signed-in user may delete referrals. Only admins / super admins
+   * qualify — officers manage the referral lifecycle but can't remove referrals.
+   * Mirrored by the backend, which rejects the delete for other roles with a 403.
+   */
+  protected readonly canDeleteReferral = computed(() => {
+    const role = this.meStore.user()?.role;
+    return role === 'super_admin' || role === 'admin';
+  });
+
   protected readonly generating = computed(() => this.recommendationsStore.generating());
 
   /** True during the initial recommendations fetch, before any items arrive. */
@@ -293,6 +303,10 @@ export class ApplicantDetailsComponent implements OnInit {
       .on(recommendationsEvents.refer)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.openLoading('Referring applicant', 'Sending the referral'));
+    this.events
+      .on(recommendationsEvents.deleteReferral)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.openLoading('Deleting referral', 'Removing the referral'));
 
     // Dismiss the loader once the referral / status update settles (either way).
     this.events
@@ -301,6 +315,8 @@ export class ApplicantDetailsComponent implements OnInit {
         recommendationsEvents.setStatusFailed,
         recommendationsEvents.referSuccess,
         recommendationsEvents.referFailed,
+        recommendationsEvents.deleteReferralSuccess,
+        recommendationsEvents.deleteReferralFailed,
       )
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.closeLoading());
@@ -418,6 +434,35 @@ export class ApplicantDetailsComponent implements OnInit {
       .subscribe((confirmed) => {
         if (confirmed) {
           this.onSetStatus(match, status);
+        }
+      });
+  }
+
+  /** Delete a referral outright (admins / super admins only), after confirming. */
+  protected onDeleteReferral(match: JobMatch): void {
+    // Defense in depth: the button is hidden for officers and the backend
+    // enforces the role, but guard here too in case the handler is reached.
+    if (!this.canDeleteReferral()) {
+      return;
+    }
+    const data: ConfirmDialogData = {
+      title: 'Delete referral',
+      message: `Are you sure you want to delete the referral to <strong>${match.title}</strong>? This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+        width: '420px',
+        maxWidth: '95vw',
+        restoreFocus: true,
+        data,
+      })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.recommendationsDispatch.deleteReferral({ id: match.recommendationId });
         }
       });
   }

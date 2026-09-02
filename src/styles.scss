@@ -156,6 +156,70 @@ body {
   }
 }
 
+// Import applicants dialog: a compact, centered card with generous rounding.
+// Internal regions (see import-applicants.component) own all spacing.
+.import-applicants-dialog {
+  .mat-mdc-dialog-surface {
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-container {
+    padding: 0;
+  }
+}
+
+// Import jobs dialog: a compact, centered card with generous rounding (mirrors
+// the import-applicants dialog). See import-jobs.component.
+.import-jobs-dialog {
+  .mat-mdc-dialog-surface {
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-container {
+    padding: 0;
+  }
+}
+
+// Import job review dialog: a full-window, edge-to-edge surface whose own top
+// bar / table / footer manage all internal spacing (see import-job-review).
+.import-job-review-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  .mat-mdc-dialog-container {
+    --mat-dialog-container-max-width: 100vw;
+    padding: 0;
+  }
+}
+
+// Import review dialog: a full-window, edge-to-edge surface whose own top bar /
+// apply-bar / table / footer manage all internal spacing (see import-review).
+.import-review-dialog {
+  max-width: 100vw !important;
+
+  .mat-mdc-dialog-surface {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--mat-sys-surface-container-lowest);
+  }
+
+  .mat-mdc-dialog-container {
+    --mat-dialog-container-max-width: 100vw;
+    padding: 0;
+  }
+}
+
 // Applicant-vs-job comparison dialog: a full-window, edge-to-edge surface whose
 // own top bar / body manage all internal spacing (see comparison.component).
 .comparison-dialog {
@@ -245,6 +309,50 @@ body {
   }
 
   .job-form__company-empty {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// Searchable company select in the import-review dialog: the panel renders in an
+// overlay (outside the component view), so its search box is styled globally via
+// `panelClass` (mirrors `.job-form__company-panel`).
+.review__company-panel {
+  .review__company-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    // Fully opaque so options never show through the sticky header. The panel
+    // surface is `surface-container`, so match it.
+    background: var(--mat-sys-surface-container);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    .mat-icon {
+      flex-shrink: 0;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    input {
+      flex: 1 1 auto;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font: inherit;
+      color: var(--mat-sys-on-surface);
+
+      &::placeholder {
+        color: var(--mat-sys-on-surface-variant);
+      }
+    }
+  }
+
+  .review__company-empty {
     margin: 0;
     padding: 1rem 1.25rem;
     color: var(--mat-sys-on-surface-variant);

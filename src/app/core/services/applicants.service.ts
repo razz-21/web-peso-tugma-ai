@@ -5,6 +5,9 @@ import { environment } from '../../../environments/environment';
 import {
   ApplicantGet,
   ApplicantGetSchema,
+  ApplicantImportRequest,
+  ApplicantImportResult,
+  ApplicantImportResultSchema,
   ApplicantList,
   ApplicantListSchema,
   ApplicantPatch,
@@ -48,6 +51,18 @@ export class ApplicantsService {
   async create(payload: ApplicantPost): Promise<ApplicantGet> {
     const body = await firstValueFrom(this.http.post<ApplicantGet>(this.baseUrl, payload));
     return ApplicantGetSchema.parse(body);
+  }
+
+  /**
+   * Bulk-register applicants parsed from an uploaded spreadsheet. Items carrying
+   * a `job_id` also refer the applicant to that job (without consuming its
+   * vacancy); items without one are saved as registered only.
+   */
+  async importApplicants(payload: ApplicantImportRequest): Promise<ApplicantImportResult> {
+    const body = await firstValueFrom(
+      this.http.post<ApplicantImportResult>(`${this.baseUrl}/import`, payload),
+    );
+    return ApplicantImportResultSchema.parse(body);
   }
 
   async update(id: string, patch: ApplicantPatch): Promise<ApplicantGet> {

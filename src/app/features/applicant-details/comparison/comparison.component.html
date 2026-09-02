@@ -13,7 +13,6 @@
   </header>
 
   <div class="comparison__body">
-    <!-- Job vs applicant -->
     <section class="comparison__parties" aria-label="Job and applicant">
       <article class="comparison__party">
         <p class="comparison__party-kicker">
@@ -73,7 +72,6 @@
       </article>
     </section>
 
-    <!-- Match summary -->
     @let summary = this.summary();
     <section class="comparison__summary">
       <div
@@ -113,7 +111,6 @@
       </div>
     </section>
 
-    <!-- Primary requirement gates -->
     @let primaryReqs = this.primaryRequirements();
     <section class="comparison__requirements">
       <header class="comparison__requirements-head">
@@ -197,7 +194,6 @@
         </header>
 
         <div class="comparison__req-grid">
-          <!-- Required column -->
           <div class="comparison__col">
             <p class="comparison__col-kicker">
               <mat-icon aria-hidden="true">work</mat-icon>
@@ -206,7 +202,6 @@
             <p class="comparison__col-text">{{ elig.required }}</p>
           </div>
 
-          <!-- Applicant column -->
           <div class="comparison__col">
             <p class="comparison__col-kicker">
               <mat-icon aria-hidden="true">person</mat-icon>
@@ -231,7 +226,6 @@
       </section>
     }
 
-    <!-- Requirement sections -->
     @for (requirement of requirements(); track requirement.key) {
       <section class="comparison__req">
         <header class="comparison__req-head">
@@ -262,7 +256,6 @@
         </header>
 
         <div class="comparison__req-grid">
-          <!-- Required column -->
           <div class="comparison__col">
             <p class="comparison__col-kicker">
               <mat-icon aria-hidden="true">work</mat-icon>
@@ -354,7 +347,6 @@
             }
           </div>
 
-          <!-- Applicant column -->
           <div class="comparison__col">
             <p class="comparison__col-kicker">
               <mat-icon aria-hidden="true">person</mat-icon>

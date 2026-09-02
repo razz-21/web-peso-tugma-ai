@@ -9,6 +9,8 @@ import {
   ApplicantReferredReportSchema,
   ApplicantRegisteredReport,
   ApplicantRegisteredReportSchema,
+  EmploymentSummaryReport,
+  EmploymentSummaryReportSchema,
   EstablishmentsRegisteredReport,
   EstablishmentsRegisteredReportSchema,
   JobSolicitedReport,
@@ -18,6 +20,8 @@ import {
   ReferralFunnelReport,
   ReferralFunnelReportSchema,
   ReportRangeParams,
+  UnemployedByEducationReport,
+  UnemployedByEducationReportSchema,
 } from '../models/reports.model';
 
 @Injectable({ providedIn: 'root' })
@@ -83,6 +87,15 @@ export class ReportsService {
     return EstablishmentsRegisteredReportSchema.parse(body);
   }
 
+  async employmentSummary(params: ReportRangeParams = {}): Promise<EmploymentSummaryReport> {
+    const body = await firstValueFrom(
+      this.http.get<EmploymentSummaryReport>(`${this.baseUrl}/employment-summary`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return EmploymentSummaryReportSchema.parse(body);
+  }
+
   async pesoAccomplishment(params: ReportRangeParams = {}): Promise<PesoAccomplishmentReport> {
     const body = await firstValueFrom(
       this.http.get<PesoAccomplishmentReport>(`${this.baseUrl}/peso-accomplishment`, {
@@ -90,6 +103,17 @@ export class ReportsService {
       }),
     );
     return PesoAccomplishmentReportSchema.parse(body);
+  }
+
+  async unemployedByEducation(
+    params: ReportRangeParams = {},
+  ): Promise<UnemployedByEducationReport> {
+    const body = await firstValueFrom(
+      this.http.get<UnemployedByEducationReport>(`${this.baseUrl}/unemployed-by-education`, {
+        params: this.toHttpParams(params),
+      }),
+    );
+    return UnemployedByEducationReportSchema.parse(body);
   }
 
   async referralToPlacementFunnel(params: ReportRangeParams = {}): Promise<ReferralFunnelReport> {

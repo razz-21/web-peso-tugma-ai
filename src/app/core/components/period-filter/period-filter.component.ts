@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 /** An inclusive start/end date range. */
 export interface DateRange {
@@ -35,6 +36,54 @@ const currentMonthToDate = (): DateRange => {
   return { start: new Date(today.getFullYear(), today.getMonth(), 1), end: today };
 };
 
+/** The whole of the previous calendar month. */
+const lastMonth = (): DateRange => {
+  const today = startOfDay(new Date());
+  return {
+    start: new Date(today.getFullYear(), today.getMonth() - 1, 1),
+    // Day 0 of the current month is the last day of the previous month.
+    end: new Date(today.getFullYear(), today.getMonth(), 0),
+  };
+};
+
+/** The 1st of the current calendar quarter through today. */
+const currentQuarterToDate = (): DateRange => {
+  const today = startOfDay(new Date());
+  const quarterStartMonth = Math.floor(today.getMonth() / 3) * 3;
+  return { start: new Date(today.getFullYear(), quarterStartMonth, 1), end: today };
+};
+
+/** The whole of the previous calendar quarter. */
+const lastQuarter = (): DateRange => {
+  const today = startOfDay(new Date());
+  const currentQuarterStartMonth = Math.floor(today.getMonth() / 3) * 3;
+  return {
+    start: new Date(today.getFullYear(), currentQuarterStartMonth - 3, 1),
+    // Day 0 of the current quarter's first month is the last day of the previous quarter.
+    end: new Date(today.getFullYear(), currentQuarterStartMonth, 0),
+  };
+};
+
+/** January 1st of the current year through today. */
+const currentYearToDate = (): DateRange => {
+  const today = startOfDay(new Date());
+  return { start: new Date(today.getFullYear(), 0, 1), end: today };
+};
+
+/** A quick-filter preset: a label and the range it resolves to. */
+interface RangePreset {
+  label: string;
+  compute: () => DateRange;
+}
+
+const RANGE_PRESETS: RangePreset[] = [
+  { label: 'This month', compute: currentMonthToDate },
+  { label: 'Last month', compute: lastMonth },
+  { label: 'This quarter', compute: currentQuarterToDate },
+  { label: 'Last quarter', compute: lastQuarter },
+  { label: 'This year', compute: currentYearToDate },
+];
+
 /**
  * A reusable date-range filter. Renders a pill trigger that opens a Material
  * range picker; emits `rangeChange` with the resolved window (start at the day's
@@ -51,6 +100,7 @@ const currentMonthToDate = (): DateRange => {
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
+    MatMenuModule,
   ],
   templateUrl: './period-filter.component.html',
   styleUrl: './period-filter.component.scss',
@@ -64,6 +114,7 @@ export class PeriodFilterComponent implements OnInit {
   /** Emits whenever the user picks a complete range (and once on init). */
   readonly rangeChange = output<DateRangeSelection>();
 
+  protected readonly presets = RANGE_PRESETS;
   protected readonly label = signal('');
   protected readonly customStart = new FormControl<Date | null>(null);
   protected readonly customEnd = new FormControl<Date | null>(null);
@@ -82,6 +133,14 @@ export class PeriodFilterComponent implements OnInit {
     const end = this.customEnd.value;
     if (!start || !end) return;
     this.emit(start, end);
+  }
+
+  /** Apply a quick-filter preset: sync the picker's inputs and emit the range. */
+  protected applyPreset(preset: RangePreset): void {
+    const range = preset.compute();
+    this.customStart.setValue(range.start);
+    this.customEnd.setValue(range.end);
+    this.emit(range.start, range.end);
   }
 
   private emit(start: Date, end: Date): void {

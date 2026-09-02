@@ -38,6 +38,11 @@ export class ReferredJobsComponent {
   readonly loading = input<boolean>(false);
   /** When true, disables adding or modifying referrals (e.g. inactive applicant). */
   readonly disabled = input<boolean>(false);
+  /**
+   * Whether the current user may delete a referral. Only admins / super admins
+   * qualify — officers never see the delete action.
+   */
+  readonly canDelete = input<boolean>(false);
 
   /** Placeholder rows rendered while referrals load. */
   protected readonly skeletonRows = [0, 1] as const;
@@ -46,6 +51,7 @@ export class ReferredJobsComponent {
   readonly compare = output<JobMatch>();
   readonly viewJob = output<JobMatch>();
   readonly newReferral = output<void>();
+  readonly deleteReferral = output<JobMatch>();
 
   private readonly datePipe = new DatePipe('en-US');
 

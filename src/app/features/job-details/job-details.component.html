@@ -12,7 +12,6 @@
       <p>Loading job...</p>
     </div>
   } @else if (job(); as job) {
-    <!-- Header card -->
     <div class="job-details__card job-details__header">
       <app-avatar
         class="job-details__header-avatar"
@@ -70,7 +69,6 @@
       </div>
     </div>
 
-    <!-- Stat cards -->
     <div class="job-details__stats">
       <div class="job-details__card job-details__stat">
         <span class="job-details__stat-label">
@@ -119,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Two-column layout -->
     <div class="job-details__layout">
       <div class="job-details__main">
         <div class="job-details__card job-details__section">
@@ -170,7 +167,7 @@
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
           @if (job.experience_preferred) {
-            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__subgroup-title">Preferred</p>
             <p class="job-details__body">{{ job.experience_preferred }}</p>
           }
         </div>
@@ -233,7 +230,7 @@
             <p class="job-details__body job-details__na">Not Indicated</p>
           }
           @if (job.preferred_skills.length) {
-            <p class="job-details__subgroup-title">Preferred (nice-to-have)</p>
+            <p class="job-details__subgroup-title">Preferred</p>
             <ul class="job-details__skills" aria-label="Preferred skills">
               @for (skill of job.preferred_skills; track skill) {
                 <li class="job-details__skill job-details__skill--preferred">{{ skill }}</li>

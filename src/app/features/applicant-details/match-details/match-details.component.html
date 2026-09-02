@@ -9,7 +9,6 @@
   </header>
 
   <div class="match-details__body">
-    <!-- Job summary -->
     <section class="match-details__summary">
       <div
         class="match-details__ring"
@@ -51,7 +50,6 @@
       </div>
     </section>
 
-    <!-- Score-band banner -->
     @let assessment = this.assessment();
     <p
       class="match-details__banner"
@@ -66,12 +64,10 @@
       >
     </p>
 
-    <!-- Vector comparison -->
     @if (match.resumeVector.length > 1 && match.jobVector.length > 1) {
       <app-vector-comparison [resume]="match.resumeVector" [job]="match.jobVector" />
     }
 
-    <!-- Score breakdown -->
     <section class="match-details__breakdown">
       <div class="match-details__breakdown-head">
         <h4 class="match-details__subhead">Score breakdown</h4>
@@ -112,7 +108,6 @@
       </ul>
     </section>
 
-    <!-- Weighted total -->
     <section class="match-details__total">
       <div>
         <p class="match-details__total-title">Total match score</p>
@@ -123,7 +118,6 @@
       </p>
     </section>
 
-    <!-- Assessment -->
     <section class="match-details__assessment">
       <h4 class="match-details__subhead">Assessment</h4>
       <p class="match-details__assessment-note">

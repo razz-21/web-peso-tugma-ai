@@ -16,8 +16,6 @@ export const MonthlyCountSchema = z.object({
 
 export type MonthlyCount = z.infer<typeof MonthlyCountSchema>;
 
-// --- Job Solicited ---------------------------------------------------------
-
 /** Headline "Vacancies solicited" metric with a period-over-period badge. */
 export const VacanciesSolicitedCardSchema = z.object({
   value: z.number().int(),
@@ -61,8 +59,6 @@ export type TopOccupation = z.infer<typeof TopOccupationSchema>;
 export type JobSolicitedRow = z.infer<typeof JobSolicitedRowSchema>;
 export type JobSolicitedReport = z.infer<typeof JobSolicitedReportSchema>;
 
-// --- Applicant Referred ----------------------------------------------------
-
 /** One row of the Applicant Referred report table — a single referral. */
 export const ApplicantReferredRowSchema = z.object({
   name: z.string().nullable(),
@@ -94,8 +90,6 @@ export const ApplicantReferredReportSchema = z.object({
 
 export type ApplicantReferredRow = z.infer<typeof ApplicantReferredRowSchema>;
 export type ApplicantReferredReport = z.infer<typeof ApplicantReferredReportSchema>;
-
-// --- Applicant Placed ------------------------------------------------------
 
 /** The position accounting for the most placements in the window. */
 export const TopPlacedPositionSchema = z.object({
@@ -135,8 +129,6 @@ export type TopPlacedPosition = z.infer<typeof TopPlacedPositionSchema>;
 export type ApplicantPlacedRow = z.infer<typeof ApplicantPlacedRowSchema>;
 export type ApplicantPlacedReport = z.infer<typeof ApplicantPlacedReportSchema>;
 
-// --- Applicant Registered --------------------------------------------------
-
 /** Headline "New registrants" metric with a period-over-period badge. */
 export const NewRegistrantsCardSchema = z.object({
   value: z.number().int(),
@@ -170,8 +162,6 @@ export const ApplicantRegisteredReportSchema = z.object({
 export type NewRegistrantsCard = z.infer<typeof NewRegistrantsCardSchema>;
 export type ApplicantRegisteredRow = z.infer<typeof ApplicantRegisteredRowSchema>;
 export type ApplicantRegisteredReport = z.infer<typeof ApplicantRegisteredReportSchema>;
-
-// --- Establishments Registered ---------------------------------------------
 
 /** A category label with its count (one bar of a breakdown). */
 export const LabeledCountSchema = z.object({
@@ -212,8 +202,6 @@ export type NewEstablishmentsCard = z.infer<typeof NewEstablishmentsCardSchema>;
 export type EstablishmentRow = z.infer<typeof EstablishmentRowSchema>;
 export type EstablishmentsRegisteredReport = z.infer<typeof EstablishmentsRegisteredReportSchema>;
 
-// --- Accomplishment --------------------------------------------------------
-
 /** The roll-up of all facilitation services for the selected window. */
 export const PesoAccomplishmentReportSchema = z.object({
   start_date: z.string(),
@@ -228,8 +216,6 @@ export const PesoAccomplishmentReportSchema = z.object({
 });
 
 export type PesoAccomplishmentReport = z.infer<typeof PesoAccomplishmentReportSchema>;
-
-// --- Referral-to-Placement Funnel ------------------------------------------
 
 /** Conversion at each stage from referral through to hire, for the window. */
 export const ReferralFunnelReportSchema = z.object({
@@ -249,7 +235,70 @@ export const ReferralFunnelReportSchema = z.object({
 
 export type ReferralFunnelReport = z.infer<typeof ReferralFunnelReportSchema>;
 
-// --- Query params ----------------------------------------------------------
+/** A headline metric with a period-over-period badge (percentage change). */
+export const SummaryMetricSchema = z.object({
+  value: z.number().int(),
+  /** Percentage change vs the preceding equal-length window; `null` when there
+   *  is no baseline to compare against (the badge is then hidden). */
+  change_pct: z.number().nullable(),
+});
+
+export type SummaryMetric = z.infer<typeof SummaryMetricSchema>;
+
+/** One row of the "Top 10 job vacancies" table — an open listing and the
+ *  establishment that posted it. */
+export const TopVacancyRowSchema = z.object({
+  job_title: z.string(),
+  company: z.string().nullable(),
+  /** Company logo (data URL / image URL); `null` falls back to initials. */
+  company_avatar: z.string().nullable(),
+  vacancies: z.number().int(),
+  location: z.string().nullable(),
+});
+
+export type TopVacancyRow = z.infer<typeof TopVacancyRowSchema>;
+
+/** A one-glance snapshot of employment facilitation for the selected window:
+ *  headline cards plus the employment-status, placement-rate, and
+ *  unemployed-by-gender breakdowns, with a current top-vacancies snapshot. */
+export const EmploymentSummaryReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  vacancies_solicited: SummaryMetricSchema,
+  registered_applicants: SummaryMetricSchema,
+  placed_applicants: SummaryMetricSchema,
+  /** Registered-in-window cohort size; `employed + unemployed`. */
+  registered_total: z.number().int(),
+  employed: z.number().int(),
+  unemployed: z.number().int(),
+  referred: z.number().int(),
+  placed: z.number().int(),
+  /** `placed / referred` as a percentage. */
+  placement_rate: z.number(),
+  unemployed_male: z.number().int(),
+  unemployed_female: z.number().int(),
+  top_vacancies: z.array(TopVacancyRowSchema),
+});
+
+export type EmploymentSummaryReport = z.infer<typeof EmploymentSummaryReportSchema>;
+
+/** The "Unemployed Applicants by Education" report: the unemployed cohort for
+ *  the selected window, profiled by course / program. `top_courses` ranks the
+ *  courses by headcount (top 10); `with_course` is the count who hold or are
+ *  pursuing a course and is the denominator behind `top3_share_pct`. */
+export const UnemployedByEducationReportSchema = z.object({
+  start_date: z.string(),
+  end_date: z.string(),
+  total_unemployed: z.number().int(),
+  most_common_course: z.string().nullable(),
+  college_graduates: z.number().int(),
+  with_course: z.number().int(),
+  top3_share_pct: z.number(),
+  top_courses: z.array(LabeledCountSchema),
+  by_education_level: z.array(LabeledCountSchema),
+});
+
+export type UnemployedByEducationReport = z.infer<typeof UnemployedByEducationReportSchema>;
 
 /** Shared query params for the report endpoints (all optional). */
 export interface ReportRangeParams {

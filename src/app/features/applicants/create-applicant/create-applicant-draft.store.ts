@@ -94,26 +94,21 @@ const STEP_FIELDS: Record<WizardStepKey, (keyof ApplicantDraft)[]> = {
   work: ['work_experience'],
   skills: ['technical_skills'],
   trainings: ['trainings'],
-  confirmation: [],
+  confirmation: ['date_registered'],
 };
 
-/**
- * Dialog-scoped state for the Create applicant wizard. Owns one Signal Form over
- * the entire applicant draft so each step reads/writes its slice while values
- * persist across step navigation. Provided at the wizard component.
- */
 @Injectable()
 export class CreateApplicantDraftStore {
-  /** When true, the permanent address mirrors the present address and is locked. */
   readonly sameAsPresent = signal(false);
 
-  /** Resume PDF staged on the Upload step, uploaded after the applicant is created. */
   readonly resumeFile = signal<File | null>(null);
 
-  /** Draft fields that were prefilled from the resume — the officer should review these. */
   readonly prefilledFields = signal<ReadonlySet<PrefillKey>>(new Set());
 
-  private readonly data = signal<ApplicantDraft>(structuredClone(INITIAL_DRAFT));
+  private readonly data = signal<ApplicantDraft>({
+    ...structuredClone(INITIAL_DRAFT),
+    date_registered: new Date(),
+  });
 
   readonly form = form(this.data, (p) => {
     disabled(p.permanent_address, () => this.sameAsPresent());
@@ -148,7 +143,26 @@ export class CreateApplicantDraftStore {
     required(p.present_address.province, { message: 'Province is required' });
     required(p.present_address.municipality_city, { message: 'Municipality/City is required' });
     required(p.present_address.baranggay, { message: 'Barangay is required' });
-    required(p.present_address.house_no_street, { message: 'House no. / Street is required' });
+
+    // Cascade gating: a child address dropdown stays disabled until its parent is
+    // chosen. The reusable address-fields component clears children on parent
+    // change; keeping the disabled logic here lets Signal Forms drive it reactively.
+    disabled(
+      p.present_address.municipality_city,
+      ({ valueOf }) => !valueOf(p.present_address.province),
+    );
+    disabled(
+      p.present_address.baranggay,
+      ({ valueOf }) => !valueOf(p.present_address.municipality_city),
+    );
+    disabled(
+      p.permanent_address.municipality_city,
+      ({ valueOf }) => !valueOf(p.permanent_address.province),
+    );
+    disabled(
+      p.permanent_address.baranggay,
+      ({ valueOf }) => !valueOf(p.permanent_address.municipality_city),
+    );
 
     pattern(p.educational_background.year_graduated, YEAR_PATTERN, {
       message: 'Enter numbers only (up to 5 digits)',
@@ -182,8 +196,6 @@ export class CreateApplicantDraftStore {
     this.sameAsPresent.set(sameAsPresent);
     this.data.set(structuredClone(draft));
   }
-
-  // --- Resume upload + extraction ------------------------------------------
 
   /** Stage the resume PDF (uploaded after the applicant is created). */
   setResumeFile(file: File): void {
@@ -324,8 +336,6 @@ export class CreateApplicantDraftStore {
   buildPayload(): ApplicantPost {
     return this.payload();
   }
-
-  // --- Repeatable sections -------------------------------------------------
 
   addOccupationIndustry(): void {
     this.push('preferred_occupation_industry', { ...EMPTY_OCCUPATION_INDUSTRY });

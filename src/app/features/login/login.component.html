@@ -46,28 +46,25 @@
       </mat-form-field>
     </div>
 
-    <div class="login__options">
+    <!-- <div class="login__options">
       <mat-checkbox [formField]="loginForm.rememberMe">Remember me</mat-checkbox>
       <a class="login__link" [routerLink]="routes.forgotPassword">Forgot password?</a>
+    </div> -->
+
+    <div class="login__buttons">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="login__submit"
+        [disabled]="submitting() || rateLimited()"
+      >
+        @if (submitting()) {
+          <mat-progress-spinner diameter="24" mode="indeterminate" aria-label="Signing in" />
+        } @else {
+          Sign in
+        }
+      </button>
     </div>
-
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      class="login__submit"
-      [disabled]="submitting()"
-    >
-      @if (submitting()) {
-        <mat-progress-spinner diameter="24" mode="indeterminate" aria-label="Signing in" />
-      } @else {
-        Sign in
-      }
-    </button>
   </form>
-
-  <p class="login__register">
-    Don't have an account?
-    <a class="login__link" [routerLink]="routes.register">Register</a>
-  </p>
 </section>

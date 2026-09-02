@@ -7,8 +7,6 @@ import { CompanyTypeSchema } from './company.model';
  * reaches the store.
  */
 
-// --- Summary cards ---------------------------------------------------------
-
 /** A headline metric with a period-over-period growth badge. */
 export const TrendCardSchema = z.object({
   value: z.number().int(),
@@ -38,8 +36,6 @@ export const DashboardSummarySchema = z.object({
 
 export type DashboardSummary = z.infer<typeof DashboardSummarySchema>;
 
-// --- Placements over time --------------------------------------------------
-
 export const MonthlyPlacementSchema = z.object({
   month: z.number().int(),
   label: z.string(),
@@ -53,8 +49,6 @@ export const PlacementsOverTimeSchema = z.object({
 
 export type MonthlyPlacement = z.infer<typeof MonthlyPlacementSchema>;
 export type PlacementsOverTime = z.infer<typeof PlacementsOverTimeSchema>;
-
-// --- Matching funnel -------------------------------------------------------
 
 export const FunnelStageSchema = z.object({
   key: z.string(),
@@ -71,8 +65,6 @@ export const MatchingFunnelSchema = z.object({
 
 export type FunnelStage = z.infer<typeof FunnelStageSchema>;
 export type MatchingFunnel = z.infer<typeof MatchingFunnelSchema>;
-
-// --- Activity (recent applicants + top hiring companies) -------------------
 
 export const RecentApplicantStatusSchema = z.enum([
   'hired',
@@ -118,8 +110,6 @@ export type RecentApplicant = z.infer<typeof RecentApplicantSchema>;
 export type TopHiringCompany = z.infer<typeof TopHiringCompanySchema>;
 export type TopHiringCompanies = z.infer<typeof TopHiringCompaniesSchema>;
 export type DashboardActivity = z.infer<typeof DashboardActivitySchema>;
-
-// --- Query params ----------------------------------------------------------
 
 /** Shared query params for the dashboard endpoints (all optional). */
 export interface DashboardRangeParams {

@@ -55,6 +55,17 @@
   margin: 0.25rem 0 1.75rem;
 }
 
+.login__buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+
+  button {
+    width: 100%;
+  }
+}
+
 .login__link {
   color: var(--mat-sys-primary);
   font-weight: 700;

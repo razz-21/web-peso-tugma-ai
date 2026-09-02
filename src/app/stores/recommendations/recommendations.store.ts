@@ -118,6 +118,22 @@ export const RecommendationsStore = signalStore(
       updatingIds: state.updatingIds.filter((id) => id !== payload.id),
       error: payload.message,
     })),
+
+    on(recommendationsEvents.deleteReferral, ({ payload }, state) => ({
+      updatingIds: [...state.updatingIds, payload.id],
+      error: null,
+    })),
+    on(recommendationsEvents.deleteReferralSuccess, ({ payload }, state) => ({
+      // A deleted referral is removed from both lists; it lives in `referrals`,
+      // but drop it from `items` too so nothing lingers if the row ever moved.
+      items: state.items.filter((item) => item.id !== payload.id),
+      referrals: state.referrals.filter((item) => item.id !== payload.id),
+      updatingIds: state.updatingIds.filter((id) => id !== payload.id),
+    })),
+    on(recommendationsEvents.deleteReferralFailed, ({ payload }, state) => ({
+      updatingIds: state.updatingIds.filter((id) => id !== payload.id),
+      error: payload.message,
+    })),
   ),
   withEventHandlers(
     (
@@ -199,6 +215,20 @@ export const RecommendationsStore = signalStore(
           ),
         ),
       ),
+      deleteReferral$: events.on(recommendationsEvents.deleteReferral).pipe(
+        mergeMap(({ payload }) =>
+          from(recommendationsService.delete(payload.id)).pipe(
+            mapResponse({
+              next: () => recommendationsEvents.deleteReferralSuccess({ id: payload.id }),
+              error: (error: unknown) =>
+                recommendationsEvents.deleteReferralFailed({
+                  id: payload.id,
+                  message: errorMessage(error, 'Failed to delete referral.'),
+                }),
+            }),
+          ),
+        ),
+      ),
       generateSuccess$: events
         .on(recommendationsEvents.generateSuccess)
         .pipe(
@@ -238,6 +268,9 @@ export const RecommendationsStore = signalStore(
             ),
           ),
         ),
+      deleteReferralSuccess$: events
+        .on(recommendationsEvents.deleteReferralSuccess)
+        .pipe(tap(() => snackBar.open('Referral deleted', 'Close', { duration: 3000 }))),
       referSuccess$: events.on(recommendationsEvents.referSuccess).pipe(
         tap(({ payload }) =>
           snackBar.open(`Referred applicant to ${payload.job?.title ?? 'the job'}`, 'Close', {
@@ -253,7 +286,11 @@ export const RecommendationsStore = signalStore(
         )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
       relevanceFailure$: events
-        .on(recommendationsEvents.setRelevanceFailed, recommendationsEvents.setStatusFailed)
+        .on(
+          recommendationsEvents.setRelevanceFailed,
+          recommendationsEvents.setStatusFailed,
+          recommendationsEvents.deleteReferralFailed,
+        )
         .pipe(tap(({ payload }) => snackBar.open(payload.message, 'Close', { duration: 3000 }))),
     }),
   ),

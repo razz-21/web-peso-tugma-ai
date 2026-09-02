@@ -1,9 +1,7 @@
 <div class="applicant-details__panel">
   @if (applicant(); as applicant) {
-    <!-- Detail sections + sticky rail -->
     <div class="applicant-details__grid">
       <article class="applicant-details__card applicant-details__detail">
-        <!-- Personal information -->
         <section id="personal" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -36,7 +34,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Contact -->
         <section id="contact" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -55,17 +52,7 @@
           </header>
           <div class="applicant-details__fields">
             <div class="applicant-details__field applicant-details__field--wide">
-              <span class="detail-field__label">Email address</span>
-              @if (applicant.email_address) {
-                <a class="applicant-details__email" [href]="'mailto:' + applicant.email_address">
-                  {{ applicant.email_address }}
-                </a>
-              } @else {
-                <span class="detail-field__chip">
-                  <mat-icon aria-hidden="true">error_outline</mat-icon>
-                  Not indicated
-                </span>
-              }
+              <app-detail-field label="Email address" [value]="applicant.email_address" />
             </div>
             <app-detail-field
               label="Primary mobile number"
@@ -80,7 +67,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Address -->
         <section id="address" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -138,7 +124,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Educational background -->
         <section id="education" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -177,7 +162,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Skills & training -->
         <section id="skills" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -229,7 +213,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Work experience -->
         <section id="work" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">
@@ -269,7 +252,6 @@
 
         <hr class="applicant-details__section-divider" />
 
-        <!-- Job preferences -->
         <section id="preferences" #section class="applicant-details__section">
           <header class="applicant-details__section-head">
             <h2 class="applicant-details__section-title">

@@ -1,6 +1,5 @@
 <div class="app-table">
   <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
-    <!-- Name -->
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
       <td mat-cell *matCellDef="let row">
@@ -15,13 +14,11 @@
       </td>
     </ng-container>
 
-    <!-- Description -->
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef scope="col">Description</th>
       <td mat-cell *matCellDef="let row">{{ row.workspace.description || '—' }}</td>
     </ng-container>
 
-    <!-- Status -->
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
       <td mat-cell *matCellDef="let row">
@@ -35,7 +32,6 @@
       </td>
     </ng-container>
 
-    <!-- Created at -->
     <ng-container matColumnDef="created_at">
       <th mat-header-cell *matHeaderCellDef scope="col">Created at</th>
       <td mat-cell *matCellDef="let row">
@@ -43,7 +39,6 @@
       </td>
     </ng-container>
 
-    <!-- Updated at -->
     <ng-container matColumnDef="updated_at">
       <th mat-header-cell *matHeaderCellDef scope="col">Updated at</th>
       <td mat-cell *matCellDef="let row">
@@ -51,7 +46,6 @@
       </td>
     </ng-container>
 
-    <!-- Actions -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
       <td mat-cell *matCellDef="let row">

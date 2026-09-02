@@ -162,6 +162,17 @@
                   <mat-icon>open_in_new</mat-icon>
                   View job
                 </button>
+                @if (canDelete()) {
+                  <button
+                    matButton="outlined"
+                    type="button"
+                    class="referred-jobs__delete"
+                    (click)="deleteReferral.emit(row.match)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                    Delete
+                  </button>
+                }
               </div>
             </div>
           </div>

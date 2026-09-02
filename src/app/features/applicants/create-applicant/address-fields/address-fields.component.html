@@ -1,0 +1,54 @@
+<div class="address-fields__grid">
+  <mat-form-field appearance="outline">
+    <mat-label>Province</mat-label>
+    <mat-select [formField]="group().province" (selectionChange)="onProvinceChange()">
+      @for (opt of provinceOptions(); track opt.code) {
+        <mat-option [value]="opt.name">{{ opt.name }}</mat-option>
+      }
+      @if (legacyProvince(); as value) {
+        <mat-option [value]="value">{{ value }} (existing)</mat-option>
+      }
+    </mat-select>
+    @if (error(group().province()); as msg) {
+      <mat-error>{{ msg }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Municipality / City</mat-label>
+    <mat-select [formField]="group().municipality_city" (selectionChange)="onCityChange()">
+      @for (opt of cityOptions(); track opt.code) {
+        <mat-option [value]="opt.name">{{ opt.name }}</mat-option>
+      }
+      @if (legacyCity(); as value) {
+        <mat-option [value]="value">{{ value }} (existing)</mat-option>
+      }
+    </mat-select>
+    @if (error(group().municipality_city()); as msg) {
+      <mat-error>{{ msg }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Barangay</mat-label>
+    <mat-select [formField]="group().baranggay">
+      @for (opt of barangayOptions(); track opt.code) {
+        <mat-option [value]="opt.name">{{ opt.name }}</mat-option>
+      }
+      @if (legacyBarangay(); as value) {
+        <mat-option [value]="value">{{ value }} (existing)</mat-option>
+      }
+    </mat-select>
+    @if (error(group().baranggay()); as msg) {
+      <mat-error>{{ msg }}</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>House no. / Street</mat-label>
+    <input matInput type="text" autocomplete="off" [formField]="group().house_no_street" />
+    @if (error(group().house_no_street()); as msg) {
+      <mat-error>{{ msg }}</mat-error>
+    }
+  </mat-form-field>
+</div>

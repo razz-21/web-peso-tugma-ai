@@ -93,7 +93,7 @@ export class UserFormComponent {
     required(p.status, { message: 'Status is required' });
 
     required(p.password, { message: 'Password is required' });
-    minLength(p.password, 6, { message: 'Password must be at least 6 characters' });
+    minLength(p.password, 8, { message: 'Password must be at least 8 characters' });
     maxLength(p.password, 128, { message: 'Password must be 128 characters or fewer' });
 
     required(p.confirmPassword, { message: 'Please confirm the password' });

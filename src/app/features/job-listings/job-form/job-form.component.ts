@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -26,6 +28,7 @@ import {
   Sex,
 } from '../../../core/models/job.model';
 import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
+import { COURSE_PROGRAM_GROUPS } from '../../../core/constants/courses.constant';
 import { CompaniesService } from '../../../core/services/companies.service';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
 import { jobsEvents } from '../../../stores/jobs/jobs.events';
@@ -74,6 +77,30 @@ const DESCRIPTION_MAX = 2000;
 /** Upper cap for the SMALLINT-backed monthly salary; guards obvious typos. */
 const SALARY_MAX = 100_000_000;
 
+/** Parse an ISO-ish date string into a `Date`, or null when absent/unparseable. */
+const parseIsoDate = (value: string | null | undefined): Date | null => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+/**
+ * Format a datepicker value as an ISO datetime at UTC midnight of the picked
+ * calendar date, or undefined when unset — keeps the chosen day stable across
+ * timezones (unlike `Date.toISOString()`, which can shift the date).
+ */
+const toDateTimeString = (value: Date | null): string | undefined => {
+  if (!value || Number.isNaN(value.getTime())) {
+    return undefined;
+  }
+  const year = value.getFullYear().toString().padStart(4, '0');
+  const month = (value.getMonth() + 1).toString().padStart(2, '0');
+  const day = value.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T00:00:00+00:00`;
+};
+
 type JobFormValue = {
   title: string;
   company_id: string;
@@ -89,6 +116,7 @@ type JobFormValue = {
   sex: Sex | '';
   civil_status: string[];
   eligibility: string;
+  date_created: Date | null;
 };
 
 const INITIAL_VALUE: JobFormValue = {
@@ -106,17 +134,20 @@ const INITIAL_VALUE: JobFormValue = {
   sex: '',
   civil_status: [],
   eligibility: '',
+  date_created: null,
 };
 
 @Component({
   selector: 'app-job-form',
   imports: [
+    MatAutocompleteModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     MatChipsModule,
+    MatDatepickerModule,
     MatIconModule,
     MatProgressSpinnerModule,
     FormField,
@@ -185,9 +216,13 @@ export class JobFormComponent {
           sex: this.job.sex ?? '',
           civil_status: this.job.civil_status ?? [],
           eligibility: this.job.eligibility ?? '',
+          date_created: parseIsoDate(this.job.created_at),
         }
-      : { ...INITIAL_VALUE, company_id: this.lockedCompany?.id ?? '' },
+      : { ...INITIAL_VALUE, company_id: this.lockedCompany?.id ?? '', date_created: new Date() },
   );
+
+  /** Upper bound for the datepicker — a job can't be created in the future. */
+  protected readonly today = new Date();
 
   /** The company backing the current selection, for the rich select trigger. */
   protected readonly selectedCompany = computed(() =>
@@ -195,6 +230,21 @@ export class JobFormComponent {
   );
 
   protected readonly companyTypeLabels = COMPANY_TYPE_LABELS;
+
+  /**
+   * Course/program suggestions filtered by what's typed. Empty groups are
+   * dropped. The field stays free-text, so off-list courses are still allowed.
+   */
+  protected readonly filteredCourseGroups = computed(() => {
+    const query = this.data().course_program.trim().toLowerCase();
+    if (!query) {
+      return COURSE_PROGRAM_GROUPS;
+    }
+    return COURSE_PROGRAM_GROUPS.map((group) => ({
+      category: group.category,
+      courses: group.courses.filter((course) => course.toLowerCase().includes(query)),
+    })).filter((group) => group.courses.length > 0);
+  });
 
   /** Skills are edited as chips, so they live outside the signal form. Required
    * (mandatory) and preferred (nice-to-have) skills are two separate lists. */
@@ -271,6 +321,7 @@ export class JobFormComponent {
     const fields = {
       title: value.title.trim(),
       company_id: value.company_id,
+      created_at: toDateTimeString(value.date_created),
       status: this.status,
       no_of_vacancies: value.no_of_vacancies,
       salary_per_month: value.salary_per_month ?? null,

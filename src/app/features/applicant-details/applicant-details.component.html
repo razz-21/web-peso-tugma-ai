@@ -31,7 +31,6 @@
       </div>
     } @else if (applicant(); as applicant) {
       <div class="applicant-details__body">
-        <!-- Profile card -->
         <article class="applicant-details__card applicant-details__profile">
           <div class="applicant-details__head">
             <app-avatar
@@ -138,12 +137,14 @@
               [recommendations]="recommendations()"
               [metrics]="rankingMetrics()"
               [generatedAt]="generatedAt()"
+              [canDelete]="canDeleteReferral()"
               (referralStatus)="onReferralStatus($event)"
               (viewComparison)="onViewComparison($event)"
               (viewJob)="onViewJob($event)"
               (newReferral)="onNewReferral()"
               (generate)="onGenerate()"
               (selectMatch)="onSelectMatch($event)"
+              (deleteReferral)="onDeleteReferral($event)"
             />
           </mat-tab>
 

@@ -5,6 +5,9 @@ import { environment } from '../../../environments/environment';
 import {
   JobGet,
   JobGetSchema,
+  JobImportRequest,
+  JobImportResult,
+  JobImportResultSchema,
   JobList,
   JobListSchema,
   JobPatch,
@@ -47,6 +50,14 @@ export class JobsService {
   async create(payload: JobPost): Promise<JobGet> {
     const body = await firstValueFrom(this.http.post<JobGet>(this.baseUrl, payload));
     return JobGetSchema.parse(body);
+  }
+
+  /** Bulk-create jobs parsed from an uploaded spreadsheet (import flow). */
+  async importJobs(payload: JobImportRequest): Promise<JobImportResult> {
+    const body = await firstValueFrom(
+      this.http.post<JobImportResult>(`${this.baseUrl}/import`, payload),
+    );
+    return JobImportResultSchema.parse(body);
   }
 
   async update(id: string, payload: JobPatch): Promise<JobGet> {

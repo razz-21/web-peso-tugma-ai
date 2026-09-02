@@ -1,0 +1,336 @@
+// Shared column track so the header and every body row line up. The table
+// scrolls horizontally on narrow viewports rather than crushing the columns.
+// Long-text/value columns (Address, Skills, Company, Job vacancy) hold a wider
+// minimum so their fields aren't cramped; the short selects stay compact.
+$cols:
+  minmax(14rem, 1.4fr) // Applicant
+  minmax(8rem, 0.7fr) // Gender
+  minmax(10rem, 0.8fr) // Civil status
+  minmax(15rem, 1.1fr) // Address
+  minmax(16rem, 1.5fr) // Skills
+  minmax(16rem, 1.4fr) // Company
+  minmax(15rem, 1.2fr) // Job vacancy
+  minmax(11rem, 0.9fr) // Status
+  minmax(11rem, 0.7fr); // Registered
+
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+  height: 100%;
+
+  // Shrink the in-cell selects/inputs so the dense table doesn't tower.
+  @include mat.form-field-density(-5);
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+// --- Top bar ----------------------------------------------------------------
+
+.review__topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.review__titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.review__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.review__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.review__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.review__skip {
+  color: var(--mat-sys-primary);
+}
+
+// --- Apply-to-all bar -------------------------------------------------------
+
+.review__applybar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.review__apply-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.review__apply-field {
+  width: 240px;
+}
+
+.review__apply-btn {
+  margin-left: 0.25rem;
+}
+
+.review__counter {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Table ------------------------------------------------------------------
+
+.review__table {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 0 1.5rem 1rem;
+}
+
+.review__row {
+  display: grid;
+  grid-template-columns: $cols;
+  gap: 0.75rem;
+  align-items: center;
+  // Floor at the sum of the column minimums so wide tracks never shrink; the
+  // table scrolls horizontally instead of cramping the fields.
+  min-width: 122rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.review__row--head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--mat-sys-surface-container-lowest);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  .review__cell {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.review__row--assigned {
+  box-shadow: inset 3px 0 0 0 var(--mat-sys-primary);
+}
+
+.review__cell {
+  min-width: 0;
+}
+
+// Applicant identity cell.
+.review__applicant {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding-left: 0.5rem;
+}
+
+.review__avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.review__applicant-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.review__name {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review__edu,
+.review__course {
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Compact form controls inside cells.
+.review__field {
+  width: 100%;
+  font-size: 0.82rem;
+}
+
+// Searchable company select — option + trigger content (avatar + name + type).
+.review__company {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.review__company-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.review__company-name {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review__company-type {
+  font-size: 0.72rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// The company options are taller (avatar + two lines), so give them room.
+::ng-deep .mat-mdc-option:has(.review__company) {
+  height: auto;
+  min-height: 3rem;
+}
+
+// --- Skills -----------------------------------------------------------------
+
+.review__skills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.review__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 1rem;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.review__chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+
+  mat-icon {
+    width: 1rem;
+    height: 1rem;
+    font-size: 1rem;
+  }
+}
+
+.review__chip--add {
+  border: 1px dashed var(--mat-sys-outline);
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+}
+
+.review__skill-input {
+  width: 6rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--mat-sys-primary);
+  border-radius: 1rem;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: 0.78rem;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// --- Status -----------------------------------------------------------------
+
+.review__status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.review__status-dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--mat-sys-outline-variant);
+}
+
+.review__status-dot--on {
+  background: var(--mat-sys-primary);
+}
+
+
+// --- Footer -----------------------------------------------------------------
+
+.review__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.review__footer-summary {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.review__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}

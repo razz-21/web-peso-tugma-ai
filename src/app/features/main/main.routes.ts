@@ -92,6 +92,13 @@ export const mainRoutes: Routes = [
           ),
       },
       {
+        path: 'reports/employment-summary',
+        loadComponent: () =>
+          import('../reports/employment-summary/employment-summary.component').then(
+            (m) => m.EmploymentSummaryComponent,
+          ),
+      },
+      {
         path: 'reports/referral-to-placement-funnel',
         loadComponent: () =>
           import('../reports/referral-funnel/referral-funnel.component').then(
@@ -117,6 +124,13 @@ export const mainRoutes: Routes = [
         loadComponent: () =>
           import('../reports/applicant-placed/applicant-placed.component').then(
             (m) => m.ApplicantPlacedComponent,
+          ),
+      },
+      {
+        path: 'reports/unemployed-applicants-education',
+        loadComponent: () =>
+          import('../reports/unemployed-applicants-education/unemployed-applicants-education.component').then(
+            (m) => m.UnemployedApplicantsEducationComponent,
           ),
       },
       {

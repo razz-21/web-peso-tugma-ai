@@ -61,6 +61,9 @@ export const JobGetSchema = JobSchema;
 export const JobPostSchema = JobFieldsSchema.extend({
   no_of_vacancies: z.number().int().min(1).max(JOB_VACANCIES_MAX),
   company_id: z.uuid(),
+  // Creation date (ISO). Lets an officer backdate a posting to a previous
+  // creation instead of "today"; omitted → the server stamps it now.
+  created_at: z.string().optional(),
 });
 
 export const JobPatchSchema = JobPostSchema.partial();
@@ -88,6 +91,18 @@ export type JobGet = z.infer<typeof JobGetSchema>;
 export type JobPost = z.infer<typeof JobPostSchema>;
 export type JobPatch = z.infer<typeof JobPatchSchema>;
 export type JobList = z.infer<typeof JobListSchema>;
+
+/** Payload for POST /jobs/import — a batch of postings to create at once. */
+export interface JobImportRequest {
+  jobs: JobPost[];
+}
+
+/** Summary of a bulk job import: how many were created. */
+export const JobImportResultSchema = z.object({
+  created: z.number().int().nonnegative(),
+  jobs: z.array(JobGetSchema),
+});
+export type JobImportResult = z.infer<typeof JobImportResultSchema>;
 
 export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   active: 'Active',

@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormField, email, form, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +17,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/services/auth.service';
 import { APP_ROUTES } from '../../core/constants/routes.constant';
+import { parseRetryAfterSeconds, retryAfterMessage } from '../../core/utils/retry-after.util';
 
 type LoginData = {
   email: string;
@@ -21,7 +29,6 @@ type LoginData = {
   selector: 'app-login',
   imports: [
     FormField,
-    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -33,7 +40,7 @@ type LoginData = {
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -41,6 +48,11 @@ export class LoginComponent {
   protected readonly hidePassword = signal(true);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Set when the backend returns 429; keeps the submit button disabled for the
+  // `Retry-After` window rather than letting the user keep firing requests that
+  // would only extend the lockout.
+  protected readonly rateLimited = signal(false);
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly data = signal<LoginData>({ email: '', password: '', rememberMe: true });
 
@@ -64,6 +76,12 @@ export class LoginComponent {
       : null;
   });
 
+  ngOnDestroy(): void {
+    if (this.retryTimer !== null) {
+      clearTimeout(this.retryTimer);
+    }
+  }
+
   protected togglePassword(): void {
     this.hidePassword.update((hidden) => !hidden);
   }
@@ -72,7 +90,7 @@ export class LoginComponent {
     event.preventDefault();
     this.loginForm().markAsTouched();
 
-    if (!this.loginForm().valid() || this.submitting()) {
+    if (!this.loginForm().valid() || this.submitting() || this.rateLimited()) {
       return;
     }
 
@@ -84,10 +102,28 @@ export class LoginComponent {
       await this.auth.login({ email, password, rememberMe });
       await this.router.navigateByUrl(APP_ROUTES.main);
     } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 429) {
+        this.lockForRetry(error.headers.get('Retry-After'));
+      }
       this.errorMessage.set(this.toErrorMessage(error));
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  /** Disable submission until the server's `Retry-After` window elapses. */
+  private lockForRetry(retryAfter: string | null): void {
+    this.rateLimited.set(true);
+    if (this.retryTimer !== null) {
+      clearTimeout(this.retryTimer);
+    }
+    // Default to 60s when the header is missing/unparseable, so the button never
+    // stays disabled forever.
+    const seconds = parseRetryAfterSeconds(retryAfter) ?? 60;
+    this.retryTimer = setTimeout(() => {
+      this.rateLimited.set(false);
+      this.retryTimer = null;
+    }, seconds * 1000);
   }
 
   private toErrorMessage(error: unknown): string {
@@ -99,6 +135,9 @@ export class LoginComponent {
         // Account disabled — surface the backend reason (e.g. "User is inactive").
         const detail = error.error?.detail;
         return typeof detail === 'string' ? detail : 'Your account is inactive.';
+      }
+      if (error.status === 429) {
+        return retryAfterMessage(error.headers.get('Retry-After'));
       }
       if (error.status === 0) {
         return 'Unable to reach the server. Please try again.';

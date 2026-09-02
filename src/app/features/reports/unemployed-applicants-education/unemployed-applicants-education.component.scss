@@ -1,0 +1,179 @@
+.unemployed-education {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.875rem;
+    background: #d7f0c0;
+    color: #4d7c1f;
+
+    mat-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+  }
+
+  // Summary line beneath the chart, echoing the report design's footer.
+  &__note {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    strong {
+      color: #4d7c1f;
+      font-weight: 700;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// "Course breakdown" ranking table.
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    color: var(--mat-sys-on-surface);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  &__no {
+    width: 3rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-weight: 600;
+  }
+
+  &__course {
+    font-weight: 600;
+  }
+
+  &__num {
+    text-align: right;
+    width: 8rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__share {
+    text-align: right;
+    width: 14rem;
+  }
+}
+
+.share {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: flex-end;
+
+  &__track {
+    flex: 1;
+    max-width: 9rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #e6ecdd;
+    overflow: hidden;
+  }
+
+  &__fill {
+    display: block;
+    height: 100%;
+    min-width: 0.5rem;
+    border-radius: 999px;
+    background: #43681f;
+  }
+
+  &__value {
+    min-width: 2.75rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// `.stat-card` and `.chart-card` live in ../report-shared.scss (see styleUrls).

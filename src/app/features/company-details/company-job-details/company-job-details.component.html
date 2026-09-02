@@ -1,7 +1,6 @@
 @let jobData = job();
 
 <div class="job-panel">
-  <!-- Header -->
   <div class="job-panel__header">
     <h3 class="job-panel__title">{{ jobData.title }}</h3>
     <span
@@ -14,7 +13,6 @@
     </span>
   </div>
 
-  <!-- Quick facts -->
   <dl class="job-panel__facts">
     <div class="job-panel__fact">
       <dt><mat-icon aria-hidden="true">payments</mat-icon> Salary / month</dt>
@@ -38,7 +36,6 @@
     </div>
   </dl>
 
-  <!-- About the role -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">About the role</h4>
     @if (jobData.description) {
@@ -48,7 +45,6 @@
     }
   </section>
 
-  <!-- Minimum education -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">school</mat-icon>
@@ -65,7 +61,6 @@
     }
   </section>
 
-  <!-- Experience -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">work_history</mat-icon>
@@ -77,12 +72,11 @@
       <p class="job-panel__body job-panel__na">Not Indicated</p>
     }
     @if (jobData.experience_preferred) {
-      <p class="job-panel__subgroup-title">Preferred (nice-to-have)</p>
+      <p class="job-panel__subgroup-title">Preferred</p>
       <p class="job-panel__body">{{ jobData.experience_preferred }}</p>
     }
   </section>
 
-  <!-- Eligibility -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">verified</mat-icon>
@@ -95,7 +89,6 @@
     }
   </section>
 
-  <!-- Skills required -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">handyman</mat-icon>
@@ -111,7 +104,7 @@
       <p class="job-panel__body job-panel__na">Not Indicated</p>
     }
     @if (jobData.preferred_skills.length) {
-      <p class="job-panel__subgroup-title">Preferred (nice-to-have)</p>
+      <p class="job-panel__subgroup-title">Preferred</p>
       <ul class="job-panel__chips" aria-label="Preferred skills">
         @for (skill of jobData.preferred_skills; track skill) {
           <li class="job-panel__chip job-panel__chip--preferred">{{ skill }}</li>
@@ -120,7 +113,6 @@
     }
   </section>
 
-  <!-- Candidate preferences -->
   <section class="job-panel__section">
     <h4 class="job-panel__section-title">
       <mat-icon aria-hidden="true">badge</mat-icon>

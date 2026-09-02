@@ -1,0 +1,239 @@
+<section class="employment-summary">
+  <a class="report-back" [routerLink]="reportsLink">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    Back to reports
+  </a>
+
+  <header class="employment-summary__header">
+    <div class="employment-summary__heading">
+      <span class="employment-summary__icon">
+        <mat-icon aria-hidden="true">insights</mat-icon>
+      </span>
+      <div class="employment-summary__titles">
+        <h1 class="employment-summary__title">Employment Summary Report</h1>
+        <p class="employment-summary__subtitle">
+          A one-glance snapshot of employment facilitation for the period.
+        </p>
+      </div>
+    </div>
+
+    <div class="employment-summary__actions">
+      <app-period-filter
+        triggerAriaLabel="Filter report by date range"
+        (rangeChange)="onPeriodChange($event)"
+      />
+    </div>
+  </header>
+
+  <div class="employment-summary__cards">
+    @if (cards(); as cards) {
+      @for (card of cards; track card.label) {
+        <article class="stat-card">
+          <span class="stat-card__icon" [class]="'stat-card__icon--' + card.tone">
+            <mat-icon aria-hidden="true">{{ card.icon }}</mat-icon>
+          </span>
+          @if (card.delta; as delta) {
+            <span
+              class="stat-card__delta stat-card__delta--badge"
+              [class.stat-card__delta--up]="delta.positive"
+            >
+              <mat-icon class="stat-card__delta-icon" aria-hidden="true">
+                {{ delta.positive ? 'arrow_drop_up' : 'arrow_drop_down' }}
+              </mat-icon>
+              {{ delta.text }}
+            </span>
+          }
+          <p class="stat-card__value">{{ card.value }}</p>
+          <p class="stat-card__label">{{ card.label }}</p>
+        </article>
+      }
+    } @else {
+      @for (placeholder of cardPlaceholders; track placeholder) {
+        <article class="stat-card">
+          <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
+          <app-skeleton variant="text" width="40%" height="2.25rem" />
+          <app-skeleton variant="text" width="60%" />
+        </article>
+      }
+    }
+  </div>
+
+  <div class="employment-summary__donuts">
+    <!-- Employment status -->
+    <article class="donut-card">
+      <header class="donut-card__heading">
+        <h2 class="donut-card__title">Employment status</h2>
+        <p class="donut-card__subtitle">Registered applicants by current status</p>
+      </header>
+      @if (report()) {
+        <app-donut-chart
+          [segments]="employmentSegments()"
+          [centerValue]="employmentCenter()"
+          centerCaption="registered"
+          [showSegmentLabels]="true"
+          ariaLabelPrefix="Employment status"
+        />
+        <ul class="donut-legend">
+          @for (row of employmentLegend(); track row.label) {
+            <li class="donut-legend__row">
+              <span class="donut-legend__dot" [style.background]="row.color"></span>
+              <span class="donut-legend__label">{{ row.label }}</span>
+              <span class="donut-legend__count">{{ row.count }}</span>
+              <span class="donut-legend__percent">{{ row.percent }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <app-skeleton height="18rem" radius="0.75rem" />
+      }
+    </article>
+
+    <!-- Placement rate -->
+    <article class="donut-card">
+      <header class="donut-card__heading">
+        <h2 class="donut-card__title">Placement rate</h2>
+        <p class="donut-card__subtitle">Referred applicants who were successfully placed</p>
+      </header>
+      @if (report()) {
+        <app-donut-chart
+          [segments]="placementSegments()"
+          [centerValue]="placementCenter()"
+          centerCaption="placement rate"
+          ariaLabelPrefix="Placement rate"
+        />
+        <ul class="donut-stats">
+          <li class="donut-stat">
+            <span class="donut-stat__icon donut-stat__icon--teal">
+              <mat-icon aria-hidden="true">send</mat-icon>
+            </span>
+            <span class="donut-stat__body">
+              <span class="donut-stat__label">Referred</span>
+              <span class="donut-stat__value">{{ referredValue() }}</span>
+            </span>
+          </li>
+          <li class="donut-stat">
+            <span class="donut-stat__icon donut-stat__icon--green">
+              <mat-icon aria-hidden="true">check</mat-icon>
+            </span>
+            <span class="donut-stat__body">
+              <span class="donut-stat__label">Placed</span>
+              <span class="donut-stat__value">{{ placedValue() }}</span>
+            </span>
+          </li>
+        </ul>
+      } @else {
+        <app-skeleton height="18rem" radius="0.75rem" />
+      }
+    </article>
+
+    <!-- Unemployed applicants by gender -->
+    <article class="donut-card">
+      <header class="donut-card__heading">
+        <h2 class="donut-card__title">Unemployed applicants by gender</h2>
+        <p class="donut-card__subtitle">Gender distribution of the currently unemployed</p>
+      </header>
+      @if (report()) {
+        <app-donut-chart
+          [segments]="genderSegments()"
+          [centerValue]="genderCenter()"
+          centerCaption="unemployed"
+          [showSegmentLabels]="true"
+          ariaLabelPrefix="Unemployed applicants by gender"
+        />
+        <ul class="donut-legend">
+          @for (row of genderLegend(); track row.label) {
+            <li class="donut-legend__row">
+              <span class="donut-legend__dot" [style.background]="row.color"></span>
+              <span class="donut-legend__label">{{ row.label }}</span>
+              <span class="donut-legend__count">{{ row.count }}</span>
+              <span class="donut-legend__percent">{{ row.percent }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <app-skeleton height="18rem" radius="0.75rem" />
+      }
+    </article>
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Applicants by status</h2>
+      <p class="chart-card__subtitle">
+        Registered job seekers, those referred to a job, and those placed
+      </p>
+    </header>
+    @if (report()) {
+      <app-monthly-bar-chart
+        [points]="statusPoints()"
+        [barColors]="statusColors"
+        [axisStep]="statusAxisStep()"
+        ariaLabelPrefix="Applicants by status"
+        valueLabel="Applicants"
+      />
+      <p class="status-notes">
+        <span class="status-notes__item">
+          <span class="status-notes__pct">{{ referredOfRegisteredPct() }}</span>
+          of registered were referred to a job
+        </span>
+        <span class="status-notes__item">
+          <span class="status-notes__pct">{{ placedOfReferredPct() }}</span>
+          of referred applicants were placed
+        </span>
+      </p>
+    } @else {
+      <app-skeleton height="22rem" radius="0.75rem" />
+    }
+  </article>
+
+  <article class="chart-card">
+    <header class="chart-card__heading">
+      <h2 class="chart-card__title">Top 10 job vacancies</h2>
+      <p class="chart-card__subtitle">Listings solicited in the period, ranked by vacancies</p>
+    </header>
+    @if (report()) {
+      @if (topVacancies().length) {
+        <div class="vacancy-scroll">
+          <table class="vacancy-table">
+            <thead>
+              <tr>
+                <th class="vacancy-table__no" scope="col">No</th>
+                <th scope="col">Job Title</th>
+                <th scope="col">Company</th>
+                <th class="vacancy-table__vac" scope="col">Vacancies</th>
+                <th scope="col">Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of topVacancies(); track $index) {
+                <tr>
+                  <td class="vacancy-table__no">{{ $index + 1 }}</td>
+                  <td class="vacancy-table__title">{{ row.jobTitle }}</td>
+                  <td>
+                    <span class="vacancy-company">
+                      <app-avatar
+                        [name]="row.company"
+                        [seed]="row.company"
+                        [image]="row.avatar"
+                        [size]="36"
+                      />
+                      <span class="vacancy-company__name">{{ row.company }}</span>
+                    </span>
+                  </td>
+                  <td class="vacancy-table__vac">
+                    <span class="vacancy-badge">{{ row.vacancies }}</span>
+                  </td>
+                  <td class="vacancy-table__location">{{ row.location }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="vacancy-empty">No open listings with vacancies.</p>
+      }
+    } @else {
+      <app-skeleton height="24rem" radius="0.75rem" />
+    }
+  </article>
+</section>

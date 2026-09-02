@@ -16,6 +16,7 @@ import {
   applicantToDraft,
   isPermanentSameAsPresent,
 } from '../../applicants/create-applicant/applicant-draft.model';
+import { AddressFieldsComponent } from '../../applicants/create-applicant/address-fields/address-fields.component';
 import { ApplicantEducationComponent } from '../../applicants/create-applicant/applicant-education/applicant-education.component';
 import { ApplicantSkillsComponent } from '../../applicants/create-applicant/applicant-skills/applicant-skills.component';
 import { ApplicantTrainingsComponent } from '../../applicants/create-applicant/applicant-trainings/applicant-trainings.component';
@@ -41,6 +42,7 @@ import {
     MatCheckboxModule,
     MatDatepickerModule,
     FormField,
+    AddressFieldsComponent,
     ApplicantEducationComponent,
     ApplicantSkillsComponent,
     ApplicantTrainingsComponent,

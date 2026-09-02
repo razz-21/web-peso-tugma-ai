@@ -1,0 +1,83 @@
+<div class="import">
+  <header class="import__header">
+    <span class="import__icon" aria-hidden="true">
+      <mat-icon>work</mat-icon>
+    </span>
+    <div class="import__heading">
+      <h2 class="import__title">Import jobs</h2>
+      <p class="import__subtitle">Upload an Excel file to add multiple postings at once.</p>
+    </div>
+    <button
+      matIconButton
+      type="button"
+      class="import__close"
+      aria-label="Close"
+      (click)="onClose()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <input
+    #fileInput
+    type="file"
+    accept=".xlsx,.xls,.csv"
+    class="import__file-input"
+    aria-hidden="true"
+    tabindex="-1"
+    (change)="onFileSelected($event)"
+  />
+
+  <div
+    class="import__dropzone"
+    [class.import__dropzone--active]="isDragging()"
+    role="button"
+    tabindex="0"
+    aria-label="Drag and drop your Excel file here, or press Enter to browse"
+    (click)="onBrowse(fileInput)"
+    (keydown.enter)="onBrowse(fileInput)"
+    (keydown.space)="onBrowse(fileInput)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    <span class="import__dropzone-icon" aria-hidden="true">
+      <mat-icon>upload</mat-icon>
+    </span>
+
+    @if (selectedFile(); as file) {
+      <p class="import__dropzone-title">{{ file.name }}</p>
+      <button matButton type="button" class="import__change" (click)="clearFile(); $event.stopPropagation()">
+        Choose a different file
+      </button>
+    } @else {
+      <p class="import__dropzone-title">
+        Drag &amp; drop your file here, or
+        <button matButton type="button" class="import__browse" (click)="onBrowse(fileInput); $event.stopPropagation()">
+          browse
+        </button>
+      </p>
+      <p class="import__dropzone-hint">Excel (.xlsx) or CSV · up to {{ maxSizeLabel }}</p>
+    }
+  </div>
+
+  @if (error(); as msg) {
+    <p class="import__error" role="alert">{{ msg }}</p>
+  }
+
+  <div class="import__note">
+    <mat-icon aria-hidden="true">info</mat-icon>
+    <p>First time? Download the template to see the exact column order and format.</p>
+  </div>
+
+  <footer class="import__actions">
+    <button matButton="outlined" type="button" (click)="onDownloadTemplate()">
+      <mat-icon>download</mat-icon>
+      Download template
+    </button>
+    <button matButton="tonal" type="button" [disabled]="!canImport()" (click)="onImport()">
+      <mat-icon>upload</mat-icon>
+      Import
+    </button>
+  </footer>
+</div>

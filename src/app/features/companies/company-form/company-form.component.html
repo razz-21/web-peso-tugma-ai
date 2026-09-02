@@ -7,7 +7,6 @@
 
 <form (submit)="submit($event)">
   <mat-dialog-content class="company-form">
-    <!-- Logo -->
     <div class="company-form__logo-row">
       <app-avatar
         class="company-form__logo"
@@ -27,7 +26,6 @@
       </div>
     </div>
 
-    <!-- Name -->
     <mat-form-field appearance="outline">
       <mat-label>Company name</mat-label>
       <input matInput type="text" autocomplete="off" [formField]="companyForm.company_name" />
@@ -36,7 +34,6 @@
       }
     </mat-form-field>
 
-    <!-- Business type -->
     <mat-form-field appearance="outline">
       <mat-label>Business type</mat-label>
       <mat-select [formField]="companyForm.company_type">
@@ -49,7 +46,6 @@
       }
     </mat-form-field>
 
-    <!-- About -->
     <mat-form-field appearance="outline">
       <mat-label>About</mat-label>
       <textarea
@@ -66,7 +62,6 @@
       <mat-hint align="end">{{ descriptionLength() }}/{{ descriptionMax }}</mat-hint>
     </mat-form-field>
 
-    <!-- Details -->
     <h3 class="company-form__section">Details</h3>
     <mat-form-field appearance="outline">
       <mat-label>Address</mat-label>
@@ -78,7 +73,6 @@
       }
     </mat-form-field>
 
-    <!-- Primary contact -->
     <h3 class="company-form__section">Primary contact</h3>
     <div class="company-form__row">
       <mat-form-field appearance="outline">

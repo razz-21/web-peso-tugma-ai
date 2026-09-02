@@ -1,15 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormField } from '@angular/forms/signals';
 import { CreateApplicantDraftStore } from '../create-applicant-draft.store';
 import { toDateString } from '../applicant-draft.model';
 
 @Component({
   selector: 'app-applicant-confirmation',
+  imports: [MatFormFieldModule, MatInputModule, MatDatepickerModule, FormField],
   templateUrl: './applicant-confirmation.component.html',
   styleUrl: './applicant-confirmation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApplicantConfirmationComponent {
-  private readonly store = inject(CreateApplicantDraftStore);
+  protected readonly store = inject(CreateApplicantDraftStore);
+
+  protected readonly today = new Date();
 
   protected readonly draft = computed(() => this.store.form().value());
 

@@ -64,8 +64,10 @@ const axisMax = (values: number[], step: number): number => {
 })
 export class MonthlyBarChartComponent {
   readonly points = input.required<MonthlyBarPoint[]>();
-  /** Bar fill colour. */
+  /** Bar fill colour, applied to every bar. */
   readonly barColor = input(DEFAULT_BAR_COLOR);
+  /** Per-bar fill colours (one per point); overrides `barColor` when provided. */
+  readonly barColors = input<string[] | null>(null);
   /** Prefix for the chart's screen-reader description, e.g. "Referrals per month". */
   readonly ariaLabelPrefix = input('Monthly totals');
   /** Noun shown in a bar's tooltip, e.g. "Referrals" → "Referrals: 42". */
@@ -88,7 +90,7 @@ export class MonthlyBarChartComponent {
     datasets: [
       {
         data: this.values(),
-        backgroundColor: this.barColor(),
+        backgroundColor: this.barColors() ?? this.barColor(),
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 56,

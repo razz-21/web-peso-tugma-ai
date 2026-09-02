@@ -178,6 +178,7 @@ export const ApplicantPostSchema = z.object({
   eligibility: z.array(EligibilitySchema).optional(),
   work_experience: z.array(WorkExperienceSchema).optional(),
   technical_skills: z.array(z.string()).optional(),
+  created_at: z.string().optional(),
 });
 
 /** Payload for PATCH /applicants/:id — every field optional (partial update). */
@@ -210,3 +211,36 @@ export type ResumeExtraction = z.infer<typeof ResumeExtractionSchema>;
 export type ApplicantPost = z.infer<typeof ApplicantPostSchema>;
 export type ApplicantPatch = z.infer<typeof ApplicantPatchSchema>;
 export type ApplicantList = z.infer<typeof ApplicantListSchema>;
+
+/** Referral lifecycle statuses (mirrors the backend `RecommendedJobStatus`). */
+export const REFERRAL_STATUSES = [
+  'referred',
+  'interview_scheduled',
+  'hired',
+  'withdrawn',
+  'not_hired',
+  'resigned',
+] as const;
+export type ReferralStatus = (typeof REFERRAL_STATUSES)[number];
+
+/** One applicant to bulk-import, with an optional job assignment (referral). */
+export interface ApplicantImportItem {
+  applicant: ApplicantPost;
+  job_id: string | null;
+  status: ReferralStatus | null;
+  /** Registered date from the file (ISO). Sets the applicant's `created_at`. */
+  date_registered: string | null;
+}
+
+/** Payload for POST /applicants/import. */
+export interface ApplicantImportRequest {
+  items: ApplicantImportItem[];
+}
+
+/** Summary of a bulk import: how many were registered and referred. */
+export const ApplicantImportResultSchema = z.object({
+  created: z.number().int().nonnegative(),
+  referred: z.number().int().nonnegative(),
+  applicants: z.array(ApplicantGetSchema),
+});
+export type ApplicantImportResult = z.infer<typeof ApplicantImportResultSchema>;

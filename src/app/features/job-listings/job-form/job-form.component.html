@@ -23,7 +23,6 @@
 
   <mat-dialog-content class="job-form__content">
     <div class="job-form__inner">
-      <!-- Company -->
       <h3 class="job-form__section">Company</h3>
       <mat-form-field appearance="outline">
         <mat-label>Company</mat-label>
@@ -103,7 +102,6 @@
         }
       </mat-form-field>
 
-      <!-- Job details -->
       <h3 class="job-form__section">Job details</h3>
       <mat-form-field appearance="outline">
         <mat-label>Job title</mat-label>
@@ -194,7 +192,6 @@
         </mat-form-field>
       </div>
 
-      <!-- Requirements -->
       <h3 class="job-form__section">Requirements</h3>
       <mat-form-field appearance="outline">
         <mat-label>Minimum education attainment (required)</mat-label>
@@ -212,10 +209,20 @@
           matInput
           type="text"
           autocomplete="off"
-          placeholder="e.g. BS Information Technology"
+          placeholder="e.g. Bachelor of Science in Information Technology"
           [formField]="jobForm.course_program"
+          [matAutocomplete]="courseAuto"
         />
-        <mat-hint>Preferred course or program of study</mat-hint>
+        <mat-autocomplete #courseAuto="matAutocomplete">
+          @for (group of filteredCourseGroups(); track group.category) {
+            <mat-optgroup [label]="group.category">
+              @for (course of group.courses; track course) {
+                <mat-option [value]="course">{{ course }}</mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-autocomplete>
+        <mat-hint>Type to search, or enter a course not listed</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -294,6 +301,20 @@
           />
         </mat-chip-grid>
         <mat-hint>Nice-to-have — adds a bonus but never disqualifies</mat-hint>
+      </mat-form-field>
+
+      <h3 class="job-form__section">Registration</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Date created</mat-label>
+        <input
+          matInput
+          [matDatepicker]="createdPicker"
+          [max]="today"
+          [formField]="jobForm.date_created"
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="createdPicker" />
+        <mat-datepicker #createdPicker />
+        <mat-hint>Defaults to today. Change to backdate this job posting.</mat-hint>
       </mat-form-field>
     </div>
   </mat-dialog-content>

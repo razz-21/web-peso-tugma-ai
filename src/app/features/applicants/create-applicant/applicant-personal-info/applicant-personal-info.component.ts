@@ -7,6 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormField } from '@angular/forms/signals';
 import { CIVIL_STATUSES, SEXES } from '../../../../core/models/applicant.model';
 import { CreateApplicantDraftStore } from '../create-applicant-draft.store';
+import { AddressFieldsComponent } from '../address-fields/address-fields.component';
 
 type FieldState = {
   touched: () => boolean;
@@ -23,6 +24,7 @@ type FieldState = {
     MatCheckboxModule,
     MatDatepickerModule,
     FormField,
+    AddressFieldsComponent,
   ],
   templateUrl: './applicant-personal-info.component.html',
   styleUrl: './applicant-personal-info.component.scss',
