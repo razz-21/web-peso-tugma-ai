@@ -84,15 +84,17 @@
                 }}
               </button>
 
-              <button
-                mat-icon-button
-                type="button"
-                class="applicant-details__delete"
-                aria-label="Delete applicant"
-                (click)="onDelete(applicant)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (canDeleteApplicant()) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  class="applicant-details__delete"
+                  aria-label="Delete applicant"
+                  (click)="onDelete(applicant)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </div>
           </div>
 

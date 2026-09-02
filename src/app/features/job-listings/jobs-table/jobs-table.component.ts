@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +39,13 @@ const STATUS_CLASS: Record<JobStatus, string> = {
 })
 export class JobsTableComponent {
   private readonly jobsStore = inject(JobsStore);
+
+  /**
+   * Whether the current user may delete a job. Only admins / super admins
+   * qualify — officers never see the delete action. Mirrored by the backend,
+   * which rejects the delete for other roles with a 403.
+   */
+  readonly canDelete = input<boolean>(false);
 
   readonly view = output<JobGet>();
   readonly edit = output<JobGet>();

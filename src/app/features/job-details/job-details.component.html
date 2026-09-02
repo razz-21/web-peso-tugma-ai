@@ -46,15 +46,17 @@
             <mat-icon>edit</mat-icon>
             Edit job
           </button>
-          <button
-            matButton="tonal"
-            type="button"
-            class="job-details__delete"
-            (click)="onDelete(job)"
-          >
-            <mat-icon>delete</mat-icon>
-            Delete
-          </button>
+          @if (canDelete()) {
+            <button
+              matButton="tonal"
+              type="button"
+              class="job-details__delete"
+              (click)="onDelete(job)"
+            >
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          }
           <button
             matButton="tonal"
             type="button"

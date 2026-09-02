@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,13 @@ interface CompanyRow {
 })
 export class CompaniesTableComponent {
   private readonly companiesStore = inject(CompaniesStore);
+
+  /**
+   * Whether the current user may delete a company. Only admins / super admins
+   * qualify — officers never see the delete action. Mirrored by the backend,
+   * which rejects the delete for other roles with a 403.
+   */
+  readonly canDelete = input<boolean>(false);
 
   readonly view = output<CompanyGet>();
   readonly edit = output<CompanyGet>();

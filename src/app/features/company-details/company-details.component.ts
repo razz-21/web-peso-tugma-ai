@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -24,6 +25,7 @@ import { APP_ROUTES } from '../../core/constants/routes.constant';
 import { CompanyDetailsStore } from '../../stores/company-details/company-details.store';
 import { companyDetailsEvents } from '../../stores/company-details/company-details.events';
 import { companiesEvents } from '../../stores/companies/companies.events';
+import { MeStore } from '../../stores/me/me.store';
 import { CompanyFormComponent } from '../companies/company-form/company-form.component';
 import { CompanyProfileComponent } from './company-profile/company-profile.component';
 import { CompanyJobsComponent } from './company-jobs/company-jobs.component';
@@ -55,9 +57,20 @@ export class CompanyDetailsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly meStore = inject(MeStore);
 
   /** Job shown in the details drawer. */
   protected readonly selectedJob = signal<JobGet | null>(null);
+
+  /**
+   * Whether the signed-in user may delete this company. Only admins / super
+   * admins qualify — officers can view and edit but can't remove companies.
+   * Mirrored by the backend, which rejects the delete for other roles with a 403.
+   */
+  protected readonly canDelete = computed(() => {
+    const role = this.meStore.user()?.role;
+    return role === 'super_admin' || role === 'admin';
+  });
 
   protected onViewJob(job: JobGet): void {
     this.selectedJob.set(job);
@@ -83,6 +96,11 @@ export class CompanyDetailsComponent implements OnInit {
   }
 
   protected onDelete(company: CompanyGet): void {
+    // Defense in depth: the button is hidden for officers and the backend
+    // enforces the role, but guard here too in case the handler is reached.
+    if (!this.canDelete()) {
+      return;
+    }
     const data: ConfirmDialogData = {
       title: 'Delete company',
       message: `Are you sure you want to delete <strong>${company.company_name}</strong>? This action cannot be undone.`,

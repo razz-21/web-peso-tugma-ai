@@ -29,7 +29,12 @@
   }
 
   <div class="jobs__card">
-    <app-jobs-table (view)="onView($event)" (edit)="onEdit($event)" (delete)="onDelete($event)" />
+    <app-jobs-table
+      [canDelete]="canDelete()"
+      (view)="onView($event)"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+    />
 
     <mat-paginator
       class="jobs__paginator"

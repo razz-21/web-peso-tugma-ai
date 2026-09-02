@@ -20,6 +20,7 @@ import { APP_ROUTES, companyDetailsRoute } from '../../core/constants/routes.con
 import { JobDetailsStore } from '../../stores/job-details/job-details.store';
 import { jobDetailsEvents } from '../../stores/job-details/job-details.events';
 import { jobsEvents } from '../../stores/jobs/jobs.events';
+import { MeStore } from '../../stores/me/me.store';
 import { AvatarComponent } from '../../core/components/avatar/avatar.component';
 import {
   ConfirmDialogComponent,
@@ -60,8 +61,19 @@ export class JobDetailsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly meStore = inject(MeStore);
 
   protected readonly job = this.store.job;
+
+  /**
+   * Whether the signed-in user may delete this job. Only admins / super admins
+   * qualify — officers can view and edit but can't remove job listings. Mirrored
+   * by the backend, which rejects the delete for other roles with a 403.
+   */
+  protected readonly canDelete = computed(() => {
+    const role = this.meStore.user()?.role;
+    return role === 'super_admin' || role === 'admin';
+  });
 
   protected readonly companyLink = computed(() => {
     const company = this.job()?.company;
@@ -149,6 +161,11 @@ export class JobDetailsComponent implements OnInit {
   }
 
   protected onDelete(job: JobGet): void {
+    // Defense in depth: the button is hidden for officers and the backend
+    // enforces the role, but guard here too in case the handler is reached.
+    if (!this.canDelete()) {
+      return;
+    }
     const data: ConfirmDialogData = {
       title: 'Delete job',
       message: `Are you sure you want to delete <strong>${job.title}</strong>? This action cannot be undone.`,

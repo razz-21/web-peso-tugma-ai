@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +19,7 @@ import { CompanyGet } from '../../core/models/company.model';
 import { APP_ROUTES } from '../../core/constants/routes.constant';
 import { CompaniesStore } from '../../stores/companies/companies.store';
 import { companiesEvents } from '../../stores/companies/companies.events';
+import { MeStore } from '../../stores/me/me.store';
 import { CompaniesTableComponent } from './companies-table/companies-table.component';
 import { CompanyFormComponent } from './company-form/company-form.component';
 import {
@@ -39,8 +47,19 @@ export class CompaniesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly meStore = inject(MeStore);
 
   protected readonly pageSizeOptions = [10, 25, 50] as const;
+
+  /**
+   * Whether the signed-in user may delete companies. Only admins / super admins
+   * qualify — officers can view and edit but can't remove companies. Mirrored by
+   * the backend, which rejects the delete for other roles with a 403.
+   */
+  protected readonly canDelete = computed(() => {
+    const role = this.meStore.user()?.role;
+    return role === 'super_admin' || role === 'admin';
+  });
 
   public ngOnInit(): void {
     this.dispatch.loadCompany({ q: '', pageIndex: 0, pageSize: 10 });

@@ -30,6 +30,7 @@
 
   <div class="companies__card">
     <app-companies-table
+      [canDelete]="canDelete()"
       (view)="onView($event)"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)"

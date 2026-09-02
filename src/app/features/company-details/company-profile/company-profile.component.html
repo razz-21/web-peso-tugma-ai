@@ -28,14 +28,16 @@
     <mat-icon>edit</mat-icon>
     Edit
   </button>
-  <button
-    mat-icon-button
-    type="button"
-    [attr.aria-label]="'Delete ' + company().company_name"
-    (click)="delete.emit(company())"
-  >
-    <mat-icon>delete</mat-icon>
-  </button>
+  @if (canDelete()) {
+    <button
+      mat-icon-button
+      type="button"
+      [attr.aria-label]="'Delete ' + company().company_name"
+      (click)="delete.emit(company())"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  }
 </div>
 
 <div class="company-profile__section">

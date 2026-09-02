@@ -82,16 +82,18 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <button
-            mat-icon-button
-            type="button"
-            class="company-jobs__delete"
-            [disabled]="deleting()"
-            [attr.aria-label]="'Delete ' + job.title"
-            (click)="onDelete(job)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
+          @if (canDelete()) {
+            <button
+              mat-icon-button
+              type="button"
+              class="company-jobs__delete"
+              [disabled]="deleting()"
+              [attr.aria-label]="'Delete ' + job.title"
+              (click)="onDelete(job)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
         </div>
       </td>
     </ng-container>

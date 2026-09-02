@@ -85,6 +85,15 @@
     margin: 0 auto;
     padding: 0.5rem 1.5rem 3rem;
     box-sizing: border-box;
+
+    // Contain horizontal overflow so the page can't scroll left-to-right. The
+    // tab bodies below run `overflow: visible` (so the Information tab's sticky
+    // rail resolves against mat-drawer-content), which removes Material's own
+    // horizontal containment and lets wide tab content escape. `clip` (not
+    // `hidden`) is deliberate: it clips without becoming a scroll container, so
+    // it doesn't rescope the sticky rail the way `overflow-x: hidden` would
+    // (that forces overflow-y to `auto`, breaking stickiness).
+    overflow-x: clip;
   }
 
   // --- Tabs (Jobs / Information) -------------------------------------------

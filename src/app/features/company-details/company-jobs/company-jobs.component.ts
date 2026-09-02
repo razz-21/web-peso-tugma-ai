@@ -60,6 +60,13 @@ export class CompanyJobsComponent {
   /** The company whose jobs are listed; used to lock the company on create/edit. */
   readonly company = input.required<CompanyGet>();
 
+  /**
+   * Whether the current user may delete a job. Only admins / super admins
+   * qualify — officers never see the delete action. Mirrored by the backend,
+   * which rejects the delete for other roles with a 403.
+   */
+  readonly canDelete = input<boolean>(false);
+
   /** Emitted when a job row is activated, to open the job details drawer. */
   readonly viewJob = output<JobGet>();
 
@@ -194,6 +201,11 @@ export class CompanyJobsComponent {
   }
 
   protected onDelete(job: JobGet): void {
+    // Defense in depth: the button is hidden for officers and the backend
+    // enforces the role, but guard here too in case the handler is reached.
+    if (!this.canDelete()) {
+      return;
+    }
     const data: ConfirmDialogData = {
       title: 'Delete job',
       message: `Are you sure you want to delete <strong>${job.title}</strong>? This action cannot be undone.`,
