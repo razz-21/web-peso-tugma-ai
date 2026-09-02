@@ -61,15 +61,17 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <button
-            mat-icon-button
-            type="button"
-            class="companies-table__delete"
-            [attr.aria-label]="'Delete ' + row.company.company_name"
-            (click)="delete.emit(row.company)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
+          @if (canDelete()) {
+            <button
+              mat-icon-button
+              type="button"
+              class="companies-table__delete"
+              [attr.aria-label]="'Delete ' + row.company.company_name"
+              (click)="delete.emit(row.company)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
         </div>
       </td>
     </ng-container>

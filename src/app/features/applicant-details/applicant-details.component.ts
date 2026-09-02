@@ -150,6 +150,16 @@ export class ApplicantDetailsComponent implements OnInit {
     return role === 'super_admin' || role === 'admin';
   });
 
+  /**
+   * Whether the signed-in user may delete this applicant. Only admins / super
+   * admins qualify — officers can view and edit but can't remove applicants.
+   * Mirrored by the backend, which rejects the delete for other roles with a 403.
+   */
+  protected readonly canDeleteApplicant = computed(() => {
+    const role = this.meStore.user()?.role;
+    return role === 'super_admin' || role === 'admin';
+  });
+
   protected readonly generating = computed(() => this.recommendationsStore.generating());
 
   /** True during the initial recommendations fetch, before any items arrive. */
@@ -702,6 +712,11 @@ export class ApplicantDetailsComponent implements OnInit {
   }
 
   protected onDelete(applicant: ApplicantGet): void {
+    // Defense in depth: the button is hidden for officers and the backend
+    // enforces the role, but guard here too in case the handler is reached.
+    if (!this.canDeleteApplicant()) {
+      return;
+    }
     const data: ConfirmDialogData = {
       title: 'Delete applicant',
       message: `Are you sure you want to delete <strong>${this.fullName()}</strong>? This action cannot be undone.`,

@@ -40,10 +40,15 @@
       <div class="company-details__layout">
         <app-company-profile
           [company]="company"
+          [canDelete]="canDelete()"
           (edit)="onEdit($event)"
           (delete)="onDelete($event)"
         />
-        <app-company-jobs [company]="company" (viewJob)="onViewJob($event); jobDrawer.open()" />
+        <app-company-jobs
+          [company]="company"
+          [canDelete]="canDelete()"
+          (viewJob)="onViewJob($event); jobDrawer.open()"
+        />
       </div>
     }
   </mat-drawer-content>

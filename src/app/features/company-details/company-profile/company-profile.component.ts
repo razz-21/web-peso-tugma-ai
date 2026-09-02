@@ -17,6 +17,12 @@ import { CompaniesStore } from '../../../stores/companies/companies.store';
 })
 export class CompanyProfileComponent {
   readonly company = input.required<CompanyGet>();
+  /**
+   * Whether the current user may delete this company. Only admins / super admins
+   * qualify — officers never see the delete action. Mirrored by the backend,
+   * which rejects the delete for other roles with a 403.
+   */
+  readonly canDelete = input<boolean>(false);
 
   readonly edit = output<CompanyGet>();
   readonly delete = output<CompanyGet>();
