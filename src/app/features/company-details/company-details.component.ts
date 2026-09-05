@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog } from '@angular/material/dialog';
 import { injectDispatch } from '@ngrx/signals/events';
 import { CompanyGet } from '../../core/models/company.model';
@@ -29,6 +30,7 @@ import { MeStore } from '../../stores/me/me.store';
 import { CompanyFormComponent } from '../companies/company-form/company-form.component';
 import { CompanyProfileComponent } from './company-profile/company-profile.component';
 import { CompanyJobsComponent } from './company-jobs/company-jobs.component';
+import { CompanyApplicantsComponent } from './company-applicants/company-applicants.component';
 import { CompanyJobDetailsComponent } from './company-job-details/company-job-details.component';
 
 @Component({
@@ -39,8 +41,10 @@ import { CompanyJobDetailsComponent } from './company-job-details/company-job-de
     MatIconModule,
     MatProgressSpinnerModule,
     MatSidenavModule,
+    MatTabsModule,
     CompanyProfileComponent,
     CompanyJobsComponent,
+    CompanyApplicantsComponent,
     CompanyJobDetailsComponent,
   ],
   templateUrl: './company-details.component.html',

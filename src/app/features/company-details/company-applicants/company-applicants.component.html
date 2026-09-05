@@ -1,0 +1,92 @@
+<header class="company-applicants__head">
+  <mat-form-field appearance="outline" class="company-applicants__search" subscriptSizing="dynamic">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      type="search"
+      placeholder="Search applicants"
+      aria-label="Search applicants"
+      [value]="search()"
+      (input)="onSearch($event)"
+    />
+  </mat-form-field>
+</header>
+
+<div class="app-table">
+  <table mat-table [dataSource]="loading() ? [] : filteredRows()" class="app-table__table">
+    <ng-container matColumnDef="applicant">
+      <th mat-header-cell *matHeaderCellDef scope="col">Applicant</th>
+      <td mat-cell *matCellDef="let row">
+        <div class="company-applicants__applicant">
+          <app-avatar [name]="row.name" [seed]="row.applicantId || row.name" />
+          <span class="company-applicants__name">{{ row.name }}</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="referred_to">
+      <th mat-header-cell *matHeaderCellDef scope="col">Referred to</th>
+      <td mat-cell *matCellDef="let row">{{ row.referredTo }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
+      <td mat-cell *matCellDef="let row">
+        <span class="company-applicants__status" [class]="row.statusClass">
+          {{ row.statusLabel }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date_referred">
+      <th mat-header-cell *matHeaderCellDef scope="col">Date referred</th>
+      <td mat-cell *matCellDef="let row">{{ row.dateReferred | date: 'MMM d, y' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
+      <td mat-cell *matCellDef="let row">
+        <div
+          class="app-table__actions"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        >
+          <button
+            mat-icon-button
+            type="button"
+            [disabled]="!row.applicantId"
+            [attr.aria-label]="'View ' + row.name"
+            (click)="onView(row)"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <!-- Rows are not clickable — only the eye icon in Actions navigates. -->
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (loading()) {
+    <div class="app-table__status" role="status">
+      <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+      <p class="app-table__status-text">Loading applicants...</p>
+    </div>
+  } @else if (filteredRows().length === 0) {
+    @if (search().trim()) {
+      <app-empty-state
+        icon="person_off"
+        [title]="noMatchTitle()"
+        text="Try a different search term."
+      />
+    } @else {
+      <app-empty-state
+        icon="person_off"
+        title="This company has no applicants yet"
+        text="Applicants appear here once they are referred to one of this company's jobs."
+      />
+    }
+  }
+</div>

@@ -41,7 +41,8 @@
   }
 
   &__search {
-    margin-left: auto;
+    // Sits at the left; the trailing action buttons are pushed to the right.
+    margin-right: auto;
     width: 22rem;
     max-width: 100%;
   }

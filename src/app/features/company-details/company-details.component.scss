@@ -83,6 +83,27 @@
     border-right: 1px solid var(--mat-sys-outline-variant);
   }
 
+  // The right column hosts the Job listings / Applicants tabs.
+  &__tabs {
+    min-width: 0;
+  }
+
+  // Count chip inside a tab label (e.g. "Applicants 6").
+  &__tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    margin-left: 0.5rem;
+    padding: 0.0625rem 0.4375rem;
+    border-radius: 999px;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
   @media (max-width: 720px) {
     &__layout {
       grid-template-columns: 1fr;
