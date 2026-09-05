@@ -44,11 +44,30 @@
           (edit)="onEdit($event)"
           (delete)="onDelete($event)"
         />
-        <app-company-jobs
-          [company]="company"
-          [canDelete]="canDelete()"
-          (viewJob)="onViewJob($event); jobDrawer.open()"
-        />
+        <mat-tab-group
+          class="company-details__tabs"
+          mat-stretch-tabs="false"
+          animationDuration="0ms"
+        >
+          <mat-tab>
+            <ng-template mat-tab-label>
+              Job listings
+              <span class="company-details__tab-count">{{ store.jobs().length }}</span>
+            </ng-template>
+            <app-company-jobs
+              [company]="company"
+              [canDelete]="canDelete()"
+              (viewJob)="onViewJob($event); jobDrawer.open()"
+            />
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              Applicants
+              <span class="company-details__tab-count">{{ store.applicants().length }}</span>
+            </ng-template>
+            <app-company-applicants [company]="company" />
+          </mat-tab>
+        </mat-tab-group>
       </div>
     }
   </mat-drawer-content>
