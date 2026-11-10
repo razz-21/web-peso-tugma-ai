@@ -3,61 +3,57 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
 
   &__header {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
   }
 
   &__title {
     margin: 0;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    font-weight: 700;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.15;
     color: var(--mat-sys-on-surface);
   }
 
   &__subtitle {
-    margin: 0.25rem 0 0;
+    margin: 0.375rem 0 0;
+    font-size: 1.0625rem;
     color: var(--mat-sys-on-surface-variant);
   }
 
-  &__add {
-    border-radius: 999px;
-  }
-
-  &__filters {
+  &__toolbar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    max-width: 32rem;
   }
 
   &__search {
-    flex: 1 1 320px;
+    flex: 0 1 32rem;
+    min-width: 0;
   }
 
   &__error {
     margin: 0;
     padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
+    border-radius: var(--mat-sys-corner-small);
     background: var(--mat-sys-error-container);
     color: var(--mat-sys-on-error-container);
   }
 
   &__card {
     border: 1px solid var(--mat-sys-outline-variant);
-    border-radius: 1rem;
+    border-radius: var(--mat-sys-corner-small);
     overflow: hidden;
-    background: var(--mat-sys-surface);
+    background: var(--mat-sys-surface-container-lowest);
   }
 
   &__paginator {
+    padding: 0.5rem 1rem;
     background: var(--mat-sys-surface-container-lowest);
-    border-top: 1px solid var(--mat-sys-outline-variant);
   }
 }

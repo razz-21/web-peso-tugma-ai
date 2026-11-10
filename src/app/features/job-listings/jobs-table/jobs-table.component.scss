@@ -1,46 +1,83 @@
 // Generic table chrome lives in the global `.app-table` styles (src/styles/_table.scss).
-// Only job-row content styling is component-specific.
+// The jobs table layers a roomier, flat-header look on top of it.
 .jobs-table {
-  &__title-text {
-    font-weight: 600;
+  th.mat-mdc-header-cell {
+    height: 3.25rem;
+    background: var(--mat-sys-surface-container-lowest);
     color: var(--mat-sys-on-surface);
+    font-size: 0.875rem;
   }
 
-  &__company {
+  td.mat-mdc-cell {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    color: var(--mat-sys-on-surface);
+    font-size: 0.875rem;
+  }
+
+  th.mat-mdc-header-cell,
+  td.mat-mdc-cell {
+    &:first-child {
+      padding-left: 1.25rem;
+    }
+
+    &:last-child {
+      padding-right: 1.25rem;
+    }
+  }
+
+  // --- Job (avatar + title + company) ---
+  &__job {
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
 
-  &__company-name {
+  &__job-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 700;
     color: var(--mat-sys-on-surface);
   }
 
-  &__vacancies {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
-    background: var(--mat-sys-surface-container-high);
-    color: var(--mat-sys-on-surface);
-    font-weight: 600;
-    line-height: 1.5;
+  &__company {
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // --- Numeric columns ---
+  &__num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__muted {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Keep the status column clear of the right-aligned salary figures.
+  &__status-col {
+    padding-left: 2.5rem;
   }
 
   &__status {
     display: inline-flex;
     align-items: center;
-    padding: 0.125rem 0.625rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.75rem;
+    border-radius: var(--mat-sys-corner-extra-small);
+    font-size: 0.8125rem;
     font-weight: 600;
-    line-height: 1.5;
+    line-height: 1.3;
 
     &--active {
-      background: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
 
     &--closed {
@@ -49,7 +86,47 @@
     }
   }
 
+  &__status-dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  // --- Posted ---
+  &__posted {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    .jobs-table__muted {
+      font-size: 0.8125rem;
+    }
+  }
+
+  // --- Actions ---
+  &__actions-col {
+    width: 1%;
+    text-align: right;
+  }
+
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   &__delete {
     color: var(--mat-sys-error);
+
+    mat-icon {
+      color: inherit;
+    }
   }
 }

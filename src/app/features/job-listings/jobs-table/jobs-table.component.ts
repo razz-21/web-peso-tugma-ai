@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { JOB_STATUS_LABELS, JobGet, JobStatus } from '../../../core/models/job.model';
 import { JobsStore } from '../../../stores/jobs/jobs.store';
@@ -29,6 +30,7 @@ const STATUS_CLASS: Record<JobStatus, string> = {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     AvatarComponent,
     EmptyStateComponent,
@@ -64,12 +66,11 @@ export class JobsTableComponent {
   );
 
   protected readonly displayedColumns = [
-    'title',
-    'company',
+    'job',
     'vacancies',
     'salary',
     'status',
-    'created_at',
+    'posted',
     'actions',
   ] as const;
 }

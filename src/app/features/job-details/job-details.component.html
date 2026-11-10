@@ -1,10 +1,22 @@
 <section class="job-details">
-  <header class="job-details__topbar">
+  <nav class="job-details__breadcrumb" aria-label="Breadcrumb">
     <button mat-icon-button type="button" aria-label="Back to job listings" (click)="onBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="job-details__topbar-title">Job details</h1>
-  </header>
+    <ol class="job-details__crumbs">
+      <li>
+        <a class="job-details__crumb-link" [routerLink]="routes.jobListings">Job listings</a>
+      </li>
+      <li class="job-details__crumb-sep" aria-hidden="true">
+        <mat-icon>chevron_right</mat-icon>
+      </li>
+      <li>
+        <span class="job-details__crumb-current" aria-current="page">{{
+          job()?.title ?? 'Job details'
+        }}</span>
+      </li>
+    </ol>
+  </nav>
 
   @if (store.loading() && !job()) {
     <div class="job-details__status" role="status">
@@ -12,273 +24,293 @@
       <p>Loading job...</p>
     </div>
   } @else if (job(); as job) {
-    <div class="job-details__card job-details__header">
+    <header class="job-details__header">
       <app-avatar
         class="job-details__header-avatar"
         [name]="job.company?.company_name ?? job.title"
         [seed]="job.company?.id ?? job.id"
         [image]="job.company?.avatar ?? null"
-        [size]="64"
+        [size]="76"
       />
+
       <div class="job-details__header-body">
         <div class="job-details__header-title">
-          <h2 class="job-details__title">{{ job.title }}</h2>
+          <h1 class="job-details__title">{{ job.title }}</h1>
           <span
             class="job-details__badge"
             [class.job-details__badge--active]="job.status === 'active'"
             [class.job-details__badge--closed]="job.status === 'closed'"
           >
-            <mat-icon aria-hidden="true">{{ job.status === 'active' ? 'bolt' : 'lock' }}</mat-icon>
+            <span class="job-details__badge-dot" aria-hidden="true"></span>
             {{ statusLabels[job.status] }}
           </span>
         </div>
 
         @if (job.company; as company) {
-          <p class="job-details__subtitle">
-            <span class="job-details__company-name">{{ company.company_name }}</span>
-            <span class="job-details__dot" aria-hidden="true">·</span>
-            <span>{{ companyTypeLabels[company.company_type] }}</span>
-          </p>
+          <ul class="job-details__tags" aria-label="Company">
+            <li class="job-details__tag job-details__tag--strong">
+              <mat-icon aria-hidden="true">apartment</mat-icon>
+              {{ company.company_name }}
+            </li>
+            <li class="job-details__tag">
+              <mat-icon aria-hidden="true">corporate_fare</mat-icon>
+              {{ companyTypeLabels[company.company_type] }}
+            </li>
+          </ul>
         }
-
-        <div class="job-details__actions">
-          <button mat-flat-button type="button" (click)="onEdit(job)">
-            <mat-icon>edit</mat-icon>
-            Edit job
-          </button>
-          @if (canDelete()) {
-            <button
-              matButton="tonal"
-              type="button"
-              class="job-details__delete"
-              (click)="onDelete(job)"
-            >
-              <mat-icon>delete</mat-icon>
-              Delete
-            </button>
-          }
-          <button
-            matButton="tonal"
-            type="button"
-            class="job-details__toggle"
-            [disabled]="store.updating()"
-            (click)="onToggleStatus(job)"
-          >
-            <mat-icon>{{ job.status === 'active' ? 'lock' : 'bolt' }}</mat-icon>
-            {{ job.status === 'active' ? 'Close job' : 'Activate job' }}
-          </button>
-        </div>
       </div>
-    </div>
 
-    <div class="job-details__stats">
-      <div class="job-details__card job-details__stat">
-        <span class="job-details__stat-label">
+      <div class="job-details__actions">
+        <button
+          matButton="outlined"
+          type="button"
+          [disabled]="store.updating()"
+          (click)="onToggleStatus(job)"
+        >
+          <mat-icon>{{ job.status === 'active' ? 'lock' : 'bolt' }}</mat-icon>
+          {{ job.status === 'active' ? 'Close job' : 'Activate job' }}
+        </button>
+        <button matButton="filled" type="button" (click)="onEdit(job)">
+          <mat-icon>edit</mat-icon>
+          Edit job
+        </button>
+        @if (canDelete()) {
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="More actions"
+            [matMenuTriggerFor]="moreMenu"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #moreMenu="matMenu" xPosition="before">
+            <button mat-menu-item type="button" class="job-details__delete" (click)="onDelete(job)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete job</span>
+            </button>
+          </mat-menu>
+        }
+      </div>
+    </header>
+
+    <dl class="job-details__card job-details__stats">
+      <div class="job-details__stat">
+        <dt class="job-details__stat-label">
           <mat-icon aria-hidden="true">payments</mat-icon>
           Salary / month
-        </span>
-        @if (job.salary_per_month != null) {
-          <span class="job-details__stat-value">₱{{ job.salary_per_month | number }}</span>
-        } @else {
-          <span class="job-details__stat-value job-details__na">Not Indicated</span>
-        }
+        </dt>
+        <dd class="job-details__stat-value">
+          @if (job.salary_per_month != null) {
+            ₱{{ job.salary_per_month | number }}
+          } @else {
+            <span class="job-details__na">Not indicated</span>
+          }
+        </dd>
       </div>
 
-      <div class="job-details__card job-details__stat job-details__stat--editable">
-        <span class="job-details__stat-label">
+      <div class="job-details__stat">
+        <dt class="job-details__stat-label">
           <mat-icon aria-hidden="true">groups</mat-icon>
           Vacancies
-        </span>
-        <span class="job-details__stat-value">{{ job.no_of_vacancies }} open</span>
-        <button
-          mat-icon-button
-          type="button"
-          class="job-details__stat-edit"
-          aria-label="Edit vacancies"
-          [disabled]="store.updating()"
-          (click)="onEditVacancies(job)"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
+        </dt>
+        <dd class="job-details__stat-value">
+          {{ job.no_of_vacancies }}
+          <span class="job-details__stat-unit">open</span>
+          <button
+            mat-icon-button
+            type="button"
+            class="job-details__stat-edit"
+            aria-label="Edit vacancies"
+            [disabled]="store.updating()"
+            (click)="onEditVacancies(job)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </dd>
       </div>
 
-      <div class="job-details__card job-details__stat">
-        <span class="job-details__stat-label">
+      <div class="job-details__stat">
+        <dt class="job-details__stat-label">
           <mat-icon aria-hidden="true">calendar_today</mat-icon>
-          Created at
-        </span>
-        <span class="job-details__stat-value">{{ job.created_at | date: 'MMM d, y h:mma' }}</span>
+          Posted
+        </dt>
+        <dd class="job-details__stat-value">
+          <time [attr.datetime]="job.created_at">
+            {{ job.created_at | date: 'MMM d, y' }}
+            <span class="job-details__stat-unit">{{ job.created_at | date: 'h:mm a' }}</span>
+          </time>
+        </dd>
       </div>
-
-      <div class="job-details__card job-details__stat">
-        <span class="job-details__stat-label">
-          <mat-icon aria-hidden="true">toggle_on</mat-icon>
-          Status
-        </span>
-        <span class="job-details__stat-value">{{ statusLabels[job.status] }}</span>
-      </div>
-    </div>
+    </dl>
 
     <div class="job-details__layout">
       <div class="job-details__main">
-        <div class="job-details__card job-details__section">
-          <h3 class="job-details__section-title">About the role</h3>
+        <section class="job-details__card" aria-labelledby="job-about-title">
+          <h2 id="job-about-title" class="job-details__card-title">About the role</h2>
           @if (job.description) {
             <p class="job-details__body">{{ job.description }}</p>
           } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
+            <p class="job-details__body">
+              No description yet.
+              <button type="button" class="job-details__inline-link" (click)="onEdit(job)">
+                Add one
+              </button>
+            </p>
           }
-        </div>
+        </section>
 
-        <div class="job-details__card job-details__section">
-          <h3 class="job-details__section-title">
-            <mat-icon aria-hidden="true">school</mat-icon>
-            Minimum education
-          </h3>
-          @if (job.minimum_education_attainment.length) {
-            <ul class="job-details__skills" aria-label="Minimum education attainment">
-              @for (education of job.minimum_education_attainment; track education) {
-                <li class="job-details__skill">{{ education }}</li>
-              }
-            </ul>
-          } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
-          }
-        </div>
+        <section class="job-details__card" aria-labelledby="job-requirements-title">
+          <h2 id="job-requirements-title" class="job-details__card-title">Requirements</h2>
+          <dl class="job-details__reqs">
+            <div class="job-details__req">
+              <dt class="job-details__req-label">
+                <mat-icon aria-hidden="true">school</mat-icon>
+                Minimum education
+              </dt>
+              <dd class="job-details__req-value">
+                @if (job.minimum_education_attainment.length) {
+                  {{ educationLabel() }}
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
 
-        <div class="job-details__card job-details__section">
-          <h3 class="job-details__section-title">
-            <mat-icon aria-hidden="true">menu_book</mat-icon>
-            Course / Program
-          </h3>
-          @if (job.course_program) {
-            <p class="job-details__body">{{ job.course_program }}</p>
-          } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
-          }
-        </div>
+            <div class="job-details__req">
+              <dt class="job-details__req-label">
+                <mat-icon aria-hidden="true">menu_book</mat-icon>
+                Course / program
+              </dt>
+              <dd class="job-details__req-value">
+                @if (job.course_program) {
+                  {{ job.course_program }}
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
 
-        <div class="job-details__card job-details__section">
-          <h3 class="job-details__section-title">
-            <mat-icon aria-hidden="true">work_history</mat-icon>
-            Experience required
-          </h3>
-          @if (job.experience_required) {
-            <p class="job-details__body">{{ job.experience_required }}</p>
-          } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
-          }
-          @if (job.experience_preferred) {
-            <p class="job-details__subgroup-title">Preferred</p>
-            <p class="job-details__body">{{ job.experience_preferred }}</p>
-          }
-        </div>
+            <div class="job-details__req">
+              <dt class="job-details__req-label">
+                <mat-icon aria-hidden="true">work_history</mat-icon>
+                Experience
+              </dt>
+              <dd class="job-details__req-value">
+                @if (job.experience_required) {
+                  <span class="job-details__body">{{ job.experience_required }}</span>
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+                @if (job.experience_preferred) {
+                  <span class="job-details__req-note">
+                    Preferred: {{ job.experience_preferred }}
+                  </span>
+                }
+              </dd>
+            </div>
 
-        <div class="job-details__card job-details__section">
-          <h3 class="job-details__section-title">
-            <mat-icon aria-hidden="true">verified</mat-icon>
-            Eligibility
-          </h3>
-          @if (job.eligibility) {
-            <p class="job-details__body">{{ job.eligibility }}</p>
-          } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
-          }
-        </div>
+            <div class="job-details__req">
+              <dt class="job-details__req-label">
+                <mat-icon aria-hidden="true">verified</mat-icon>
+                Eligibility
+              </dt>
+              <dd class="job-details__req-value">
+                @if (job.eligibility) {
+                  {{ job.eligibility }}
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        </section>
       </div>
 
       <aside class="job-details__sidebar">
+        <section class="job-details__card job-details__side" aria-labelledby="job-skills-title">
+          <h2 id="job-skills-title" class="job-details__card-title">Skills</h2>
+          <p class="job-details__label">Required</p>
+          @if (job.skills_required.length) {
+            <ul class="job-details__chips" aria-label="Required skills">
+              @for (skill of job.skills_required; track skill) {
+                <li class="job-details__chip job-details__chip--filled">{{ skill }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="job-details__na">Not indicated</p>
+          }
+          @if (job.preferred_skills.length) {
+            <p class="job-details__label job-details__label--spaced">Preferred</p>
+            <ul class="job-details__chips" aria-label="Preferred skills">
+              @for (skill of job.preferred_skills; track skill) {
+                <li class="job-details__chip job-details__chip--dashed">{{ skill }}</li>
+              }
+            </ul>
+          }
+        </section>
+
+        <section class="job-details__card job-details__side" aria-labelledby="job-prefs-title">
+          <h2 id="job-prefs-title" class="job-details__card-title">Candidate preferences</h2>
+          <dl class="job-details__prefs">
+            <div class="job-details__pref">
+              <dt class="job-details__label">Age range</dt>
+              <dd class="job-details__pref-value">
+                @if (job.age_range) {
+                  {{ job.age_range }}
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
+            <div class="job-details__pref">
+              <dt class="job-details__label">Sex</dt>
+              <dd class="job-details__pref-value">
+                @if (job.sex) {
+                  {{ sexLabel() }}
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
+            <div class="job-details__pref job-details__pref--stacked">
+              <dt class="job-details__label">Civil status</dt>
+              <dd class="job-details__pref-value">
+                @if (job.civil_status.length) {
+                  <ul class="job-details__chips" aria-label="Civil status">
+                    @for (civilStatus of job.civil_status; track civilStatus) {
+                      <li class="job-details__chip">{{ civilStatus }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <span class="job-details__na">Not indicated</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        </section>
+
         @if (job.company; as company) {
-          <div class="job-details__card job-details__side">
-            <h3 class="job-details__side-title">Company</h3>
-            <div class="job-details__company">
+          <section class="job-details__card job-details__side" aria-labelledby="job-company-title">
+            <h2 id="job-company-title" class="job-details__card-title">Company</h2>
+            <a class="job-details__company" [routerLink]="companyLink()">
               <app-avatar
                 [name]="company.company_name"
                 [seed]="company.id"
                 [image]="company.avatar ?? null"
-                [size]="44"
+                [size]="52"
               />
-              <div class="job-details__company-text">
+              <span class="job-details__company-text">
                 <span class="job-details__company-name">{{ company.company_name }}</span>
                 <span class="job-details__company-type">{{
                   companyTypeLabels[company.company_type]
                 }}</span>
-              </div>
-            </div>
-            <button
-              matButton="tonal"
-              type="button"
-              class="job-details__view-company"
-              (click)="onViewCompany(company.id)"
-            >
-              <mat-icon>apartment</mat-icon>
-              View company
-            </button>
-          </div>
+              </span>
+              <mat-icon class="job-details__company-chevron" aria-hidden="true">
+                chevron_right
+              </mat-icon>
+            </a>
+          </section>
         }
-
-        <div class="job-details__card job-details__side">
-          <h3 class="job-details__side-title">
-            <mat-icon aria-hidden="true">handyman</mat-icon>
-            Skills required
-          </h3>
-          @if (job.skills_required.length) {
-            <ul class="job-details__skills" aria-label="Required skills">
-              @for (skill of job.skills_required; track skill) {
-                <li class="job-details__skill">{{ skill }}</li>
-              }
-            </ul>
-          } @else {
-            <p class="job-details__body job-details__na">Not Indicated</p>
-          }
-          @if (job.preferred_skills.length) {
-            <p class="job-details__subgroup-title">Preferred</p>
-            <ul class="job-details__skills" aria-label="Preferred skills">
-              @for (skill of job.preferred_skills; track skill) {
-                <li class="job-details__skill job-details__skill--preferred">{{ skill }}</li>
-              }
-            </ul>
-          }
-        </div>
-
-        <div class="job-details__card job-details__side">
-          <h3 class="job-details__side-title">
-            <mat-icon aria-hidden="true">badge</mat-icon>
-            Candidate preferences
-          </h3>
-          <dl class="job-details__meta">
-            <div class="job-details__meta-row">
-              <dt class="job-details__meta-label">Age range</dt>
-              @if (job.age_range) {
-                <dd class="job-details__meta-value">{{ job.age_range }}</dd>
-              } @else {
-                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
-              }
-            </div>
-            <div class="job-details__meta-row">
-              <dt class="job-details__meta-label">Sex</dt>
-              @if (job.sex) {
-                <dd class="job-details__meta-value">{{ job.sex }}</dd>
-              } @else {
-                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
-              }
-            </div>
-            <div class="job-details__meta-row">
-              <dt class="job-details__meta-label">Civil status</dt>
-              @if (job.civil_status.length) {
-                <dd class="job-details__meta-value">
-                  <ul class="job-details__skills" aria-label="Civil status">
-                    @for (civilStatus of job.civil_status; track civilStatus) {
-                      <li class="job-details__skill">{{ civilStatus }}</li>
-                    }
-                  </ul>
-                </dd>
-              } @else {
-                <dd class="job-details__meta-value job-details__na">Not Indicated</dd>
-              }
-            </div>
-          </dl>
-        </div>
       </aside>
     </div>
   }
