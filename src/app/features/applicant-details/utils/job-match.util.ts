@@ -9,9 +9,9 @@ import { JobMatch } from '../types/job-match.type';
 /** Highest MatchScore, i.e. the sum of every dimension's full weight. */
 export const MAX_MATCH_SCORE = 100;
 
-const RING_GREEN = '#4d6a24';
-const RING_TEAL = '#3f7d88';
-const RING_AMBER = '#9a7b1e';
+const RING_GREEN = 'var(--app-success)';
+const RING_TEAL = 'var(--app-info)';
+const RING_AMBER = 'var(--app-warning)';
 
 /** Ring / score-band color for a 0–100 score. */
 export const scoreColor = (score: number): string =>

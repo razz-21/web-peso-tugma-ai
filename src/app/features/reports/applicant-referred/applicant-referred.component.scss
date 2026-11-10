@@ -38,8 +38,8 @@
     width: 3.25rem;
     height: 3.25rem;
     border-radius: 0.875rem;
-    background: #e4e7de;
-    color: #5b6152;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
 
     mat-icon {
       width: 1.75rem;

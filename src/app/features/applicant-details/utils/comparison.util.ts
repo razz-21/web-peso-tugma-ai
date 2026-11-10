@@ -1,9 +1,9 @@
 import { RequirementStatus } from '../types/comparison.type';
 
-const MET_COLOR = '#4d6a24';
-const PARTIAL_COLOR = '#9a7b1e';
-const UNMET_COLOR = '#b3261e';
-const UNKNOWN_COLOR = '#7c857a';
+const MET_COLOR = 'var(--app-success)';
+const PARTIAL_COLOR = 'var(--app-warning)';
+const UNMET_COLOR = 'var(--mat-sys-error)';
+const UNKNOWN_COLOR = 'var(--mat-sys-outline)';
 
 /** Status from a 0–100 coverage score, for non-skills requirements. */
 export const statusFromScore = (score: number): RequirementStatus =>

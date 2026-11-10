@@ -169,13 +169,13 @@
     }
 
     &--positive {
-      background: color-mix(in srgb, #4d6a24 16%, var(--mat-sys-surface));
-      color: #33481a;
+      background: color-mix(in srgb, var(--app-success) 16%, var(--mat-sys-surface));
+      color: var(--app-on-success-container);
     }
 
     &--caution {
-      background: color-mix(in srgb, #e0a91b 30%, var(--mat-sys-surface));
-      color: #6b4e07;
+      background: color-mix(in srgb, var(--app-warning) 30%, var(--mat-sys-surface));
+      color: var(--app-on-warning-container);
     }
 
     &--critical {

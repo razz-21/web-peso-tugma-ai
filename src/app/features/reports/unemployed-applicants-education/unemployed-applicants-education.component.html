@@ -95,7 +95,7 @@
       @if (report.by_education_level.length) {
         <app-monthly-bar-chart
           [points]="educationPoints()"
-          barColor="#2f5d54"
+          barColor="var(--app-info)"
           ariaLabelPrefix="Unemployed by education level"
           valueLabel="Applicants"
           [axisStep]="100"

@@ -3,9 +3,10 @@ import { Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { MonthlyPlacement } from '../../../core/models/dashboard.model';
 import { useSystemChartFont } from '../chart-font';
+import { injectCssColorResolver, resolveCssColor } from '../../../core/utils/css-color.util';
 
-const BAR_LIGHT = '#c7e59c';
-const BAR_HIGHLIGHT = '#43681f';
+const BAR_LIGHT = 'var(--mat-sys-primary-container)';
+const BAR_HIGHLIGHT = 'var(--mat-sys-primary)';
 
 /** Draws each bar's value just above its top edge, matching the mock. */
 const valueLabelsPlugin: Plugin<'bar'> = {
@@ -16,7 +17,7 @@ const valueLabelsPlugin: Plugin<'bar'> = {
     const values = chart.data.datasets[0]?.data ?? [];
     ctx.save();
     ctx.font = `600 13px ${Chart.defaults.font.family}`;
-    ctx.fillStyle = '#1f2723';
+    ctx.fillStyle = resolveCssColor(chart.canvas, 'var(--mat-sys-on-surface)');
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     meta.data.forEach((bar, index) => {
@@ -56,6 +57,12 @@ const axisMax = (values: number[]): number => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlacementsChartComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   /** Twelve months (Jan–Dec) of hire counts from the dashboard API. */
   readonly months = input.required<MonthlyPlacement[]>();
 
@@ -79,7 +86,7 @@ export class PlacementsChartComponent {
         {
           data: values,
           backgroundColor: values.map((_, index) =>
-            index === peakIndex ? BAR_HIGHLIGHT : BAR_LIGHT,
+            this.c(index === peakIndex ? BAR_HIGHLIGHT : BAR_LIGHT),
           ),
           borderRadius: 6,
           borderSkipped: false,
@@ -103,14 +110,14 @@ export class PlacementsChartComponent {
       y: {
         beginAtZero: true,
         max: axisMax(this.values()),
-        ticks: { color: '#7c857a', font: { size: 13 } },
-        grid: { color: '#eef1ea' },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 13 } },
+        grid: { color: this.c('var(--mat-sys-surface-container-high)') },
         border: { display: false },
       },
       x: {
         grid: { display: false },
         border: { display: false },
-        ticks: { color: '#7c857a', font: { size: 14 } },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 14 } },
       },
     },
   }));

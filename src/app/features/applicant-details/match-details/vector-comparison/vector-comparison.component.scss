@@ -40,7 +40,7 @@
     padding: 1.25rem;
     border-radius: 0.85rem;
     border: 1px solid var(--mat-sys-outline-variant);
-    background: #fff;
+    background: var(--mat-sys-surface-container-lowest);
   }
 
   &__chart {
@@ -73,11 +73,11 @@
     border-radius: 999px;
 
     &--resume {
-      background: #4d6a24;
+      background: var(--app-success);
     }
 
     &--job {
-      background: #9a7b1e;
+      background: var(--app-warning);
     }
   }
 
@@ -98,13 +98,13 @@
 
     mat-icon {
       flex-shrink: 0;
-      color: #9a7b1e;
+      color: var(--app-warning);
     }
   }
 
   &__dim {
     font-weight: 700;
-    color: #9a7b1e;
+    color: var(--app-warning);
   }
 
   @media (max-width: 560px) {

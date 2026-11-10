@@ -189,9 +189,9 @@
   }
 
   &--active {
-    background: #d7f0c0;
-    border-color: #b7dd97;
-    color: #3f6b16;
+    background: var(--app-success-container);
+    border-color: color-mix(in srgb, var(--app-success) 35%, transparent);
+    color: var(--app-success);
     font-weight: 600;
   }
 
@@ -227,20 +227,20 @@
     }
 
     &--red {
-      background: #fbdada;
-      color: #b3261e;
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
     }
     &--green {
-      background: #d7f0c0;
-      color: #4d7c1f;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
     &--amber {
-      background: #ffe08a;
-      color: #b45309;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
     &--grey {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
   }
 
@@ -264,7 +264,7 @@
   }
 
   &__record {
-    color: #3f6b16;
+    color: var(--app-success);
     font-weight: 600;
   }
 
@@ -292,20 +292,20 @@
     font-weight: 600;
 
     &--red {
-      background: #fbdada;
-      color: #b3261e;
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
     }
     &--green {
-      background: #d7f0c0;
-      color: #3f6b16;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
     &--amber {
-      background: #ffdf9e;
-      color: #8a5a00;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
     &--grey {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
   }
 
@@ -318,7 +318,7 @@
     margin: 0.25rem 0 0;
     padding: 0.875rem 1.125rem;
     border-radius: 0.875rem;
-    background: #eef1e6;
+    background: var(--mat-sys-surface-container-high);
   }
 
   &__note {
@@ -340,7 +340,7 @@
     padding: 0.375rem 0;
 
     & + & {
-      border-top: 1px solid rgb(0 0 0 / 6%);
+      border-top: 1px solid var(--mat-sys-outline-variant);
     }
   }
 
@@ -357,7 +357,7 @@
   }
 
   &__diff-from {
-    color: #b04a3f;
+    color: var(--mat-sys-error);
     text-decoration: line-through;
   }
 
@@ -370,6 +370,6 @@
 
   &__diff-to {
     font-weight: 700;
-    color: #3f6b16;
+    color: var(--app-success);
   }
 }

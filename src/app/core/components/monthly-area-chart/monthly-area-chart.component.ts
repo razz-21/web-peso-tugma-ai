@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { useSystemChartFont } from '../../../features/dashboard/chart-font';
+import { injectCssColorResolver, withAlpha } from '../../utils/css-color.util';
 
 /** One point: a short label and its value. */
 export interface MonthlyAreaPoint {
@@ -9,8 +10,7 @@ export interface MonthlyAreaPoint {
   count: number;
 }
 
-const LINE_COLOR = '#43681f';
-const FILL_COLOR = 'rgba(67, 104, 31, 0.08)';
+const LINE_COLOR = 'var(--mat-sys-primary)';
 
 /** Round the y-axis max up to a clean multiple of `step` above the tallest point. */
 const axisMax = (values: number[], step: number): number => {
@@ -44,6 +44,12 @@ const axisMax = (values: number[], step: number): number => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MonthlyAreaChartComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   readonly points = input.required<MonthlyAreaPoint[]>();
   /** Prefix for the chart's screen-reader description, e.g. "Registrations per month". */
   readonly ariaLabelPrefix = input('Monthly totals');
@@ -64,14 +70,14 @@ export class MonthlyAreaChartComponent {
     datasets: [
       {
         data: this.values(),
-        borderColor: LINE_COLOR,
-        backgroundColor: FILL_COLOR,
+        borderColor: this.c(LINE_COLOR),
+        backgroundColor: withAlpha(this.c(LINE_COLOR), 0.08),
         fill: true,
         tension: 0.35,
         borderWidth: 2,
         pointRadius: 4,
-        pointBackgroundColor: LINE_COLOR,
-        pointBorderColor: LINE_COLOR,
+        pointBackgroundColor: this.c(LINE_COLOR),
+        pointBorderColor: this.c(LINE_COLOR),
       },
     ],
   }));
@@ -84,9 +90,9 @@ export class MonthlyAreaChartComponent {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: '#1f2723',
-        titleColor: '#ffffff',
-        bodyColor: '#e6ebe2',
+        backgroundColor: this.c('var(--mat-sys-inverse-surface)'),
+        titleColor: this.c('var(--mat-sys-inverse-on-surface)'),
+        bodyColor: this.c('var(--mat-sys-inverse-on-surface)'),
         padding: 10,
         cornerRadius: 8,
         displayColors: false,
@@ -101,14 +107,18 @@ export class MonthlyAreaChartComponent {
       y: {
         beginAtZero: true,
         max: axisMax(this.values(), this.axisStep()),
-        ticks: { stepSize: this.axisStep(), color: '#7c857a', font: { size: 13 } },
-        grid: { color: '#eef1ea' },
+        ticks: {
+          stepSize: this.axisStep(),
+          color: this.c('var(--mat-sys-on-surface-variant)'),
+          font: { size: 13 },
+        },
+        grid: { color: this.c('var(--mat-sys-surface-container-high)') },
         border: { display: false },
       },
       x: {
         grid: { display: false },
         border: { display: false },
-        ticks: { color: '#7c857a', font: { size: 14 } },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 14 } },
       },
     },
   }));

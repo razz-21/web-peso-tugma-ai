@@ -49,28 +49,28 @@
     line-height: 1.5;
 
     &--hired {
-      background: #d7f0c0;
-      color: #3f6212;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
     &--interview {
-      background: #bfe6e6;
-      color: #14746f;
+      background: var(--app-info-container);
+      color: var(--app-on-info-container);
     }
     &--new {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
     &--referred {
-      background: #ffdf9e;
-      color: #8a5a06;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
     &--withdrawn {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
     &--not_hired {
-      background: #f5d9d9;
-      color: #9b3131;
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
     }
   }
 }

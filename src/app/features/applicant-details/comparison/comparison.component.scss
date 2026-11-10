@@ -67,7 +67,7 @@
     background: color-mix(in srgb, var(--mat-sys-primary) 7%, var(--mat-sys-surface));
 
     &--applicant {
-      background: color-mix(in srgb, #3f7d88 8%, var(--mat-sys-surface));
+      background: color-mix(in srgb, var(--app-info) 8%, var(--mat-sys-surface));
     }
   }
 
@@ -224,13 +224,13 @@
     }
 
     &--met {
-      background: color-mix(in srgb, #4d6a24 20%, var(--mat-sys-surface));
-      color: #33481a;
+      background: color-mix(in srgb, var(--app-success) 20%, var(--mat-sys-surface));
+      color: var(--app-on-success-container);
     }
 
     &--partial {
-      background: color-mix(in srgb, #e0a91b 32%, var(--mat-sys-surface));
-      color: #6b4e07;
+      background: color-mix(in srgb, var(--app-warning) 32%, var(--mat-sys-surface));
+      color: var(--app-on-warning-container);
     }
 
     &--unmet {
@@ -427,14 +427,14 @@
     }
 
     &--matched {
-      background: color-mix(in srgb, #4d6a24 20%, var(--mat-sys-surface));
-      color: #33481a;
+      background: color-mix(in srgb, var(--app-success) 20%, var(--mat-sys-surface));
+      color: var(--app-on-success-container);
     }
 
     &--related {
-      background: color-mix(in srgb, #9a7b1e 20%, var(--mat-sys-surface));
+      background: color-mix(in srgb, var(--app-warning) 20%, var(--mat-sys-surface));
       // Darkened amber for AA contrast against the tinted background.
-      color: #5f4a0f;
+      color: var(--app-on-warning-container);
       // Stack the skill name over its "via" note, so a long related-skill
       // explanation reads on its own line instead of wrapping beside the name.
       align-items: flex-start;
@@ -461,8 +461,8 @@
     }
 
     &--matched-soft {
-      background: color-mix(in srgb, #4d6a24 16%, var(--mat-sys-surface));
-      color: #33481a;
+      background: color-mix(in srgb, var(--app-success) 16%, var(--mat-sys-surface));
+      color: var(--app-on-success-container);
     }
 
     &--extra {

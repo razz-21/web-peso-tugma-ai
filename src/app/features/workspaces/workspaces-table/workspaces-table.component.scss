@@ -26,8 +26,8 @@
     line-height: 1.2;
 
     &--active {
-      background: #cdeede;
-      color: #1f5c45;
+      background: var(--app-info-container);
+      color: var(--app-on-info-container);
     }
 
     &--inactive {

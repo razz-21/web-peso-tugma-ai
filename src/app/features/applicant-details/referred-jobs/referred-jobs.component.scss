@@ -234,13 +234,13 @@
   }
 
   &__status--interview {
-    background: color-mix(in srgb, #3f7d88 22%, var(--mat-sys-surface));
-    color: #1f4a52;
+    background: color-mix(in srgb, var(--app-info) 22%, var(--mat-sys-surface));
+    color: var(--app-on-info-container);
   }
 
   &__status--hired {
-    background: color-mix(in srgb, #4d6a24 24%, var(--mat-sys-surface));
-    color: #33471a;
+    background: color-mix(in srgb, var(--app-success) 24%, var(--mat-sys-surface));
+    color: var(--app-on-success-container);
   }
 
   &__status--withdrawn {
@@ -255,8 +255,8 @@
 
   &__status--resigned {
     // Neutral amber — a terminal state that was, unlike "not hired", a success.
-    background: color-mix(in srgb, #9a7b1e 22%, var(--mat-sys-surface));
-    color: #5f4a0f;
+    background: color-mix(in srgb, var(--app-warning) 22%, var(--mat-sys-surface));
+    color: var(--app-on-warning-container);
   }
 
   &__chevron {

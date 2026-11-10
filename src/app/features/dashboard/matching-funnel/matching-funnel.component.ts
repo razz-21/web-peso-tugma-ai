@@ -3,16 +3,17 @@ import { Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { FunnelStage } from '../../../core/models/dashboard.model';
 import { useSystemChartFont } from '../chart-font';
+import { injectCssColorResolver, resolveCssColor } from '../../../core/utils/css-color.util';
 
 /** Bar color per funnel stage; unknown keys fall back to a neutral grey. */
 const STAGE_COLORS: Record<string, string> = {
-  referred: '#3f5a1f',
-  interviewed: '#2c5a57',
-  hired: '#b0860f',
-  withdrawn: '#8a8f86',
-  not_hired: '#b45454',
+  referred: 'var(--mat-sys-primary)',
+  interviewed: 'var(--app-info)',
+  hired: 'var(--app-warning)',
+  withdrawn: 'var(--mat-sys-outline)',
+  not_hired: 'var(--mat-sys-error)',
 };
-const FALLBACK_COLOR = '#8a8f86';
+const FALLBACK_COLOR = 'var(--mat-sys-outline)';
 
 /** Renders `<count> (<pct>%)` immediately to the right of each bar's tip. */
 const funnelLabelsPlugin: Plugin<'bar'> = {
@@ -24,7 +25,7 @@ const funnelLabelsPlugin: Plugin<'bar'> = {
     const base = values[0] || 0;
     ctx.save();
     ctx.font = `600 13px ${Chart.defaults.font.family}`;
-    ctx.fillStyle = '#1f2723';
+    ctx.fillStyle = resolveCssColor(chart.canvas, 'var(--mat-sys-on-surface)');
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     meta.data.forEach((bar, index) => {
@@ -59,6 +60,12 @@ const funnelLabelsPlugin: Plugin<'bar'> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchingFunnelComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   /** Ordered funnel stages (Referred first) from the dashboard API. */
   readonly stages = input.required<FunnelStage[]>();
 
@@ -78,7 +85,7 @@ export class MatchingFunnelComponent {
       datasets: [
         {
           data: stages.map((stage) => stage.count),
-          backgroundColor: stages.map((stage) => STAGE_COLORS[stage.key] ?? FALLBACK_COLOR),
+          backgroundColor: stages.map((stage) => this.c(STAGE_COLORS[stage.key] ?? FALLBACK_COLOR)),
           borderRadius: 6,
           borderSkipped: false,
           maxBarThickness: 34,
@@ -108,7 +115,7 @@ export class MatchingFunnelComponent {
       y: {
         grid: { display: false },
         border: { display: false },
-        ticks: { color: '#3c4a3a', font: { size: 14 } },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 14 } },
       },
     },
   }));

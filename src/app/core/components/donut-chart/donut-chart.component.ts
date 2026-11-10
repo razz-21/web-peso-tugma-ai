@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { ArcElement, Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { useSystemChartFont } from '../../../features/dashboard/chart-font';
+import { injectCssColorResolver, resolveCssColor } from '../../utils/css-color.util';
 
 /** One ring segment: a label, its value, and the arc colour. */
 export interface DonutSegment {
@@ -10,9 +11,9 @@ export interface DonutSegment {
   color: string;
 }
 
-const CENTER_VALUE_COLOR = '#1f2723';
-const CENTER_CAPTION_COLOR = '#7c857a';
-const SEGMENT_LABEL_COLOR = '#ffffff';
+const CENTER_VALUE_COLOR = 'var(--mat-sys-on-surface)';
+const CENTER_CAPTION_COLOR = 'var(--mat-sys-on-surface-variant)';
+const SEGMENT_LABEL_COLOR = 'var(--mat-sys-surface-container-lowest)';
 
 /**
  * A reusable doughnut chart with text stacked in the ring's hole and optional
@@ -43,6 +44,12 @@ const SEGMENT_LABEL_COLOR = '#ffffff';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonutChartComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   readonly segments = input.required<DonutSegment[]>();
   /** Large text shown in the ring's hole, e.g. "1,284" or "36.5%". */
   readonly centerValue = input('');
@@ -66,7 +73,7 @@ export class DonutChartComponent {
     datasets: [
       {
         data: this.segments().map((segment) => segment.value),
-        backgroundColor: this.segments().map((segment) => segment.color),
+        backgroundColor: this.segments().map((segment) => this.c(segment.color)),
         borderWidth: 0,
         spacing: 2,
       },
@@ -108,11 +115,11 @@ export class DonutChartComponent {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = CENTER_VALUE_COLOR;
+    ctx.fillStyle = resolveCssColor(chart.canvas, CENTER_VALUE_COLOR);
     ctx.font = `700 26px ${Chart.defaults.font.family}`;
     ctx.fillText(value, cx, caption ? cy - 6 : cy);
     if (caption) {
-      ctx.fillStyle = CENTER_CAPTION_COLOR;
+      ctx.fillStyle = resolveCssColor(chart.canvas, CENTER_CAPTION_COLOR);
       ctx.font = `500 13px ${Chart.defaults.font.family}`;
       ctx.fillText(caption, cx, cy + 16);
     }
@@ -129,7 +136,7 @@ export class DonutChartComponent {
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = SEGMENT_LABEL_COLOR;
+    ctx.fillStyle = resolveCssColor(chart.canvas, SEGMENT_LABEL_COLOR);
     ctx.font = `700 13px ${Chart.defaults.font.family}`;
     meta.data.forEach((element, index) => {
       const value = this.segments()[index]?.value ?? 0;

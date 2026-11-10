@@ -80,8 +80,8 @@
 
     // Referred — amber (awaiting action).
     &--referred {
-      background: #ffe6bd;
-      color: #6b4a14;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
 
     // Not hired — red (negative terminal outcome).

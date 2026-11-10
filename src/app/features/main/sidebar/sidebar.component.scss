@@ -20,7 +20,9 @@
   height: 100%;
   padding: 1.5rem 1rem;
   box-sizing: border-box;
-  background: var(--mat-sys-surface);
+  // M3 navigation surface: one tone off the white page so the two read as
+  // separate regions in both themes.
+  background: var(--mat-sys-surface-container-low);
 }
 
 .sidebar__brand {
@@ -44,6 +46,11 @@
     width: 1.75rem;
     height: 1.75rem;
   }
+}
+
+.sidebar__theme-toggle {
+  margin-left: auto;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .sidebar__brand-text {
@@ -72,7 +79,7 @@
   gap: 0.875rem;
   padding: 0.75rem;
   border-radius: 1.25rem;
-  background: var(--mat-sys-surface-container);
+  background: var(--app-raised-surface);
 }
 
 .sidebar__workspace-badge {
@@ -124,7 +131,7 @@
   padding: 0.875rem 1rem;
   border: none;
   border-radius: 1.25rem;
-  background: var(--mat-sys-surface-container);
+  background: var(--app-raised-surface);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -133,7 +140,12 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--mat-sys-surface-container-high);
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, var(--app-raised-surface));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
   }
 }
 

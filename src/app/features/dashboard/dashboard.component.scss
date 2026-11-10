@@ -129,7 +129,7 @@
   &__footer-value {
     font-size: clamp(1.5rem, 2.5vw, 1.875rem);
     font-weight: 700;
-    color: #43681f;
+    color: var(--app-success);
   }
 }
 
@@ -177,20 +177,20 @@
     }
 
     &--green {
-      background: #d7f0c0;
-      color: #4d7c1f;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
     &--teal {
-      background: #c5e8e6;
-      color: #146c68;
+      background: var(--app-info-container);
+      color: var(--app-on-info-container);
     }
     &--grey {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
     &--amber {
-      background: #ffdf9e;
-      color: #b45309;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
   }
 
@@ -221,8 +221,8 @@
     color: var(--mat-sys-on-surface-variant);
 
     &--up {
-      background: #d7f0c0;
-      color: #3f6212;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
   }
 

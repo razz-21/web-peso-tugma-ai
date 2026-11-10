@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { injectDispatch } from '@ngrx/signals/events';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { ThemeToggleComponent } from '../../../core/components/theme-toggle/theme-toggle.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ROLE_LABELS } from '../../../core/models/user.model';
 import { APP_ROUTES } from '../../../core/constants/routes.constant';
@@ -28,6 +29,7 @@ type NavItem = {
     MatIconModule,
     MatMenuModule,
     AvatarComponent,
+    ThemeToggleComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
