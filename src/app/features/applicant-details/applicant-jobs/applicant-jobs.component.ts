@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { DatePipe, PercentPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -19,6 +19,7 @@ import { ReferralStatusChange } from '../types/referred-jobs.type';
   selector: 'app-applicant-jobs',
   imports: [
     DatePipe,
+    DecimalPipe,
     PercentPipe,
     MatButtonModule,
     MatIconModule,
@@ -90,21 +91,21 @@ export class ApplicantJobsComponent {
         hint:
           metrics.totalRelevant > 0
             ? `${metrics.relevantInK} of ${metrics.totalRelevant} relevant found`
-            : 'no relevant items yet',
+            : 'No relevant items yet',
         tooltip: `Of all the jobs that are a good fit for the applicant, this is how many the system managed to show in the top ${k}. A higher score means it misses fewer good jobs.`,
       },
       {
         key: 'f1',
         label: 'F1@K',
         value: metrics.f1,
-        hint: 'balance of precision & recall',
+        hint: 'Balance of precision and recall',
         tooltip: `A single overall score that combines the two above. It only goes high when the list is both accurate (few bad jobs) and complete (few missed good jobs).`,
       },
       {
         key: 'ndcg',
         label: 'nDCG@K',
         value: metrics.ndcg,
-        hint: 'rank-weighted quality',
+        hint: 'Rank-weighted quality',
         tooltip: `This checks the order of the list, not just what's in it. It's higher when the best-fitting jobs are placed near the top where people look first.`,
       },
     ];

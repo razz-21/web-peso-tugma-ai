@@ -41,7 +41,7 @@ const STATUS_INDEX: Record<RecommendedJobStatus, number> = {
 const STEP_LABELS: readonly string[] = ['Referred', 'Interview', 'Hired'];
 
 /** Build the three-node status timeline for a referral. */
-export const buildSteps = (status: RecommendedJobStatus, referredShort: string): StepNode[] => {
+export const buildSteps = (status: RecommendedJobStatus, referredOn: string): StepNode[] => {
   // "Not hired" / "Withdrawn" / "Resigned" are terminal: the first two steps are
   // completed and the final step is replaced with the terminal node.
   let base: { label: string; state: StepState }[];
@@ -77,8 +77,9 @@ export const buildSteps = (status: RecommendedJobStatus, referredShort: string):
         line = 'green';
       }
     }
-    // Only the referral date is known; later milestones show a placeholder.
-    const sub = index === 0 ? referredShort : '—';
+    // Only the referral date is known: later milestones read "Not yet" until
+    // reached, and "—" once reached (their date isn't recorded).
+    const sub = index === 0 ? referredOn : step.state === 'pending' ? 'Not yet' : '—';
     return { ...step, sub, line };
   });
 };

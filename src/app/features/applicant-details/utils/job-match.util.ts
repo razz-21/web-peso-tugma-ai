@@ -9,13 +9,13 @@ import { JobMatch } from '../types/job-match.type';
 /** Highest MatchScore, i.e. the sum of every dimension's full weight. */
 export const MAX_MATCH_SCORE = 100;
 
-const RING_GREEN = 'var(--app-success)';
-const RING_TEAL = 'var(--app-info)';
+const RING_GREEN = 'var(--mat-sys-primary)';
 const RING_AMBER = 'var(--app-warning)';
+const RING_RED = 'var(--mat-sys-error)';
 
-/** Ring / score-band color for a 0–100 score. */
+/** Ring / score-band color for a 0–100 score: strong ≥70, fair 50–69, weak <50. */
 export const scoreColor = (score: number): string =>
-  score >= 85 ? RING_GREEN : score >= 70 ? RING_TEAL : RING_AMBER;
+  score >= 70 ? RING_GREEN : score >= 50 ? RING_AMBER : RING_RED;
 
 /**
  * Scoring dimensions in display order, mapped to labels, icons and the
@@ -35,8 +35,13 @@ export const SCORE_DIMENSIONS: readonly {
     label: 'Semantic',
     icon: 'auto_awesome',
   },
-  { key: 'skills', weightKey: 'skills_match', label: 'Skills', icon: 'edit' },
-  { key: 'experience', weightKey: 'experience_match', label: 'Experience', icon: 'work' },
+  { key: 'skills', weightKey: 'skills_match', label: 'Skills', icon: 'construction' },
+  {
+    key: 'experience',
+    weightKey: 'experience_match',
+    label: 'Experience',
+    icon: 'work_history',
+  },
   {
     key: 'educational_background',
     weightKey: 'educational_match',
@@ -127,7 +132,8 @@ export const toJobMatch = (
       .filter((dimension) => dimension.key === 'semantic_similarity' || dimension.value >= 50)
       .map((dimension) => ({
         icon: dimension.icon,
-        label: `${dimension.label} ${dimension.value}%`,
+        name: dimension.label,
+        value: dimension.value,
       })),
     breakdown,
     keyMatched: recommendation.key_matched,

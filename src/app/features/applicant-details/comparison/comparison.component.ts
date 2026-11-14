@@ -15,7 +15,15 @@ import {
   SkillTierItem,
 } from '../types/comparison.type';
 import { BOTH_SEXES, ageRangeLabel, parseAgeRange } from '../utils/age.util';
-import { STATUS_LABEL, statusColor, statusFromScore } from '../utils/comparison.util';
+import {
+  GATE_ICON,
+  GATE_LABEL,
+  GATE_TONE,
+  STATUS_ICON,
+  STATUS_LABEL,
+  statusColor,
+  statusFromScore,
+} from '../utils/comparison.util';
 import { capitalize, joinList, norm } from '../utils/text.util';
 
 @Component({
@@ -31,6 +39,11 @@ export class ComparisonComponent {
 
   protected readonly match = this.data.match;
   protected readonly applicant = this.data.applicant;
+
+  protected readonly statusIcon = STATUS_ICON;
+  protected readonly gateTone = GATE_TONE;
+  protected readonly gateIcon = GATE_ICON;
+  protected readonly gateLabel = GATE_LABEL;
 
   protected readonly applicantName = computed(() =>
     [
@@ -179,7 +192,7 @@ export class ComparisonComponent {
       key: 'skills',
       label: 'Skills',
       lower: 'skills',
-      icon: 'edit',
+      icon: 'construction',
       status: skillsStatus,
       badge: !skillsHasData
         ? STATUS_LABEL.unknown
@@ -226,7 +239,7 @@ export class ComparisonComponent {
       key: 'experience',
       label: 'Experience',
       lower: 'experience',
-      icon: 'work',
+      icon: 'work_history',
       status: experienceStatus,
       badge: STATUS_LABEL[experienceStatus],
       coverage: experienceScore,

@@ -1,10 +1,16 @@
+@use '@angular/material' as mat;
+
 .jobs {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: 1.25rem;
+  padding: 2rem 2.5rem;
   max-width: 1320px;
   margin: 0 auto;
+
+  @media (max-width: 600px) {
+    padding: 1.5rem 1rem;
+  }
 
   &__header {
     display: flex;
@@ -28,12 +34,22 @@
     color: var(--mat-sys-on-surface-variant);
   }
 
-  &__toolbar {
+  &__add {
+    height: 2.625rem;
+    padding-inline: 1.25rem;
+    border-radius: var(--mat-sys-corner-small);
+    font-weight: 700;
+  }
+
+  &__filters {
     display: flex;
   }
 
+  // Compact (44px) search field, per the design.
   &__search {
-    flex: 0 1 32rem;
+    @include mat.form-field-density(-3);
+
+    flex: 0 1 24rem;
     min-width: 0;
   }
 
@@ -53,7 +69,9 @@
   }
 
   &__paginator {
-    padding: 0.5rem 1rem;
-    background: var(--mat-sys-surface-container-lowest);
+    padding: 0.25rem 1rem;
+    // Light grey footer, matching the table header.
+    background: var(--mat-sys-surface-container-low);
+    border-top: 1px solid var(--mat-sys-outline-variant);
   }
 }

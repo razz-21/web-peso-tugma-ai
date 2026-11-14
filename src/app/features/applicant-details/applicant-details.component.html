@@ -13,97 +13,113 @@
   </mat-drawer>
 
   <mat-drawer-content class="applicant-details__content">
-    <header class="applicant-details__topbar">
-      <a
-        class="applicant-details__back"
-        [routerLink]="routes.applicants"
-        aria-label="Back to applicants"
-      >
-        <mat-icon>arrow_back</mat-icon>
-      </a>
-      <h1 class="applicant-details__title">Applicant details</h1>
-    </header>
+    <div class="applicant-details__body">
+      <nav class="applicant-details__breadcrumb" aria-label="Breadcrumb">
+        <a matIconButton [routerLink]="routes.applicants" aria-label="Back to applicants">
+          <mat-icon>arrow_back</mat-icon>
+        </a>
+        <ol class="applicant-details__crumbs">
+          <li>
+            <a class="applicant-details__crumb-link" [routerLink]="routes.applicants">Applicants</a>
+          </li>
+          <li class="applicant-details__crumb-sep" aria-hidden="true">
+            <mat-icon>chevron_right</mat-icon>
+          </li>
+          <li>
+            <span class="applicant-details__crumb-current" aria-current="page">{{
+              fullName() || 'Applicant details'
+            }}</span>
+          </li>
+        </ol>
+      </nav>
 
-    @if (store.loading() && !applicant()) {
-      <div class="applicant-details__status" role="status">
-        <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
-        <p>Loading applicant...</p>
-      </div>
-    } @else if (applicant(); as applicant) {
-      <div class="applicant-details__body">
-        <article class="applicant-details__card applicant-details__profile">
-          <div class="applicant-details__head">
-            <app-avatar
-              class="applicant-details__avatar"
-              [name]="fullName() || '?'"
-              [seed]="applicant.id"
-              [size]="72"
-            />
-            <div class="applicant-details__identity">
-              <div class="applicant-details__name-row">
-                <h2
-                  class="applicant-details__name"
-                  [matTooltip]="fullName() || 'Unnamed applicant'"
-                  matTooltipPosition="above"
-                >
-                  {{ fullName() || 'Unnamed applicant' }}
-                </h2>
-                <span
-                  class="applicant-details__badge"
-                  [class.applicant-details__badge--active]="
-                    (applicant.status || 'active') === 'active'
-                  "
-                  [class.applicant-details__badge--inactive]="applicant.status === 'inactive'"
-                >
-                  <span class="applicant-details__badge-dot" aria-hidden="true"></span>
-                  {{ statusLabels[applicant.status || 'active'] }}
-                </span>
-                <button
-                  mat-icon-button
-                  type="button"
-                  class="applicant-details__title-edit"
-                  aria-label="Edit salary expectation and employment status"
-                  (click)="onEditSection('employment', 'Salary & employment')"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-              </div>
-            </div>
+      @if (store.loading() && !applicant()) {
+        <div class="applicant-details__status" role="status">
+          <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+          <p>Loading applicant...</p>
+        </div>
+      } @else if (applicant(); as applicant) {
+        <header class="applicant-details__header">
+          <app-avatar
+            class="applicant-details__avatar"
+            [name]="fullName() || '?'"
+            [seed]="applicant.id"
+            [size]="80"
+          />
 
-            <div class="applicant-details__head-actions">
-              <button
-                mat-stroked-button
-                type="button"
-                class="applicant-details__status-btn"
-                [class.applicant-details__status-btn--inactive]="applicant.status === 'inactive'"
-                (click)="onToggleStatus(applicant)"
+          <div class="applicant-details__identity">
+            <h1
+              class="applicant-details__name"
+              [matTooltip]="fullName() || 'Unnamed applicant'"
+              matTooltipPosition="above"
+            >
+              {{ fullName() || 'Unnamed applicant' }}
+            </h1>
+            <ul class="applicant-details__tags" aria-label="Applicant summary">
+              <li
+                class="applicant-details__badge"
+                [class.applicant-details__badge--active]="
+                  (applicant.status || 'active') === 'active'
+                "
+                [class.applicant-details__badge--inactive]="applicant.status === 'inactive'"
               >
-                <mat-icon>{{ applicant.status === 'inactive' ? 'check_box' : 'lock' }}</mat-icon>
-                {{
-                  applicant.status === 'inactive' ? 'Activate applicant' : 'Deactivate applicant'
-                }}
-              </button>
+                <span class="applicant-details__badge-dot" aria-hidden="true"></span>
+                {{ statusLabels[applicant.status || 'active'] }}
+              </li>
+              <li class="applicant-details__tag">
+                <mat-icon aria-hidden="true">calendar_today</mat-icon>
+                Registered
+                <time [attr.datetime]="applicant.created_at">{{
+                  applicant.created_at | date: 'MMM d, y'
+                }}</time>
+              </li>
+            </ul>
+          </div>
 
+          <div class="applicant-details__head-actions">
+            <button
+              matButton="outlined"
+              type="button"
+              (click)="onEditSection('personal', 'Personal information')"
+            >
+              <mat-icon>edit</mat-icon>
+              Edit applicant
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              aria-label="More applicant actions"
+              [matMenuTriggerFor]="applicantMenu"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #applicantMenu="matMenu" xPosition="before">
+              <button mat-menu-item type="button" (click)="onToggleStatus(applicant)">
+                <mat-icon>{{ applicant.status === 'inactive' ? 'check_circle' : 'lock' }}</mat-icon>
+                <span>{{
+                  applicant.status === 'inactive' ? 'Activate applicant' : 'Deactivate applicant'
+                }}</span>
+              </button>
               @if (canDeleteApplicant()) {
                 <button
-                  mat-icon-button
+                  mat-menu-item
                   type="button"
-                  class="applicant-details__delete"
-                  aria-label="Delete applicant"
+                  class="applicant-details__menu-delete"
                   (click)="onDelete(applicant)"
                 >
                   <mat-icon>delete</mat-icon>
+                  <span>Delete applicant</span>
                 </button>
               }
-            </div>
+            </mat-menu>
           </div>
+        </header>
 
-          <hr class="applicant-details__divider" />
-
+        <div class="applicant-details__stats-card">
           <dl class="applicant-details__stats">
             <div class="applicant-details__stat">
               <dt><mat-icon aria-hidden="true">payments</mat-icon> Salary expectation</dt>
-              <dd class="applicant-details__stat-strong">{{ salaryLabel() }}</dd>
+              <dd>{{ salaryLabel() }}</dd>
             </div>
             <div class="applicant-details__stat">
               <dt><mat-icon aria-hidden="true">work</mat-icon> Employment status</dt>
@@ -113,24 +129,24 @@
               <dt><mat-icon aria-hidden="true">school</mat-icon> Education</dt>
               <dd>{{ education() }}</dd>
             </div>
-            <div class="applicant-details__stat">
-              <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Registered</dt>
-              <dd>{{ applicant.created_at | date: 'MMM d, y' }}</dd>
-            </div>
           </dl>
-        </article>
+          <button
+            mat-icon-button
+            type="button"
+            class="applicant-details__stats-edit"
+            aria-label="Edit salary expectation and employment status"
+            (click)="onEditSection('employment', 'Salary & employment')"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
 
         <mat-tab-group
           class="applicant-details__tabs"
           mat-stretch-tabs="false"
           animationDuration="0ms"
         >
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <mat-icon aria-hidden="true">work</mat-icon>
-              Jobs
-            </ng-template>
-
+          <mat-tab label="Jobs">
             <app-applicant-jobs
               [disabled]="applicant.status === 'inactive'"
               [loading]="loadingRecommendations()"
@@ -150,31 +166,21 @@
             />
           </mat-tab>
 
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <mat-icon aria-hidden="true">badge</mat-icon>
-              Information
-            </ng-template>
-
+          <mat-tab label="Information">
             <app-applicant-info
               [applicant]="applicant"
               (editSection)="onEditSection($event.section, $event.label)"
             />
           </mat-tab>
 
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <mat-icon aria-hidden="true">folder</mat-icon>
-              Files
-            </ng-template>
-
+          <mat-tab label="Files">
             <app-applicant-files
               [foreignId]="applicant.id"
               [disabled]="applicant.status === 'inactive'"
             />
           </mat-tab>
         </mat-tab-group>
-      </div>
-    }
+      }
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>

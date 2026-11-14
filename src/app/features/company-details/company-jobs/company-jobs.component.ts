@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
@@ -34,10 +35,6 @@ import {
   toJobReviewRows,
 } from '../../job-listings/import-jobs/import-job-review.model';
 import { EmptyStateComponent } from '../../../core/components/empty-state/empty-state.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-} from '../../../core/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-company-jobs',
@@ -48,6 +45,7 @@ import {
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatMenuModule,
     MatTableModule,
     MatProgressSpinnerModule,
     EmptyStateComponent,
@@ -69,6 +67,9 @@ export class CompanyJobsComponent {
 
   /** Emitted when a job row is activated, to open the job details drawer. */
   readonly viewJob = output<JobGet>();
+  /** Edit / delete are handled by the page, which shares them with the drawer. */
+  readonly editJob = output<JobGet>();
+  readonly deleteJob = output<JobGet>();
 
   // The job list and its actions live in CompanyDetailsStore (loaded, kept in
   // sync, and deletes handled there).
@@ -98,11 +99,10 @@ export class CompanyJobsComponent {
   protected readonly noMatchTitle = computed(() => `No jobs match "${this.search().trim()}"`);
 
   protected readonly displayedColumns = [
-    'title',
+    'job',
     'vacancies',
-    'education',
     'salary',
-    'created_at',
+    'posted',
     'actions',
   ] as const;
 
@@ -183,10 +183,6 @@ export class CompanyJobsComponent {
       });
   }
 
-  protected onEdit(job: JobGet): void {
-    this.openForm({ job, lockedCompany: this.company() });
-  }
-
   private openForm(data: JobFormData): void {
     this.dialog.open<JobFormComponent, JobFormData, JobGet>(JobFormComponent, {
       width: '100vw',
@@ -198,34 +194,5 @@ export class CompanyJobsComponent {
       restoreFocus: true,
       data,
     });
-  }
-
-  protected onDelete(job: JobGet): void {
-    // Defense in depth: the button is hidden for officers and the backend
-    // enforces the role, but guard here too in case the handler is reached.
-    if (!this.canDelete()) {
-      return;
-    }
-    const data: ConfirmDialogData = {
-      title: 'Delete job',
-      message: `Are you sure you want to delete <strong>${job.title}</strong>? This action cannot be undone.`,
-      confirmLabel: 'Delete',
-      destructive: true,
-    };
-
-    this.dialog
-      .open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-        width: '420px',
-        maxWidth: '95vw',
-        restoreFocus: true,
-        data,
-      })
-      .afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.dispatch.deleteCompanyJob({ id: job.id });
-        }
-      });
   }
 }

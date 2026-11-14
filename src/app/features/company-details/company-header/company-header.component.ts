@@ -1,0 +1,55 @@
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { injectDispatch } from '@ngrx/signals/events';
+import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
+import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
+import { companiesEvents } from '../../../stores/companies/companies.events';
+import { CompaniesStore } from '../../../stores/companies/companies.store';
+
+@Component({
+  selector: 'app-company-header',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, AvatarComponent],
+  templateUrl: './company-header.component.html',
+  styleUrl: './company-header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CompanyHeaderComponent {
+  readonly company = input.required<CompanyGet>();
+  /** Number of job listings shown in the header tag. */
+  readonly jobCount = input(0);
+  /**
+   * Whether the current user may delete this company. Only admins / super admins
+   * qualify — officers never see the delete action. Mirrored by the backend,
+   * which rejects the delete for other roles with a 403.
+   */
+  readonly canDelete = input<boolean>(false);
+
+  readonly edit = output<CompanyGet>();
+  readonly delete = output<CompanyGet>();
+
+  private readonly dispatch = injectDispatch(companiesEvents);
+  private readonly snackBar = inject(MatSnackBar);
+
+  protected readonly typeLabel = computed(() => COMPANY_TYPE_LABELS[this.company().company_type]);
+  protected readonly jobCountLabel = computed(() => {
+    const count = this.jobCount();
+    return `${count} job ${count === 1 ? 'listing' : 'listings'}`;
+  });
+  /** True while an avatar upload is in flight (shared companies store). */
+  protected readonly uploading = inject(CompaniesStore).uploadAvatarLoading;
+
+  protected onAvatarSelected(file: File): void {
+    this.dispatch.uploadCompanyAvatar({ id: this.company().id, file });
+  }
+
+  protected onAvatarRemove(): void {
+    this.dispatch.removeCompanyAvatar({ id: this.company().id });
+  }
+
+  protected onAvatarInvalid(message: string): void {
+    this.snackBar.open(message, 'Close', { duration: 3000 });
+  }
+}

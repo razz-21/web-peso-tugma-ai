@@ -58,7 +58,7 @@ export class ApplicantsTableComponent {
     'occupation',
     'education',
     'status',
-    'updated_at',
+    'added',
     'actions',
   ] as const;
 }

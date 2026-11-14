@@ -19,7 +19,7 @@ export type StepState = 'done' | 'current' | 'pending' | 'failed' | 'withdrawn';
 export interface StepNode {
   readonly label: string;
   readonly state: StepState;
-  /** Small caption under the dot (referred date, or "—" when unknown). */
+  /** Caption under the dot: referred date, "Not yet" when pending, "—" when undated. */
   readonly sub: string;
   /** Color of the connector line to the next step. */
   readonly line?: 'green' | 'red';
@@ -35,13 +35,12 @@ export interface ReferralRow {
   readonly companyName: string;
   /** Officer who referred the applicant ("Referred by"); null when unknown. */
   readonly referredBy: string | null;
-  /** Header meta: company · salary · referred date. */
-  readonly headerSegments: readonly string[];
+  /** Monthly salary, e.g. "₱49,998 / mo"; null when the job doesn't specify one. */
+  readonly salaryLabel: string | null;
   readonly score: number;
   readonly statusLabel: string;
   /** Status pill tone class suffix (referred | interview | hired | ...). */
   readonly statusTone: string;
-  readonly referredOnLabel: string;
   readonly steps: readonly StepNode[];
   /** Terminal referrals (withdrawn / not hired / resigned) can't be updated. */
   readonly terminal: boolean;

@@ -32,7 +32,7 @@
           <app-skeleton variant="circle" width="2.75rem" height="2.75rem" />
           <app-skeleton variant="text" width="55%" height="2rem" />
           <app-skeleton variant="text" width="75%" />
-          <app-skeleton width="5rem" height="1.5rem" radius="999px" />
+          <app-skeleton width="5rem" height="1.5rem" radius="4px" />
         </article>
       }
     }
@@ -51,7 +51,7 @@
         </a>
       </header>
       @if (store.loading()) {
-        <app-skeleton height="20rem" radius="0.75rem" />
+        <app-skeleton height="20rem" radius="6px" />
       } @else if (store.placements(); as placements) {
         <app-placements-chart [months]="placements.months" />
       }
@@ -69,7 +69,7 @@
         </div>
       </header>
       @if (store.loading()) {
-        <app-skeleton height="18rem" radius="0.75rem" />
+        <app-skeleton height="18rem" radius="6px" />
       } @else if (store.funnel(); as funnel) {
         <app-matching-funnel [stages]="funnel.stages" />
       }
@@ -103,7 +103,7 @@
               <app-skeleton variant="text" width="45%" />
               <app-skeleton variant="text" width="70%" />
             </div>
-            <app-skeleton width="4.5rem" height="1.5rem" radius="999px" />
+            <app-skeleton width="4.5rem" height="1.5rem" radius="4px" />
           </div>
         }
       } @else if (store.activity(); as activity) {
@@ -125,7 +125,7 @@
               <app-skeleton variant="text" width="55%" />
               <app-skeleton variant="text" width="35%" />
             </div>
-            <app-skeleton width="2.5rem" height="1.75rem" radius="0.5rem" />
+            <app-skeleton width="2.5rem" height="1.75rem" radius="4px" />
           </div>
         }
       } @else if (store.activity(); as activity) {

@@ -1,66 +1,38 @@
-<div class="company-profile__head">
-  <app-avatar
-    class="company-profile__logo"
-    [name]="company().company_name"
-    [seed]="company().id"
-    [image]="company().avatar"
-    [size]="80"
-    [editable]="true"
-    [uploading]="uploading()"
-    (fileSelected)="onAvatarSelected($event)"
-    (removeRequested)="onAvatarRemove()"
-    (invalid)="onAvatarInvalid($event)"
-  />
-
-  <div class="company-profile__heading">
-    <h1 class="company-profile__name">{{ company().company_name }}</h1>
-    <span class="company-profile__type">{{ typeLabel() }}</span>
-  </div>
-</div>
-
-<div class="company-profile__actions">
-  <button
-    matButton="tonal"
-    type="button"
-    class="company-profile__edit"
-    (click)="edit.emit(company())"
-  >
-    <mat-icon>edit</mat-icon>
-    Edit
-  </button>
-  @if (canDelete()) {
-    <button
-      mat-icon-button
-      type="button"
-      [attr.aria-label]="'Delete ' + company().company_name"
-      (click)="delete.emit(company())"
-    >
-      <mat-icon>delete</mat-icon>
-    </button>
-  }
-</div>
-
-<div class="company-profile__section">
-  <h2 class="company-profile__section-title">About</h2>
+<section class="company-profile__section" aria-labelledby="company-about-title">
+  <h2 id="company-about-title" class="company-profile__title">About</h2>
   <p class="company-profile__about">{{ company().description || 'No description provided.' }}</p>
-</div>
+</section>
 
-<hr class="company-profile__divider" />
-
-<div class="company-profile__section">
-  <h2 class="company-profile__section-title">Details</h2>
-  <dl class="company-profile__list">
-    <div class="company-profile__list-row">
-      <dt>Address</dt>
+<section class="company-profile__section" aria-labelledby="company-contact-title">
+  <h2 id="company-contact-title" class="company-profile__title">Contact</h2>
+  <dl class="company-profile__contacts">
+    <div class="company-profile__contact">
+      <dt>
+        <mat-icon class="company-profile__contact-icon" aria-hidden="true">location_on</mat-icon>
+        Address
+      </dt>
       <dd>{{ company().address || '—' }}</dd>
     </div>
-    <div class="company-profile__list-row">
-      <dt>Phone</dt>
+    <div class="company-profile__contact">
+      <dt>
+        <mat-icon class="company-profile__contact-icon" aria-hidden="true">call</mat-icon>
+        Phone
+      </dt>
       <dd>{{ company().contact_number || '—' }}</dd>
     </div>
-    <div class="company-profile__list-row">
-      <dt>Email</dt>
-      <dd>{{ company().email || '—' }}</dd>
+    <div class="company-profile__contact">
+      <dt>
+        <mat-icon class="company-profile__contact-icon" aria-hidden="true">mail</mat-icon>
+        Email
+      </dt>
+      <dd>
+        @if (emailParts(); as parts) {
+          <!-- Prefer wrapping right after the "@" for long addresses. -->
+          {{ parts.local }}<wbr />{{ parts.domain }}
+        } @else {
+          —
+        }
+      </dd>
     </div>
   </dl>
-</div>
+</section>

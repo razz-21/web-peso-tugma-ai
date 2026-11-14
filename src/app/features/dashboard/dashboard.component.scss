@@ -60,7 +60,7 @@
   gap: 1.25rem;
   padding: 1.5rem;
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 1rem;
+  border-radius: var(--mat-sys-corner-small);
   // Lightest surface (white in the light theme) so the cards stand out from the
   // tinted dashboard background.
   background: var(--mat-sys-surface-container-lowest);
@@ -159,7 +159,7 @@
   gap: 0.75rem;
   padding: 1.5rem;
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 1rem;
+  border-radius: var(--mat-sys-corner-small);
   background: var(--mat-sys-surface);
 
   &__icon {
@@ -168,7 +168,7 @@
     justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: 0.875rem;
+    border-radius: var(--mat-sys-corner-small);
 
     mat-icon {
       width: 1.5rem;
@@ -214,7 +214,7 @@
     gap: 0.25rem;
     margin-top: 0.25rem;
     padding: 0.25rem 0.625rem;
-    border-radius: 999px;
+    border-radius: var(--mat-sys-corner-extra-small);
     font-size: 0.8125rem;
     font-weight: 600;
     background: var(--mat-sys-surface-container-highest);

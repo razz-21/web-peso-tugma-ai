@@ -1,6 +1,5 @@
 <div class="referred-jobs__head">
   <h2 class="referred-jobs__title">
-    <mat-icon aria-hidden="true">work</mat-icon>
     Referred jobs
     <span class="referred-jobs__count">{{ rows().length }}</span>
   </h2>
@@ -14,13 +13,13 @@
   <ul class="referred-jobs__list" aria-hidden="true">
     @for (row of skeletonRows; track row) {
       <li class="referred-jobs__item">
-        <div class="referred-jobs__summary referred-jobs__summary--skeleton">
+        <div class="referred-jobs__summary">
           <app-skeleton variant="circle" width="48px" height="48px" />
           <span class="referred-jobs__summary-body">
             <app-skeleton variant="text" width="45%" height="1.1rem" />
-            <app-skeleton variant="text" width="65%" />
+            <app-skeleton variant="text" width="30%" />
           </span>
-          <app-skeleton width="3rem" height="1.75rem" radius="999px" />
+          <app-skeleton width="6.5rem" height="2.25rem" radius="0.5rem" />
         </div>
       </li>
     }
@@ -32,25 +31,18 @@
     </span>
     <h3 class="referred-jobs__empty-title">No referred jobs yet</h3>
     <p class="referred-jobs__empty-text">
-      This applicant hasn't been referred to any job. Refer them to a matched opening to start
-      tracking the referral through interview and hiring.
+      Refer this applicant from a recommended match below, or use Manual referral to pick any open
+      job. Each referral is tracked here through interview and hiring.
     </p>
-    <button matButton="tonal" type="button" [disabled]="disabled()" (click)="newReferral.emit()">
-      <mat-icon>add</mat-icon>
-      Manual referral
-    </button>
   </div>
 } @else {
   <ul class="referred-jobs__list">
     @for (row of rows(); track row.id) {
       @let open = openId() === row.id;
-      <li class="referred-jobs__item" [class.referred-jobs__item--open]="open">
-        <button
-          type="button"
-          class="referred-jobs__summary"
-          [attr.aria-expanded]="open"
-          (click)="toggle(row.id)"
-        >
+      <li class="referred-jobs__item">
+        <!-- The whole summary toggles on click for mouse users; the chevron button
+             is the keyboard / screen-reader control. -->
+        <div class="referred-jobs__summary" (click)="toggle(row.id)">
           <app-avatar
             [name]="row.companyName"
             [seed]="row.match.company?.id ?? row.companyName"
@@ -59,32 +51,54 @@
           />
           <span class="referred-jobs__summary-body">
             <span class="referred-jobs__summary-title">
-              <span class="referred-jobs__job-title">{{ row.title }}</span>
+              <h3 class="referred-jobs__job-title">{{ row.title }}</h3>
               @if (row.isLatest) {
                 <span class="referred-jobs__latest">Latest</span>
               }
             </span>
-            <span class="referred-jobs__summary-meta">
-              @for (segment of row.headerSegments; track $index; let first = $first) {
-                @if (!first) {
-                  <span class="referred-jobs__dot" aria-hidden="true">·</span>
-                }
-                <span>{{ segment }}</span>
+            <span class="referred-jobs__company">{{ row.companyName }}</span>
+          </span>
+
+          <div
+            class="referred-jobs__summary-actions"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <button
+              type="button"
+              class="referred-jobs__status"
+              [class]="'referred-jobs__status--' + row.statusTone"
+              [matMenuTriggerFor]="statusMenu"
+              [matMenuTriggerData]="{ match: row.match }"
+              [disabled]="disabled() || row.terminal"
+              [attr.aria-label]="'Referral status: ' + row.statusLabel + '. Change status'"
+              [attr.title]="
+                disabled()
+                  ? 'Applicant is inactive'
+                  : row.terminal
+                    ? 'This referral is ' + row.statusLabel + ' and can no longer be updated'
+                    : null
+              "
+            >
+              <span class="referred-jobs__status-dot" aria-hidden="true"></span>
+              {{ row.statusLabel }}
+              @if (!disabled() && !row.terminal) {
+                <mat-icon aria-hidden="true">arrow_drop_down</mat-icon>
               }
-            </span>
-          </span>
-          <span class="referred-jobs__match">
-            <span class="referred-jobs__match-value">{{ row.score }}%</span>
-            <span class="referred-jobs__match-label">Match</span>
-          </span>
-          <span class="referred-jobs__status" [class]="'referred-jobs__status--' + row.statusTone">
-            <span class="referred-jobs__status-dot" aria-hidden="true"></span>
-            {{ row.statusLabel }}
-          </span>
-          <mat-icon class="referred-jobs__chevron" aria-hidden="true">
-            {{ open ? 'expand_less' : 'expand_more' }}
-          </mat-icon>
-        </button>
+            </button>
+
+            <button
+              mat-icon-button
+              type="button"
+              [attr.aria-expanded]="open"
+              [attr.aria-controls]="'referral-panel-' + row.id"
+              [attr.aria-label]="(open ? 'Collapse ' : 'Expand ') + row.title"
+              (click)="toggle(row.id)"
+            >
+              <mat-icon>{{ open ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </div>
+        </div>
 
         @if (open) {
           <div
@@ -92,85 +106,69 @@
             animate.enter="referred-jobs__panel-anim--enter"
             animate.leave="referred-jobs__panel-anim--leave"
           >
-            <div class="referred-jobs__panel">
-              <dl class="referred-jobs__facts">
-                <div class="referred-jobs__fact">
-                  <dt>Referred on</dt>
-                  <dd>{{ row.referredOnLabel }}</dd>
-                </div>
-                <div class="referred-jobs__fact">
-                  <dt>Referred by</dt>
-                  <dd>{{ row.referredBy ?? '—' }}</dd>
-                </div>
-                <div class="referred-jobs__fact">
-                  <dt>Match score</dt>
-                  <dd class="referred-jobs__score">{{ row.score }}%</dd>
-                </div>
-              </dl>
+            <div class="referred-jobs__panel" [id]="'referral-panel-' + row.id">
+              <div class="referred-jobs__detail">
+                <dl class="referred-jobs__facts">
+                  <div class="referred-jobs__fact">
+                    <dt>Salary</dt>
+                    <dd>{{ row.salaryLabel ?? 'Not indicated' }}</dd>
+                  </div>
+                  <div class="referred-jobs__fact">
+                    <dt>Match score</dt>
+                    <dd>{{ row.score }}%</dd>
+                  </div>
+                  <div class="referred-jobs__fact">
+                    <dt>Referred by</dt>
+                    <dd>{{ row.referredBy ?? '—' }}</dd>
+                  </div>
+                </dl>
 
-              <hr class="referred-jobs__divider" />
-
-              <ol class="referred-jobs__stepper">
-                @for (step of row.steps; track $index) {
-                  <li
-                    class="referred-jobs__step"
-                    [class.referred-jobs__step--done]="step.state === 'done'"
-                    [class.referred-jobs__step--current]="step.state === 'current'"
-                    [class.referred-jobs__step--failed]="step.state === 'failed'"
-                    [class.referred-jobs__step--withdrawn]="step.state === 'withdrawn'"
-                    [class.referred-jobs__step--line-green]="step.line === 'green'"
-                    [class.referred-jobs__step--line-red]="step.line === 'red'"
-                  >
-                    <span class="referred-jobs__step-dot">
-                      @if (step.state === 'done' || step.state === 'failed') {
-                        <mat-icon aria-hidden="true">check</mat-icon>
-                      } @else if (step.state === 'withdrawn') {
-                        <mat-icon aria-hidden="true">remove</mat-icon>
-                      } @else if (step.state === 'current') {
-                        <span class="referred-jobs__step-core"></span>
-                      }
-                    </span>
-                    <span class="referred-jobs__step-label">{{ step.label }}</span>
-                    <span class="referred-jobs__step-sub">{{ step.sub }}</span>
-                  </li>
-                }
-              </ol>
+                <ol class="referred-jobs__stepper" aria-label="Referral progress">
+                  @for (step of row.steps; track $index) {
+                    <li
+                      class="referred-jobs__step"
+                      [class.referred-jobs__step--reached]="
+                        step.state === 'done' || step.state === 'current'
+                      "
+                      [class.referred-jobs__step--failed]="step.state === 'failed'"
+                      [class.referred-jobs__step--withdrawn]="step.state === 'withdrawn'"
+                      [class.referred-jobs__step--line-green]="step.line === 'green'"
+                      [class.referred-jobs__step--line-red]="step.line === 'red'"
+                    >
+                      <span class="referred-jobs__step-dot" aria-hidden="true">
+                        @if (step.state === 'done' || step.state === 'current') {
+                          <mat-icon>check</mat-icon>
+                        } @else if (step.state === 'failed') {
+                          <mat-icon>close</mat-icon>
+                        } @else if (step.state === 'withdrawn') {
+                          <mat-icon>remove</mat-icon>
+                        }
+                      </span>
+                      <span class="referred-jobs__step-label">{{ step.label }}</span>
+                      <span class="referred-jobs__step-sub">{{ step.sub }}</span>
+                    </li>
+                  }
+                </ol>
+              </div>
 
               <div class="referred-jobs__actions">
-                <button
-                  matButton="tonal"
-                  type="button"
-                  [matMenuTriggerFor]="statusMenu"
-                  [matMenuTriggerData]="{ match: row.match }"
-                  [disabled]="disabled() || row.terminal"
-                  [attr.title]="
-                    disabled()
-                      ? 'Applicant is inactive'
-                      : row.terminal
-                        ? 'This referral is ' + row.statusLabel + ' and can no longer be updated'
-                        : null
-                  "
-                >
-                  <mat-icon>check_box</mat-icon>
-                  Update status
-                </button>
-                <button matButton="outlined" type="button" (click)="compare.emit(row.match)">
+                <button matButton type="button" (click)="compare.emit(row.match)">
                   <mat-icon>compare_arrows</mat-icon>
                   Compare
                 </button>
-                <button matButton="outlined" type="button" (click)="viewJob.emit(row.match)">
+                <button matButton type="button" (click)="viewJob.emit(row.match)">
                   <mat-icon>open_in_new</mat-icon>
                   View job
                 </button>
                 @if (canDelete()) {
                   <button
-                    matButton="outlined"
+                    mat-icon-button
                     type="button"
                     class="referred-jobs__delete"
+                    [attr.aria-label]="'Delete referral to ' + row.title"
                     (click)="deleteReferral.emit(row.match)"
                   >
                     <mat-icon>delete</mat-icon>
-                    Delete
                   </button>
                 }
               </div>
@@ -182,18 +180,16 @@
   </ul>
 }
 
-<mat-menu #statusMenu="matMenu" class="referred-jobs__menu">
+<mat-menu #statusMenu="matMenu" xPosition="before">
   <ng-template matMenuContent let-match="match">
     @for (option of optionsFor(match.status); track option.value) {
       <button
         mat-menu-item
         type="button"
-        [style.color]="option.danger ? 'var(--mat-sys-error)' : null"
+        [class.referred-jobs__menu-danger]="option.danger"
         (click)="onStatus(match, option.value)"
       >
-        <mat-icon [style.color]="option.danger ? 'var(--mat-sys-error)' : null">
-          {{ option.icon }}
-        </mat-icon>
+        <mat-icon>{{ option.icon }}</mat-icon>
         <span>{{ option.label }}</span>
       </button>
     }
