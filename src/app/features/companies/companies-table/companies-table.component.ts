@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { COMPANY_TYPE_LABELS, CompanyGet } from '../../../core/models/company.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
@@ -21,6 +22,7 @@ interface CompanyRow {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     AvatarComponent,
     EmptyStateComponent,
@@ -53,12 +55,5 @@ export class CompaniesTableComponent {
     })),
   );
 
-  protected readonly displayedColumns = [
-    'company_name',
-    'company_type',
-    'email',
-    'created_at',
-    'updated_at',
-    'actions',
-  ] as const;
+  protected readonly displayedColumns = ['company', 'type', 'email', 'added', 'actions'] as const;
 }

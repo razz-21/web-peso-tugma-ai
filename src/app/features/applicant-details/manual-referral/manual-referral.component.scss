@@ -4,16 +4,16 @@
 }
 
 // Score-band colors, mirrored from utils/job-match.util.ts.
-$green: #4d6a24;
-$amber: #9a7b1e;
-$error: #b3261e;
+$green: var(--app-success);
+$amber: var(--app-warning);
+$error: var(--mat-sys-error);
 
 .manual-referral {
   display: flex;
   flex-direction: column;
   height: 100%;
   color: var(--mat-sys-on-surface-variant);
-  background: #fff;
+  background: var(--mat-sys-surface-container-lowest);
 
   // --- Top bar -------------------------------------------------------------
 
@@ -79,7 +79,7 @@ $error: #b3261e;
     flex-shrink: 0;
     padding: 1.35rem 1.5rem;
     border-radius: 1.25rem;
-    background: #fff;
+    background: var(--mat-sys-surface-container-lowest);
   }
 
   &__kicker {
@@ -176,8 +176,8 @@ $error: #b3261e;
     border-radius: 999px;
     font-size: 0.8rem;
     font-weight: 700;
-    background: color-mix(in srgb, #{$green} 16%, #fff);
-    color: #33481a;
+    background: color-mix(in srgb, #{$green} 16%, var(--mat-sys-surface-container-lowest));
+    color: var(--app-success);
   }
 
   // --- Quick stats grid ----------------------------------------------------
@@ -257,8 +257,8 @@ $error: #b3261e;
     border-radius: 0.7rem;
     font-size: 1rem;
     font-weight: 700;
-    background: color-mix(in srgb, #e0a91b 42%, #fff);
-    color: #6b4e07;
+    background: color-mix(in srgb, var(--app-warning) 42%, var(--mat-sys-surface-container-lowest));
+    color: var(--app-on-warning-container);
   }
 
   &__timeline {
@@ -299,8 +299,8 @@ $error: #b3261e;
     border-radius: 0.7rem;
     font-size: 0.9rem;
     font-weight: 600;
-    background: color-mix(in srgb, #{$green} 14%, #fff);
-    color: #33481a;
+    background: color-mix(in srgb, #{$green} 14%, var(--mat-sys-surface-container-lowest));
+    color: var(--app-success);
 
     &--pin {
       background: var(--mat-sys-surface-container-high);
@@ -398,12 +398,12 @@ $error: #b3261e;
   &__job {
     border: 1px solid var(--mat-sys-outline-variant);
     border-radius: 1rem;
-    background: #fff;
+    background: var(--mat-sys-surface-container-lowest);
     overflow: hidden;
 
     &--open {
       border-color: color-mix(in srgb, #{$green} 45%, var(--mat-sys-outline-variant));
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 6%, transparent);
     }
   }
 
@@ -455,8 +455,8 @@ $error: #b3261e;
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 700;
-    background: color-mix(in srgb, #{$green} 16%, #fff);
-    color: #33481a;
+    background: color-mix(in srgb, #{$green} 16%, var(--mat-sys-surface-container-lowest));
+    color: var(--app-success);
 
     mat-icon {
       width: 1rem;
@@ -569,17 +569,21 @@ $error: #b3261e;
     }
 
     &--met {
-      background: color-mix(in srgb, #{$green} 20%, #fff);
-      color: #33481a;
+      background: color-mix(in srgb, #{$green} 20%, var(--mat-sys-surface-container-lowest));
+      color: var(--app-success);
     }
 
     &--partial {
-      background: color-mix(in srgb, #e0a91b 32%, #fff);
-      color: #6b4e07;
+      background: color-mix(
+        in srgb,
+        var(--app-warning) 32%,
+        var(--mat-sys-surface-container-lowest)
+      );
+      color: var(--app-on-warning-container);
     }
 
     &--unmet {
-      background: color-mix(in srgb, #{$error} 16%, #fff);
+      background: color-mix(in srgb, #{$error} 16%, var(--mat-sys-surface-container-lowest));
       color: $error;
     }
   }
@@ -642,12 +646,12 @@ $error: #b3261e;
     white-space: nowrap;
 
     &--pass {
-      background: color-mix(in srgb, #{$green} 20%, #fff);
-      color: #33481a;
+      background: color-mix(in srgb, #{$green} 20%, var(--mat-sys-surface-container-lowest));
+      color: var(--app-success);
     }
 
     &--fail {
-      background: color-mix(in srgb, #{$error} 16%, #fff);
+      background: color-mix(in srgb, #{$error} 16%, var(--mat-sys-surface-container-lowest));
       color: $error;
     }
 
@@ -685,12 +689,12 @@ $error: #b3261e;
     }
 
     &--matched {
-      background: color-mix(in srgb, #{$green} 20%, #fff);
-      color: #33481a;
+      background: color-mix(in srgb, #{$green} 20%, var(--mat-sys-surface-container-lowest));
+      color: var(--app-success);
     }
 
     &--missing {
-      background: #fff;
+      background: var(--mat-sys-surface-container-lowest);
       border: 1px dashed color-mix(in srgb, #{$error} 55%, transparent);
       color: $error;
     }
@@ -735,8 +739,8 @@ $error: #b3261e;
   }
 
   &__refer {
-    --mdc-filled-button-container-color: #{$green};
-    --mdc-filled-button-label-text-color: #fff;
+    --mat-button-filled-container-color: #{$green};
+    --mat-button-filled-label-text-color: var(--app-on-success);
   }
 
   &__refer-blocked {
@@ -747,14 +751,14 @@ $error: #b3261e;
     border-radius: 0.75rem;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #9a3b2f;
-    background: #fdecea;
+    color: var(--mat-sys-error);
+    background: var(--mat-sys-error-container);
 
     mat-icon {
       width: 1.1rem;
       height: 1.1rem;
       font-size: 1.1rem;
-      color: #c0392b;
+      color: var(--mat-sys-error);
     }
   }
 
@@ -764,7 +768,7 @@ $error: #b3261e;
     gap: 0.35rem;
     font-size: 0.95rem;
     font-weight: 700;
-    color: #33481a;
+    color: var(--app-success);
 
     mat-icon {
       width: 1.2rem;

@@ -1,99 +1,125 @@
 @let jobData = job();
 
-<div class="job-panel">
-  <div class="job-panel__header">
-    <h3 class="job-panel__title">{{ jobData.title }}</h3>
-    <span
-      class="job-panel__badge"
-      [class.job-panel__badge--active]="jobData.status === 'active'"
-      [class.job-panel__badge--closed]="jobData.status === 'closed'"
-    >
-      <mat-icon aria-hidden="true">{{ jobData.status === 'active' ? 'bolt' : 'lock' }}</mat-icon>
-      {{ statusLabels[jobData.status] }}
-    </span>
+<header class="job-panel__header">
+  <div class="job-panel__heading">
+    <h2 class="job-panel__title">{{ jobData.title }}</h2>
+    <div class="job-panel__tags">
+      <span
+        class="job-panel__badge"
+        [class.job-panel__badge--active]="jobData.status === 'active'"
+        [class.job-panel__badge--closed]="jobData.status === 'closed'"
+      >
+        <span class="job-panel__badge-dot" aria-hidden="true"></span>
+        {{ statusLabels[jobData.status] }}
+      </span>
+      <span class="job-panel__tag">
+        Posted
+        <time [attr.datetime]="jobData.created_at">{{
+          jobData.created_at | date: 'MMM d, y'
+        }}</time>
+      </span>
+    </div>
   </div>
 
-  <dl class="job-panel__facts">
-    <div class="job-panel__fact">
+  <div class="job-panel__header-actions">
+    <a matIconButton [routerLink]="jobLink()" aria-label="Open full job details">
+      <mat-icon>open_in_full</mat-icon>
+    </a>
+    <button mat-icon-button type="button" aria-label="Close job details" (click)="closed.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</header>
+
+<div class="job-panel__body">
+  <dl class="job-panel__stats">
+    <div class="job-panel__stat">
       <dt><mat-icon aria-hidden="true">payments</mat-icon> Salary / month</dt>
-      @if (jobData.salary_per_month != null) {
-        <dd class="job-panel__fact-value--salary">₱{{ jobData.salary_per_month | number }}</dd>
-      } @else {
-        <dd class="job-panel__na">Not Indicated</dd>
-      }
+      <dd class="job-panel__stat-value">
+        @if (jobData.salary_per_month != null) {
+          ₱{{ jobData.salary_per_month | number }}
+        } @else {
+          <span class="job-panel__na">Not indicated</span>
+        }
+      </dd>
     </div>
-    <div class="job-panel__fact">
+    <div class="job-panel__stat">
       <dt><mat-icon aria-hidden="true">groups</mat-icon> Vacancies</dt>
-      <dd>{{ jobData.no_of_vacancies }}</dd>
-    </div>
-    <div class="job-panel__fact">
-      <dt><mat-icon aria-hidden="true">calendar_today</mat-icon> Created at</dt>
-      <dd>{{ jobData.created_at | date: 'MMM d, y' }}</dd>
-    </div>
-    <div class="job-panel__fact">
-      <dt><mat-icon aria-hidden="true">update</mat-icon> Updated at</dt>
-      <dd>{{ jobData.updated_at | date: 'MMM d, y' }}</dd>
+      <dd class="job-panel__stat-value">
+        {{ jobData.no_of_vacancies }}
+        <span class="job-panel__stat-unit">open</span>
+      </dd>
     </div>
   </dl>
 
   <section class="job-panel__section">
-    <h4 class="job-panel__section-title">About the role</h4>
+    <h3 class="job-panel__section-title">About the role</h3>
     @if (jobData.description) {
-      <p class="job-panel__body">{{ jobData.description }}</p>
+      <p class="job-panel__text">{{ jobData.description }}</p>
     } @else {
-      <p class="job-panel__body job-panel__na">Not Indicated</p>
+      <p class="job-panel__text job-panel__na">Not indicated</p>
     }
   </section>
 
   <section class="job-panel__section">
-    <h4 class="job-panel__section-title">
-      <mat-icon aria-hidden="true">school</mat-icon>
-      Minimum education
-    </h4>
-    @if (jobData.minimum_education_attainment.length) {
-      <ul class="job-panel__chips" aria-label="Minimum education attainment">
-        @for (education of jobData.minimum_education_attainment; track education) {
-          <li class="job-panel__chip">{{ education }}</li>
-        }
-      </ul>
-    } @else {
-      <p class="job-panel__body job-panel__na">Not Indicated</p>
-    }
+    <h3 class="job-panel__section-title">Requirements</h3>
+    <dl class="job-panel__reqs">
+      <div class="job-panel__req">
+        <dt>
+          <mat-icon class="job-panel__req-icon" aria-hidden="true">school</mat-icon>
+          Minimum education
+        </dt>
+        <dd>
+          @if (educationLabel()) {
+            {{ educationLabel() }}
+          } @else {
+            <span class="job-panel__na">Not indicated</span>
+          }
+        </dd>
+      </div>
+      @if (jobData.course_program) {
+        <div class="job-panel__req">
+          <dt>
+            <mat-icon class="job-panel__req-icon" aria-hidden="true">menu_book</mat-icon>
+            Course / program
+          </dt>
+          <dd>{{ jobData.course_program }}</dd>
+        </div>
+      }
+      <div class="job-panel__req">
+        <dt>
+          <mat-icon class="job-panel__req-icon" aria-hidden="true">work_history</mat-icon>
+          Experience
+        </dt>
+        <dd>
+          @if (jobData.experience_required) {
+            {{ jobData.experience_required }}
+          } @else {
+            <span class="job-panel__na">Not indicated</span>
+          }
+          @if (jobData.experience_preferred) {
+            <span class="job-panel__req-note">Preferred: {{ jobData.experience_preferred }}</span>
+          }
+        </dd>
+      </div>
+      <div class="job-panel__req">
+        <dt>
+          <mat-icon class="job-panel__req-icon" aria-hidden="true">verified</mat-icon>
+          Eligibility
+        </dt>
+        <dd>
+          @if (jobData.eligibility) {
+            {{ jobData.eligibility }}
+          } @else {
+            <span class="job-panel__na">Not indicated</span>
+          }
+        </dd>
+      </div>
+    </dl>
   </section>
 
   <section class="job-panel__section">
-    <h4 class="job-panel__section-title">
-      <mat-icon aria-hidden="true">work_history</mat-icon>
-      Experience required
-    </h4>
-    @if (jobData.experience_required) {
-      <p class="job-panel__body">{{ jobData.experience_required }}</p>
-    } @else {
-      <p class="job-panel__body job-panel__na">Not Indicated</p>
-    }
-    @if (jobData.experience_preferred) {
-      <p class="job-panel__subgroup-title">Preferred</p>
-      <p class="job-panel__body">{{ jobData.experience_preferred }}</p>
-    }
-  </section>
-
-  <section class="job-panel__section">
-    <h4 class="job-panel__section-title">
-      <mat-icon aria-hidden="true">verified</mat-icon>
-      Eligibility
-    </h4>
-    @if (jobData.eligibility) {
-      <p class="job-panel__body">{{ jobData.eligibility }}</p>
-    } @else {
-      <p class="job-panel__body job-panel__na">Not Indicated</p>
-    }
-  </section>
-
-  <section class="job-panel__section">
-    <h4 class="job-panel__section-title">
-      <mat-icon aria-hidden="true">handyman</mat-icon>
-      Skills required
-    </h4>
+    <h3 class="job-panel__section-title">Skills required</h3>
     @if (jobData.skills_required.length) {
       <ul class="job-panel__chips" aria-label="Required skills">
         @for (skill of jobData.skills_required; track skill) {
@@ -101,10 +127,10 @@
         }
       </ul>
     } @else {
-      <p class="job-panel__body job-panel__na">Not Indicated</p>
+      <p class="job-panel__text job-panel__na">Not indicated</p>
     }
     @if (jobData.preferred_skills.length) {
-      <p class="job-panel__subgroup-title">Preferred</p>
+      <p class="job-panel__subtitle">Preferred</p>
       <ul class="job-panel__chips" aria-label="Preferred skills">
         @for (skill of jobData.preferred_skills; track skill) {
           <li class="job-panel__chip job-panel__chip--preferred">{{ skill }}</li>
@@ -114,41 +140,67 @@
   </section>
 
   <section class="job-panel__section">
-    <h4 class="job-panel__section-title">
-      <mat-icon aria-hidden="true">badge</mat-icon>
-      Candidate preferences
-    </h4>
-    <dl class="job-panel__meta">
-      <div class="job-panel__meta-row">
-        <dt class="job-panel__meta-label">Age range</dt>
+    <h3 class="job-panel__section-title">Candidate preferences</h3>
+    <dl class="job-panel__prefs">
+      <div class="job-panel__pref">
+        <dt>Age range</dt>
         @if (jobData.age_range) {
-          <dd class="job-panel__meta-value">{{ jobData.age_range }}</dd>
+          <dd class="job-panel__pref-value">{{ jobData.age_range }}</dd>
         } @else {
-          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+          <dd class="job-panel__na">Not indicated</dd>
         }
       </div>
-      <div class="job-panel__meta-row">
-        <dt class="job-panel__meta-label">Sex</dt>
-        @if (jobData.sex) {
-          <dd class="job-panel__meta-value">{{ jobData.sex }}</dd>
+      <div class="job-panel__pref">
+        <dt>Sex</dt>
+        @if (sexLabel()) {
+          <dd class="job-panel__pref-value">{{ sexLabel() }}</dd>
         } @else {
-          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+          <dd class="job-panel__na">Not indicated</dd>
         }
       </div>
-      <div class="job-panel__meta-row">
-        <dt class="job-panel__meta-label">Civil status</dt>
-        @if (jobData.civil_status.length) {
-          <dd class="job-panel__meta-value">
-            <ul class="job-panel__chips" aria-label="Civil status">
-              @for (civilStatus of jobData.civil_status; track civilStatus) {
-                <li class="job-panel__chip">{{ civilStatus }}</li>
-              }
-            </ul>
-          </dd>
+      <div class="job-panel__pref">
+        <dt>Civil status</dt>
+        @if (civilStatusLabel()) {
+          <dd class="job-panel__pref-value">{{ civilStatusLabel() }}</dd>
         } @else {
-          <dd class="job-panel__meta-value job-panel__na">Not Indicated</dd>
+          <dd class="job-panel__na">Not indicated</dd>
         }
       </div>
     </dl>
   </section>
 </div>
+
+<footer class="job-panel__footer">
+  @if (canDelete()) {
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="More job actions"
+      [matMenuTriggerFor]="moreMenu"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu" yPosition="above">
+      <button mat-menu-item type="button" class="job-panel__delete" (click)="delete.emit(jobData)">
+        <mat-icon>delete</mat-icon>
+        <span>Delete job</span>
+      </button>
+    </mat-menu>
+  }
+
+  <div class="job-panel__footer-actions">
+    <button
+      matButton="outlined"
+      type="button"
+      [disabled]="updating()"
+      (click)="toggleStatus.emit(jobData)"
+    >
+      <mat-icon>{{ jobData.status === 'active' ? 'lock' : 'bolt' }}</mat-icon>
+      {{ jobData.status === 'active' ? 'Close job' : 'Activate job' }}
+    </button>
+    <button mat-flat-button type="button" (click)="edit.emit(jobData)">
+      <mat-icon>edit</mat-icon>
+      Edit job
+    </button>
+  </div>
+</footer>

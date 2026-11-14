@@ -7,10 +7,11 @@ import {
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { injectDispatch } from '@ngrx/signals/events';
@@ -42,7 +43,9 @@ import {
     DecimalPipe,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
+    RouterLink,
     AvatarComponent,
   ],
   templateUrl: './job-details.component.html',
@@ -80,6 +83,14 @@ export class JobDetailsComponent implements OnInit {
     return company ? companyDetailsRoute(company.id) : null;
   });
 
+  /** Minimum education attainment as a single readable line. */
+  protected readonly educationLabel = computed(
+    () => this.job()?.minimum_education_attainment.join(', ') ?? '',
+  );
+
+  /** Spaced-out sex preference, e.g. `Female/Male` → `Female / Male`. */
+  protected readonly sexLabel = computed(() => this.job()?.sex?.replace('/', ' / ') ?? '');
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -89,10 +100,6 @@ export class JobDetailsComponent implements OnInit {
 
   protected onBack(): void {
     this.router.navigate([APP_ROUTES.jobListings]);
-  }
-
-  protected onViewCompany(companyId: string): void {
-    this.router.navigateByUrl(companyDetailsRoute(companyId));
   }
 
   protected onToggleStatus(job: JobGet): void {

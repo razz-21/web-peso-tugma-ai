@@ -54,12 +54,12 @@ interface VacancyRow {
 const EM_DASH = '—';
 
 // Ring colours, shared between each donut and its legend dots.
-const COLOR_EMPLOYED = '#c2992e';
-const COLOR_UNEMPLOYED = '#43681f';
-const COLOR_PLACED = '#5f8f2f';
-const COLOR_TRACK = '#e2e6db';
-const COLOR_MALE = '#2f6d6a';
-const COLOR_FEMALE = '#c2992e';
+const COLOR_EMPLOYED = 'var(--app-warning)';
+const COLOR_UNEMPLOYED = 'var(--mat-sys-primary)';
+const COLOR_PLACED = 'var(--app-success)';
+const COLOR_TRACK = 'var(--mat-sys-surface-container-highest)';
+const COLOR_MALE = 'var(--app-info)';
+const COLOR_FEMALE = 'var(--app-warning)';
 
 const formatNumber = (value: number): string => value.toLocaleString('en-US');
 

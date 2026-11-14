@@ -80,7 +80,7 @@
 
   // ---- Custom range slider ----
   &__slider {
-    --track: #c9cdbf;
+    --track: var(--mat-sys-outline-variant);
     flex: 1;
     min-width: 0;
     height: 1.15rem;
@@ -108,7 +108,7 @@
       border-radius: 50%;
       background: var(--factor);
       border: 2px solid var(--mat-sys-surface-container-lowest);
-      box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
     }
 
     &::-moz-range-track {
@@ -129,7 +129,7 @@
       border-radius: 50%;
       background: var(--factor);
       border: 2px solid var(--mat-sys-surface-container-lowest);
-      box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
     }
 
     &:focus-visible {
@@ -273,8 +273,8 @@
     margin: 1.25rem 0 0;
     padding: 0.9rem 1.1rem;
     border-radius: 0.85rem;
-    background: #d7eae7;
-    color: #123f3a;
+    background: var(--app-info-container);
+    color: var(--app-on-info-container);
     font-size: 0.95rem;
 
     mat-icon {

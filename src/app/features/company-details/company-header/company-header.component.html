@@ -1,0 +1,54 @@
+<app-avatar
+  class="company-header__avatar"
+  [name]="company().company_name"
+  [seed]="company().id"
+  [image]="company().avatar"
+  [size]="72"
+  [editable]="true"
+  [uploading]="uploading()"
+  (fileSelected)="onAvatarSelected($event)"
+  (removeRequested)="onAvatarRemove()"
+  (invalid)="onAvatarInvalid($event)"
+/>
+
+<div class="company-header__body">
+  <h1 class="company-header__name">{{ company().company_name }}</h1>
+  <ul class="company-header__tags" aria-label="Company summary">
+    <li class="company-header__tag">
+      <mat-icon aria-hidden="true">corporate_fare</mat-icon>
+      {{ typeLabel() }}
+    </li>
+    <li class="company-header__tag">
+      <mat-icon aria-hidden="true">work</mat-icon>
+      {{ jobCountLabel() }}
+    </li>
+  </ul>
+</div>
+
+<div class="company-header__actions">
+  <button matButton="outlined" type="button" (click)="edit.emit(company())">
+    <mat-icon>edit</mat-icon>
+    Edit company
+  </button>
+  @if (canDelete()) {
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="More company actions"
+      [matMenuTriggerFor]="moreMenu"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu" xPosition="before">
+      <button
+        mat-menu-item
+        type="button"
+        class="company-header__delete"
+        (click)="delete.emit(company())"
+      >
+        <mat-icon>delete</mat-icon>
+        <span>Delete company</span>
+      </button>
+    </mat-menu>
+  }
+</div>

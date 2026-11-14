@@ -24,8 +24,10 @@
   flex-direction: column;
   gap: 2.5rem;
   padding: clamp(2rem, 4vw, 3.5rem);
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
+  --auth-panel-bg: var(--mat-sys-primary);
+  --auth-panel-fg: var(--mat-sys-on-primary);
+  background: var(--auth-panel-bg);
+  color: var(--auth-panel-fg);
 
   @media (max-width: 900px) {
     gap: 2rem;
@@ -47,7 +49,7 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 1rem;
-  background: color-mix(in srgb, var(--mat-sys-on-primary) 16%, transparent);
+  background: color-mix(in srgb, var(--auth-panel-fg) 16%, transparent);
 
   img {
     width: 2.5rem;
@@ -74,7 +76,7 @@
   margin: 0;
   font-size: 1.125rem;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--mat-sys-on-primary) 88%, transparent);
+  color: color-mix(in srgb, var(--auth-panel-fg) 88%, transparent);
 }
 
 // ---------------------------------------------------------------------------
@@ -90,7 +92,7 @@
 .auth__circle {
   position: absolute;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--mat-sys-on-primary) 9%, transparent);
+  background: color-mix(in srgb, var(--auth-panel-fg) 9%, transparent);
 }
 
 .auth__circle--lg {
@@ -177,7 +179,7 @@
   top: 4.5rem;
   left: 3.25rem;
   width: 7.5rem;
-  border-top: 2px dashed color-mix(in srgb, var(--mat-sys-on-primary) 45%, transparent);
+  border-top: 2px dashed color-mix(in srgb, var(--auth-panel-fg) 45%, transparent);
   transform: rotate(36deg);
   transform-origin: left center;
 }
@@ -208,16 +210,33 @@
   z-index: 1;
   margin: 0;
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--mat-sys-on-primary) 80%, transparent);
+  color: color-mix(in srgb, var(--auth-panel-fg) 80%, transparent);
 }
 
 // ---------------------------------------------------------------------------
 // Content (right) — hosts the routed form
 // ---------------------------------------------------------------------------
 .auth__content {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: clamp(2rem, 5vw, 4rem);
   background: var(--mat-sys-surface-container-lowest);
+}
+
+.auth__theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// In dark mode a full-strength primary panel glows; the tonal container keeps the
+// brand colour but sits comfortably next to the dark surface.
+:host-context(.dark) .auth__welcome,
+:host-context(.dark-mc) .auth__welcome,
+:host-context(.dark-hc) .auth__welcome {
+  --auth-panel-bg: var(--mat-sys-primary-container);
+  --auth-panel-fg: var(--mat-sys-on-primary-container);
 }

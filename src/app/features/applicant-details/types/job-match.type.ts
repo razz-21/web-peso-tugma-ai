@@ -4,9 +4,13 @@ import {
   SkillMatch,
 } from '../../../core/models/recommended-job.model';
 
+/** A well-scoring dimension shown as a chip, e.g. "Skills 100%". */
 export interface JobMatchTag {
   readonly icon: string;
-  readonly label: string;
+  /** Dimension name, e.g. "Skills". */
+  readonly name: string;
+  /** Dimension score, 0–100%. */
+  readonly value: number;
 }
 
 /** One scoring dimension shown in the match-details breakdown. */

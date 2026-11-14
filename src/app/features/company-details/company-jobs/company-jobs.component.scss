@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -10,62 +12,44 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem 1.5rem;
+    padding: 1.125rem;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
-  &__heading {
+  // Compact (44px) search field, matching the companies list.
+  &__search {
+    @include mat.form-field-density(-3);
+
+    flex: 0 1 21rem;
+    min-width: 0;
+    // Sits at the left; the trailing action buttons are pushed to the right.
+    margin-right: auto;
+  }
+
+  &__actions {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  &__table tr.mat-mdc-row {
+    height: 3.5rem;
   }
 
   &__title {
-    margin: 0;
-    font-size: 1.125rem;
+    display: block;
     font-weight: 700;
     color: var(--mat-sys-on-surface);
   }
 
-  &__count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 999px;
-    background: var(--mat-sys-secondary-container);
-    color: var(--mat-sys-on-secondary-container);
-    font-size: 0.8125rem;
-    font-weight: 600;
-  }
-
-  &__search {
-    margin-left: auto;
-    width: 22rem;
-    max-width: 100%;
-  }
-
-  &__role {
+  &__education {
     display: block;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface);
-  }
-
-  &__apps {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.5rem;
-    background: var(--mat-sys-surface-container-high);
-    color: var(--mat-sys-on-surface);
-    font-weight: 600;
     font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
-  &__delete {
-    color: var(--mat-sys-error);
+  // Breathing room between the right-aligned salary and the posted date.
+  &__posted {
+    padding-left: 2.25rem;
   }
 }

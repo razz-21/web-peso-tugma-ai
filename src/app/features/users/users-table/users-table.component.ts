@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { STATUS_LABELS, User, UserGet, UserRole } from '../../../core/models/user.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
@@ -28,6 +29,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     AvatarComponent,
     EmptyStateComponent,
@@ -50,8 +52,7 @@ export class UsersTableComponent {
     'email',
     'role',
     'status',
-    'created_at',
-    'updated_at',
+    'added',
     'actions',
   ] as const;
 

@@ -11,6 +11,11 @@ import {
   CompanyPost,
   ListCompaniesParams,
 } from '../models/company.model';
+import {
+  CompanyApplicantList,
+  CompanyApplicantListSchema,
+  ListCompanyApplicantsParams,
+} from '../models/company-applicant.model';
 
 @Injectable({ providedIn: 'root' })
 export class CompaniesService {
@@ -71,5 +76,26 @@ export class CompaniesService {
   async removeAvatar(id: string): Promise<CompanyGet> {
     const body = await firstValueFrom(this.http.delete<CompanyGet>(`${this.baseUrl}/${id}/avatar`));
     return CompanyGetSchema.parse(body);
+  }
+
+  /** List the applicants referred to this company's jobs. */
+  async listApplicants(
+    id: string,
+    params: ListCompanyApplicantsParams = {},
+  ): Promise<CompanyApplicantList> {
+    let httpParams = new HttpParams();
+    if (params.limit != null) {
+      httpParams = httpParams.set('limit', params.limit);
+    }
+    if (params.offset != null) {
+      httpParams = httpParams.set('offset', params.offset);
+    }
+
+    const body = await firstValueFrom(
+      this.http.get<CompanyApplicantList>(`${this.baseUrl}/${id}/applicants`, {
+        params: httpParams,
+      }),
+    );
+    return CompanyApplicantListSchema.parse(body);
   }
 }

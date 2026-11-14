@@ -1,19 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 
-/** Label + value pair that falls back to a "Not indicated" chip when empty. */
+/**
+ * Label + value pair rendered as a `<dt>`/`<dd>` group. Attach it to a `<div>`
+ * inside a `<dl>` (`<div appDetailField …>`) so the definition list stays valid.
+ * Empty values read as a muted "Not indicated".
+ */
 @Component({
-  selector: 'app-detail-field',
-  imports: [MatIconModule],
+  selector: '[appDetailField]',
   template: `
-    <span class="detail-field__label">{{ label() }}</span>
+    <dt class="detail-field__label">{{ label() }}</dt>
     @if (hasValue()) {
-      <span class="detail-field__value">{{ value() }}</span>
+      <dd class="detail-field__value">{{ value() }}</dd>
     } @else {
-      <span class="detail-field__chip">
-        <mat-icon aria-hidden="true">error_outline</mat-icon>
-        Not indicated
-      </span>
+      <dd class="detail-field__value detail-field__value--empty">Not indicated</dd>
     }
   `,
   styleUrl: './detail-field.component.scss',

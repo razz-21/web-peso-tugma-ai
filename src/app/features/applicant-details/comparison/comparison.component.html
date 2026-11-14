@@ -1,399 +1,354 @@
 <div class="comparison">
   <header class="comparison__topbar">
-    <button
-      mat-icon-button
-      type="button"
-      class="comparison__back"
-      aria-label="Close comparison"
-      (click)="close()"
-    >
+    <button mat-icon-button type="button" aria-label="Close comparison" (click)="close()">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="comparison__title">Comparison</h1>
+    <div class="comparison__topbar-text">
+      <h1 class="comparison__title">Comparison</h1>
+      <p class="comparison__topbar-sub">
+        {{ match.title }} · {{ applicantName() || 'Unnamed applicant' }}
+      </p>
+    </div>
   </header>
 
   <div class="comparison__body">
-    <section class="comparison__parties" aria-label="Job and applicant">
-      <article class="comparison__party">
-        <p class="comparison__party-kicker">
-          <mat-icon aria-hidden="true">work</mat-icon>
-          Job vacancy
-        </p>
-        <div class="comparison__party-head">
-          @if (match.company; as company) {
-            <app-avatar
-              [name]="company.name"
-              [seed]="company.id"
-              [image]="company.avatar"
-              [size]="52"
-            />
-          } @else {
-            <app-avatar [name]="match.title" [seed]="match.recommendationId" [size]="52" />
-          }
-          <div class="comparison__party-body">
-            <h2 class="comparison__party-name">{{ match.title }}</h2>
-            @if (jobMeta().length > 0) {
-              <p class="comparison__party-meta">
-                @for (segment of jobMeta(); track $index; let first = $first) {
-                  @if (!first) {
-                    <span class="comparison__dot" aria-hidden="true">·</span>
-                  }
-                  <span>{{ segment }}</span>
-                }
-              </p>
-            }
-          </div>
-        </div>
-      </article>
-
-      <span class="comparison__vs" aria-hidden="true">vs</span>
-
-      <article class="comparison__party comparison__party--applicant">
-        <p class="comparison__party-kicker">
-          <mat-icon aria-hidden="true">person</mat-icon>
-          Applicant
-        </p>
-        <div class="comparison__party-head">
-          <app-avatar [name]="applicantName() || '?'" [seed]="applicant.id" [size]="52" />
-          <div class="comparison__party-body">
-            <h2 class="comparison__party-name">{{ applicantName() || 'Unnamed applicant' }}</h2>
-            @if (applicantMeta().length > 0) {
-              <p class="comparison__party-meta">
-                @for (segment of applicantMeta(); track $index; let first = $first) {
-                  @if (!first) {
-                    <span class="comparison__dot" aria-hidden="true">·</span>
-                  }
-                  <span>{{ segment }}</span>
-                }
-              </p>
-            }
-          </div>
-        </div>
-      </article>
-    </section>
-
-    @let summary = this.summary();
-    <section class="comparison__summary">
-      <div
-        class="comparison__ring"
-        [style.--score]="match.score"
-        [style.--ring-color]="match.color"
-      >
-        <span class="comparison__ring-value">{{ match.score }}%</span>
-      </div>
-      <div class="comparison__summary-body">
-        <h2 class="comparison__summary-title">{{ summary.title }}</h2>
-        <p class="comparison__summary-sub">{{ summary.subtitle }}</p>
-      </div>
-      <div class="comparison__summary-badges">
-        <span class="comparison__pill comparison__pill--met">
-          <mat-icon aria-hidden="true">check_circle</mat-icon>
-          {{ summary.metCount }} met
-        </span>
-        @if (summary.partialCount > 0) {
-          <span class="comparison__pill comparison__pill--partial">
-            <mat-icon aria-hidden="true">error_outline</mat-icon>
-            {{ summary.partialCount }} partial
-          </span>
-        }
-        @if (summary.unmetCount > 0) {
-          <span class="comparison__pill comparison__pill--unmet">
-            <mat-icon aria-hidden="true">cancel</mat-icon>
-            {{ summary.unmetCount }} unmet
-          </span>
-        }
-        @if (summary.unknownCount > 0) {
-          <span class="comparison__pill comparison__pill--unknown">
-            <mat-icon aria-hidden="true">remove</mat-icon>
-            {{ summary.unknownCount }} no data
-          </span>
-        }
-      </div>
-    </section>
-
-    @let primaryReqs = this.primaryRequirements();
-    <section class="comparison__requirements">
-      <header class="comparison__requirements-head">
-        <h3 class="comparison__requirements-title">
-          <mat-icon aria-hidden="true">verified_user</mat-icon>
-          Primary requirements
-        </h3>
-        <span
-          class="comparison__pill"
-          [class.comparison__pill--met]="primaryReqs.met"
-          [class.comparison__pill--unmet]="!primaryReqs.met"
-        >
-          <mat-icon aria-hidden="true">
-            {{ primaryReqs.met ? 'check_circle' : 'cancel' }}
-          </mat-icon>
-          {{ primaryReqs.met ? 'Met' : 'Not met' }}
-        </span>
-      </header>
-      <ul class="comparison__gates">
-        @for (gate of primaryReqs.rows; track gate.key) {
-          <li class="comparison__gate">
-            <mat-icon class="comparison__gate-icon" aria-hidden="true">{{ gate.icon }}</mat-icon>
-            <div class="comparison__gate-body">
-              <span class="comparison__gate-label">{{ gate.label }}</span>
-              <span class="comparison__gate-reason">{{ gate.reason }}</span>
-            </div>
-            <span
-              class="comparison__pill"
-              [class.comparison__pill--met]="gate.state === 'pass'"
-              [class.comparison__pill--unmet]="gate.state === 'fail'"
-              [class.comparison__pill--unknown]="gate.state === 'na' || gate.state === 'unknown'"
-            >
-              <mat-icon aria-hidden="true">
-                {{
-                  gate.state === 'pass'
-                    ? 'check_circle'
-                    : gate.state === 'fail'
-                      ? 'cancel'
-                      : gate.state === 'unknown'
-                        ? 'help_outline'
-                        : 'remove'
-                }}
-              </mat-icon>
-              {{
-                gate.state === 'pass'
-                  ? 'Pass'
-                  : gate.state === 'fail'
-                    ? 'Fail'
-                    : gate.state === 'unknown'
-                      ? 'No data'
-                      : 'No limit'
-              }}
-            </span>
-          </li>
-        }
-      </ul>
-    </section>
-
-    <!-- Eligibility (only when the job states a requirement) -->
-    @let elig = this.eligibility();
-    @if (elig.hasRequirement) {
-      <section class="comparison__req">
-        <header class="comparison__req-head">
-          <h3 class="comparison__req-title">
-            <mat-icon aria-hidden="true">verified</mat-icon>
-            Eligibility
-          </h3>
-          <span
-            class="comparison__pill"
-            [class.comparison__pill--met]="elig.state === 'pass'"
-            [class.comparison__pill--unmet]="elig.state === 'fail'"
-            [class.comparison__pill--unknown]="elig.state === 'na'"
-          >
-            <mat-icon aria-hidden="true">
-              {{
-                elig.state === 'pass' ? 'check_circle' : elig.state === 'fail' ? 'cancel' : 'remove'
-              }}
-            </mat-icon>
-            {{ elig.badge }}
-          </span>
-        </header>
-
-        <div class="comparison__req-grid">
-          <div class="comparison__col">
-            <p class="comparison__col-kicker">
-              <mat-icon aria-hidden="true">work</mat-icon>
-              Required
-            </p>
-            <p class="comparison__col-text">{{ elig.required }}</p>
-          </div>
-
-          <div class="comparison__col">
-            <p class="comparison__col-kicker">
-              <mat-icon aria-hidden="true">person</mat-icon>
-              Applicant has
-            </p>
-            @if (elig.applicantHeld.length > 0) {
-              <div class="comparison__chips">
-                @for (item of elig.applicantHeld; track $index) {
-                  <span class="comparison__chip comparison__chip--matched-soft">{{ item }}</span>
-                }
-              </div>
+    <div class="comparison__content">
+      <!-- Job vs applicant -->
+      <section class="comparison__parties" aria-label="Job and applicant">
+        <article class="comparison__party">
+          <p class="comparison__party-label">
+            <mat-icon aria-hidden="true">work</mat-icon>
+            Job vacancy
+          </p>
+          <div class="comparison__party-head">
+            @if (match.company; as company) {
+              <app-avatar
+                [name]="company.name"
+                [seed]="company.id"
+                [image]="company.avatar"
+                [size]="52"
+              />
             } @else {
-              <p class="comparison__col-text">None on file</p>
+              <app-avatar [name]="match.title" [seed]="match.recommendationId" [size]="52" />
             }
-          </div>
-        </div>
-
-        <p class="comparison__note">
-          <mat-icon aria-hidden="true">info</mat-icon>
-          <span>{{ elig.reason }}</span>
-        </p>
-      </section>
-    }
-
-    @for (requirement of requirements(); track requirement.key) {
-      <section class="comparison__req">
-        <header class="comparison__req-head">
-          <h3 class="comparison__req-title">
-            <mat-icon aria-hidden="true">{{ requirement.icon }}</mat-icon>
-            {{ requirement.label }}
-          </h3>
-          <span
-            class="comparison__pill"
-            [class.comparison__pill--met]="requirement.status === 'met'"
-            [class.comparison__pill--partial]="requirement.status === 'partial'"
-            [class.comparison__pill--unmet]="requirement.status === 'unmet'"
-            [class.comparison__pill--unknown]="requirement.status === 'unknown'"
-          >
-            <mat-icon aria-hidden="true">
-              {{
-                requirement.status === 'met'
-                  ? 'check_circle'
-                  : requirement.status === 'partial'
-                    ? 'error_outline'
-                    : requirement.status === 'unmet'
-                      ? 'cancel'
-                      : 'remove'
-              }}
-            </mat-icon>
-            {{ requirement.badge }}
-          </span>
-        </header>
-
-        <div class="comparison__req-grid">
-          <div class="comparison__col">
-            <p class="comparison__col-kicker">
-              <mat-icon aria-hidden="true">work</mat-icon>
-              Required
-            </p>
-
-            @if (requirement.isSkills) {
-              <div class="comparison__chips">
-                @for (skill of requirement.matchedSkills; track skill.name) {
-                  <span class="comparison__chip comparison__chip--matched">
-                    <mat-icon aria-hidden="true">check</mat-icon>
-                    {{ skill.name }}
-                    @if (skill.tier === 'preferred') {
-                      <span class="comparison__chip-tier">preferred</span>
+            <div class="comparison__party-body">
+              <h2 class="comparison__party-name">{{ match.title }}</h2>
+              @if (jobMeta().length > 0) {
+                <p class="comparison__party-meta">
+                  @for (segment of jobMeta(); track $index; let first = $first) {
+                    @if (!first) {
+                      <span aria-hidden="true">·</span>
                     }
-                  </span>
-                }
-                @for (related of requirement.relatedSkills; track related.required) {
-                  <span
-                    class="comparison__chip comparison__chip--related"
-                    [attr.title]="
-                      related.via
-                        ? related.required + ' — related to ' + related.via
-                        : related.required + ' — related skill'
-                    "
-                  >
-                    <mat-icon aria-hidden="true">change_circle</mat-icon>
-                    <span class="comparison__chip-body">
-                      <span class="comparison__chip-name">
-                        {{ related.required }}
-                        @if (related.tier === 'preferred') {
-                          <span class="comparison__chip-tier">preferred</span>
-                        }
-                      </span>
-                      @if (related.via) {
-                        <span class="comparison__chip-via"
-                          >via {{ related.via }} ({{ related.similarity }}%)</span
-                        >
-                      }
-                    </span>
-                  </span>
-                }
-                @for (skill of requirement.missingSkills; track skill.name) {
-                  <span
-                    class="comparison__chip comparison__chip--missing"
-                    [class.comparison__chip--missing-preferred]="skill.tier === 'preferred'"
-                  >
-                    <mat-icon aria-hidden="true">close</mat-icon>
-                    {{ skill.name }}
-                    @if (skill.tier === 'preferred') {
-                      <span class="comparison__chip-tier">preferred</span>
-                    }
-                  </span>
-                }
-              </div>
-
-              <div class="comparison__coverage">
-                <div class="comparison__coverage-head">
-                  <span>Coverage</span>
-                  <span class="comparison__coverage-value" [style.color]="requirement.coverageColor"
-                    >{{ requirement.coverage }}%</span
-                  >
-                </div>
-                <span class="comparison__coverage-track" aria-hidden="true">
-                  <span
-                    class="comparison__coverage-fill"
-                    [style.width.%]="requirement.coverage"
-                    [style.background]="requirement.coverageColor"
-                  ></span>
-                </span>
-              </div>
-            } @else {
-              @if (requirement.requiredItems.length > 0) {
-                <div class="comparison__chips">
-                  @for (item of requirement.requiredItems; track item) {
-                    <span class="comparison__chip comparison__chip--neutral">{{ item }}</span>
+                    <span>{{ segment }}</span>
                   }
-                </div>
-              } @else if (requirement.requiredText) {
-                <p class="comparison__col-text">{{ requirement.requiredText }}</p>
-              }
-              @if (requirement.preferredText) {
-                <p class="comparison__col-kicker comparison__col-kicker--preferred">
-                  <mat-icon aria-hidden="true">{{ requirement.icon }}</mat-icon>
-                  Preferred
                 </p>
-                <p class="comparison__col-text">{{ requirement.preferredText }}</p>
               }
-            }
+            </div>
           </div>
+        </article>
 
-          <div class="comparison__col">
-            <p class="comparison__col-kicker">
-              <mat-icon aria-hidden="true">person</mat-icon>
-              Applicant has
-            </p>
+        <span class="comparison__vs" aria-hidden="true">vs</span>
 
-            @if (requirement.isSkills) {
-              <p class="comparison__sub-label">Matching</p>
-              @if (requirement.matchingSkills.length > 0) {
-                <div class="comparison__chips">
-                  @for (skill of requirement.matchingSkills; track skill) {
-                    <span class="comparison__chip comparison__chip--matched-soft">{{ skill }}</span>
+        <article class="comparison__party">
+          <p class="comparison__party-label">
+            <mat-icon aria-hidden="true">person</mat-icon>
+            Applicant
+          </p>
+          <div class="comparison__party-head">
+            <app-avatar [name]="applicantName() || '?'" [seed]="applicant.id" [size]="52" />
+            <div class="comparison__party-body">
+              <h2 class="comparison__party-name">{{ applicantName() || 'Unnamed applicant' }}</h2>
+              @if (applicantMeta().length > 0) {
+                <p class="comparison__party-meta">
+                  @for (segment of applicantMeta(); track $index; let first = $first) {
+                    @if (!first) {
+                      <span aria-hidden="true">·</span>
+                    }
+                    <span>{{ segment }}</span>
                   }
-                </div>
-              } @else {
-                <p class="comparison__col-text">No matching skills</p>
+                </p>
               }
-
-              @if (requirement.additionalSkills.length > 0) {
-                <p class="comparison__sub-label">Additional skills</p>
-                <div class="comparison__chips">
-                  @for (skill of requirement.additionalSkills; track skill) {
-                    <span class="comparison__chip comparison__chip--extra">{{ skill }}</span>
-                  }
-                </div>
-              }
-            } @else {
-              @if (requirement.applicantItems.length > 0) {
-                <div class="comparison__chips">
-                  @for (item of requirement.applicantItems; track $index) {
-                    <span class="comparison__chip comparison__chip--matched-soft">{{ item }}</span>
-                  }
-                </div>
-              } @else if (requirement.applicantText) {
-                <p class="comparison__col-text">{{ requirement.applicantText }}</p>
-              }
-            }
+            </div>
           </div>
+        </article>
+      </section>
+
+      <!-- Overall verdict -->
+      @let summary = this.summary();
+      <section class="comparison__card comparison__summary" aria-label="Match summary">
+        <div
+          class="comparison__ring"
+          role="img"
+          [style.--score]="match.score"
+          [style.--ring-color]="match.color"
+          [attr.aria-label]="'Match score ' + match.score + '%'"
+        >
+          <span class="comparison__ring-value" aria-hidden="true">{{ match.score }}%</span>
         </div>
+        <div class="comparison__summary-body">
+          <h2 class="comparison__summary-title">{{ summary.title }}</h2>
+          <p class="comparison__summary-sub">{{ summary.subtitle }}</p>
+        </div>
+        <ul class="comparison__summary-tags" aria-label="Requirement totals">
+          <li class="comparison__tag comparison__tag--met">
+            <mat-icon aria-hidden="true">{{ statusIcon.met }}</mat-icon>
+            {{ summary.metCount }} met
+          </li>
+          @if (summary.partialCount > 0) {
+            <li class="comparison__tag comparison__tag--partial">
+              <mat-icon aria-hidden="true">{{ statusIcon.partial }}</mat-icon>
+              {{ summary.partialCount }} partial
+            </li>
+          }
+          @if (summary.unmetCount > 0) {
+            <li class="comparison__tag comparison__tag--unmet">
+              <mat-icon aria-hidden="true">{{ statusIcon.unmet }}</mat-icon>
+              {{ summary.unmetCount }} unmet
+            </li>
+          }
+          @if (summary.unknownCount > 0) {
+            <li class="comparison__tag comparison__tag--unknown">
+              <mat-icon aria-hidden="true">{{ statusIcon.unknown }}</mat-icon>
+              {{ summary.unknownCount }} no data
+            </li>
+          }
+        </ul>
+      </section>
 
-        @if (requirement.note) {
+      <!-- Primary requirements (hard gates) -->
+      @let primaryReqs = this.primaryRequirements();
+      <section class="comparison__card" aria-labelledby="cmp-primary-title">
+        <header class="comparison__card-head">
+          <h3 id="cmp-primary-title" class="comparison__card-title">
+            <mat-icon aria-hidden="true">verified_user</mat-icon>
+            Primary requirements
+          </h3>
+          <span
+            class="comparison__tag"
+            [class]="'comparison__tag--' + (primaryReqs.met ? 'met' : 'unmet')"
+          >
+            <mat-icon aria-hidden="true">{{
+              primaryReqs.met ? 'check_circle' : 'cancel'
+            }}</mat-icon>
+            {{ primaryReqs.met ? 'Met' : 'Not met' }}
+          </span>
+        </header>
+        <ul class="comparison__gates">
+          @for (gate of primaryReqs.rows; track gate.key) {
+            <li class="comparison__gate">
+              <mat-icon class="comparison__gate-icon" aria-hidden="true">{{ gate.icon }}</mat-icon>
+              <div class="comparison__gate-body">
+                <span class="comparison__gate-label">{{ gate.label }}</span>
+                <span class="comparison__gate-reason">{{ gate.reason }}</span>
+              </div>
+              <span class="comparison__tag" [class]="'comparison__tag--' + gateTone[gate.state]">
+                <mat-icon aria-hidden="true">{{ gateIcon[gate.state] }}</mat-icon>
+                {{ gateLabel[gate.state] }}
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Eligibility (only when the job states a requirement) -->
+      @let elig = this.eligibility();
+      @if (elig.hasRequirement) {
+        <section class="comparison__card" aria-labelledby="cmp-eligibility-title">
+          <header class="comparison__card-head">
+            <h3 id="cmp-eligibility-title" class="comparison__card-title">
+              <mat-icon aria-hidden="true">verified</mat-icon>
+              Eligibility
+            </h3>
+            <span class="comparison__tag" [class]="'comparison__tag--' + gateTone[elig.state]">
+              <mat-icon aria-hidden="true">{{ gateIcon[elig.state] }}</mat-icon>
+              {{ elig.badge }}
+            </span>
+          </header>
+
+          <div class="comparison__grid">
+            <div class="comparison__col">
+              <p class="comparison__col-label">
+                <mat-icon aria-hidden="true">work</mat-icon>
+                Required
+              </p>
+              <p class="comparison__text">{{ elig.required }}</p>
+            </div>
+            <div class="comparison__col">
+              <p class="comparison__col-label">
+                <mat-icon aria-hidden="true">person</mat-icon>
+                Applicant has
+              </p>
+              @if (elig.applicantHeld.length > 0) {
+                <ul class="comparison__chips">
+                  @for (item of elig.applicantHeld; track $index) {
+                    <li class="comparison__chip comparison__chip--held">{{ item }}</li>
+                  }
+                </ul>
+              } @else {
+                <p class="comparison__text comparison__text--muted">None on file</p>
+              }
+            </div>
+          </div>
+
           <p class="comparison__note">
             <mat-icon aria-hidden="true">info</mat-icon>
-            <span>{{ requirement.note }}</span>
+            <span>{{ elig.reason }}</span>
           </p>
-        }
-      </section>
-    }
+        </section>
+      }
+
+      <!-- Scored requirements: skills / experience / education / location -->
+      @for (requirement of requirements(); track requirement.key) {
+        <section class="comparison__card" [attr.aria-labelledby]="'cmp-' + requirement.key">
+          <header class="comparison__card-head">
+            <h3 [id]="'cmp-' + requirement.key" class="comparison__card-title">
+              <mat-icon aria-hidden="true">{{ requirement.icon }}</mat-icon>
+              {{ requirement.label }}
+            </h3>
+            <span class="comparison__tag" [class]="'comparison__tag--' + requirement.status">
+              <mat-icon aria-hidden="true">{{ statusIcon[requirement.status] }}</mat-icon>
+              {{ requirement.badge }}
+            </span>
+          </header>
+
+          <div class="comparison__grid">
+            <div class="comparison__col">
+              <p class="comparison__col-label">
+                <mat-icon aria-hidden="true">work</mat-icon>
+                Required
+              </p>
+
+              @if (requirement.isSkills) {
+                <ul class="comparison__chips" aria-label="Required skills">
+                  @for (skill of requirement.matchedSkills; track skill.name) {
+                    <li class="comparison__chip comparison__chip--matched">
+                      <mat-icon aria-hidden="true">check</mat-icon>
+                      {{ skill.name }}
+                      @if (skill.tier === 'preferred') {
+                        <span class="comparison__chip-tier">preferred</span>
+                      }
+                    </li>
+                  }
+                  @for (related of requirement.relatedSkills; track related.required) {
+                    <li
+                      class="comparison__chip comparison__chip--related"
+                      [attr.title]="
+                        related.via
+                          ? related.required + ' — related to ' + related.via
+                          : related.required + ' — related skill'
+                      "
+                    >
+                      <mat-icon aria-hidden="true">change_circle</mat-icon>
+                      <span class="comparison__chip-body">
+                        <span>
+                          {{ related.required }}
+                          @if (related.tier === 'preferred') {
+                            <span class="comparison__chip-tier">preferred</span>
+                          }
+                        </span>
+                        @if (related.via) {
+                          <span class="comparison__chip-via"
+                            >via {{ related.via }} ({{ related.similarity }}%)</span
+                          >
+                        }
+                      </span>
+                    </li>
+                  }
+                  @for (skill of requirement.missingSkills; track skill.name) {
+                    <li
+                      class="comparison__chip comparison__chip--missing"
+                      [class.comparison__chip--missing-preferred]="skill.tier === 'preferred'"
+                    >
+                      <mat-icon aria-hidden="true">close</mat-icon>
+                      {{ skill.name }}
+                      @if (skill.tier === 'preferred') {
+                        <span class="comparison__chip-tier">preferred</span>
+                      }
+                    </li>
+                  }
+                </ul>
+
+                <div class="comparison__coverage">
+                  <div class="comparison__coverage-head">
+                    <span>Coverage</span>
+                    <span class="comparison__coverage-value">{{ requirement.coverage }}%</span>
+                  </div>
+                  <span class="comparison__coverage-track" aria-hidden="true">
+                    <span
+                      class="comparison__coverage-fill"
+                      [style.width.%]="requirement.coverage"
+                      [style.background]="requirement.coverageColor"
+                    ></span>
+                  </span>
+                </div>
+              } @else {
+                @if (requirement.requiredItems.length > 0) {
+                  <ul class="comparison__chips">
+                    @for (item of requirement.requiredItems; track item) {
+                      <li class="comparison__chip">{{ item }}</li>
+                    }
+                  </ul>
+                } @else if (requirement.requiredText) {
+                  <p class="comparison__text">{{ requirement.requiredText }}</p>
+                }
+                @if (requirement.preferredText) {
+                  <p class="comparison__col-label comparison__col-label--spaced">
+                    <mat-icon aria-hidden="true">star_outline</mat-icon>
+                    Preferred
+                  </p>
+                  <p class="comparison__text">{{ requirement.preferredText }}</p>
+                }
+              }
+            </div>
+
+            <div class="comparison__col">
+              <p class="comparison__col-label">
+                <mat-icon aria-hidden="true">person</mat-icon>
+                Applicant has
+              </p>
+
+              @if (requirement.isSkills) {
+                <p class="comparison__sub-label">Matching</p>
+                @if (requirement.matchingSkills.length > 0) {
+                  <ul class="comparison__chips">
+                    @for (skill of requirement.matchingSkills; track skill) {
+                      <li class="comparison__chip comparison__chip--held">{{ skill }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="comparison__text comparison__text--muted">No matching skills</p>
+                }
+
+                @if (requirement.additionalSkills.length > 0) {
+                  <p class="comparison__sub-label">Additional skills</p>
+                  <ul class="comparison__chips">
+                    @for (skill of requirement.additionalSkills; track skill) {
+                      <li class="comparison__chip comparison__chip--extra">{{ skill }}</li>
+                    }
+                  </ul>
+                }
+              } @else {
+                @if (requirement.applicantItems.length > 0) {
+                  <ul class="comparison__chips">
+                    @for (item of requirement.applicantItems; track $index) {
+                      <li class="comparison__chip comparison__chip--held">{{ item }}</li>
+                    }
+                  </ul>
+                } @else if (requirement.applicantText) {
+                  <p class="comparison__text">{{ requirement.applicantText }}</p>
+                }
+              }
+            </div>
+          </div>
+
+          @if (requirement.note) {
+            <p class="comparison__note">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              <span>{{ requirement.note }}</span>
+            </p>
+          }
+        </section>
+      }
+    </div>
   </div>
 </div>

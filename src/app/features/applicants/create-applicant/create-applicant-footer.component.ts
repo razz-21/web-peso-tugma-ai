@@ -53,10 +53,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       background: var(--mat-sys-surface-container-lowest);
     }
 
-    .wizard-footer__btn {
-      border-radius: 999px;
-    }
-
     .wizard-footer__btn-content {
       display: flex;
       align-items: center;

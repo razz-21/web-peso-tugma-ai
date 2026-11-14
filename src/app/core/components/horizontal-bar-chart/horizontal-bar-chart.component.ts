@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { useSystemChartFont } from '../../../features/dashboard/chart-font';
+import { injectCssColorResolver, resolveCssColor } from '../../utils/css-color.util';
 
 /** One horizontal bar: a category label and its value. */
 export interface HorizontalBarPoint {
@@ -9,7 +10,7 @@ export interface HorizontalBarPoint {
   count: number;
 }
 
-const DEFAULT_BAR_COLOR = '#43681f';
+const DEFAULT_BAR_COLOR = 'var(--mat-sys-primary)';
 
 /** Draws each bar's value just past its right edge. */
 const valueLabelsPlugin: Plugin<'bar'> = {
@@ -20,7 +21,7 @@ const valueLabelsPlugin: Plugin<'bar'> = {
     const values = chart.data.datasets[0]?.data ?? [];
     ctx.save();
     ctx.font = `600 13px ${Chart.defaults.font.family}`;
-    ctx.fillStyle = '#1f2723';
+    ctx.fillStyle = resolveCssColor(chart.canvas, 'var(--mat-sys-on-surface)');
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     meta.data.forEach((bar, index) => {
@@ -66,6 +67,12 @@ const axisMax = (values: number[], step: number): number => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HorizontalBarChartComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   readonly points = input.required<HorizontalBarPoint[]>();
   /** Bar fill colour, applied to every bar. */
   readonly barColor = input(DEFAULT_BAR_COLOR);
@@ -96,7 +103,7 @@ export class HorizontalBarChartComponent {
     datasets: [
       {
         data: this.values(),
-        backgroundColor: this.barColors() ?? this.barColor(),
+        backgroundColor: this.barColors()?.map((color) => this.c(color)) ?? this.c(this.barColor()),
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 26,
@@ -115,9 +122,9 @@ export class HorizontalBarChartComponent {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: '#1f2723',
-        titleColor: '#ffffff',
-        bodyColor: '#e6ebe2',
+        backgroundColor: this.c('var(--mat-sys-inverse-surface)'),
+        titleColor: this.c('var(--mat-sys-inverse-on-surface)'),
+        bodyColor: this.c('var(--mat-sys-inverse-on-surface)'),
         padding: 10,
         cornerRadius: 8,
         displayColors: false,
@@ -133,13 +140,13 @@ export class HorizontalBarChartComponent {
         beginAtZero: true,
         max: axisMax(this.values(), this.axisStep()),
         ticks: { display: false },
-        grid: { color: '#eef1ea' },
+        grid: { color: this.c('var(--mat-sys-surface-container-high)') },
         border: { display: false },
       },
       y: {
         grid: { display: false },
         border: { display: false },
-        ticks: { color: '#3c443a', font: { size: 14 } },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 14 } },
       },
     },
   }));

@@ -1,0 +1,70 @@
+:host {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.company-header {
+  &__avatar {
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1 1 20rem;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--mat-sys-on-surface);
+    overflow-wrap: anywhere;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.625rem;
+    border-radius: var(--mat-sys-corner-extra-small);
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    font-size: 0.9375rem;
+
+    mat-icon {
+      width: 1.125rem;
+      height: 1.125rem;
+      font-size: 1.125rem;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  &__delete {
+    color: var(--mat-sys-error);
+
+    mat-icon {
+      color: inherit;
+    }
+  }
+}

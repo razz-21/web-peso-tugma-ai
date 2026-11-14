@@ -6,6 +6,7 @@ import { mapResponse } from '@ngrx/operators';
 import { exhaustMap, from, map, switchMap, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CompanyGet } from '../../core/models/company.model';
+import { CompanyApplicant } from '../../core/models/company-applicant.model';
 import { JobGet } from '../../core/models/job.model';
 import { CompaniesService } from '../../core/services/companies.service';
 import { JobsService } from '../../core/services/jobs.service';
@@ -16,6 +17,9 @@ import { companiesEvents } from '../companies/companies.events';
 /** Upper bound for a single company's job list; well above realistic counts. */
 const COMPANY_JOBS_LIMIT = 100;
 
+/** Upper bound for a single company's referred applicants; matches the API cap. */
+const COMPANY_APPLICANTS_LIMIT = 100;
+
 type CompanyDetailsState = {
   company: CompanyGet | null;
   loading: boolean;
@@ -24,6 +28,9 @@ type CompanyDetailsState = {
   jobsLoading: boolean;
   jobsError: string | null;
   deleteJobLoading: boolean;
+  applicants: CompanyApplicant[];
+  applicantsLoading: boolean;
+  applicantsError: string | null;
 };
 
 const initialState: CompanyDetailsState = {
@@ -34,6 +41,9 @@ const initialState: CompanyDetailsState = {
   jobsLoading: false,
   jobsError: null,
   deleteJobLoading: false,
+  applicants: [],
+  applicantsLoading: false,
+  applicantsError: null,
 };
 
 const errorMessage = (error: unknown, fallback: string): string => {
@@ -85,6 +95,20 @@ export const CompanyDetailsStore = signalStore(
       deleteJobLoading: false,
     })),
     on(companyDetailsEvents.deleteCompanyJobFailed, () => ({ deleteJobLoading: false })),
+    on(companyDetailsEvents.loadCompanyApplicants, () => ({
+      applicantsLoading: true,
+      applicantsError: null,
+    })),
+    on(companyDetailsEvents.loadCompanyApplicantsSuccess, ({ payload }) => ({
+      applicants: payload,
+      applicantsLoading: false,
+      applicantsError: null,
+    })),
+    on(companyDetailsEvents.loadCompanyApplicantsFailed, ({ payload }) => ({
+      applicants: [],
+      applicantsLoading: false,
+      applicantsError: payload,
+    })),
     // Create/update run through the shared job form (global jobs store). Rather than
     // refetching, patch this company's list directly from the returned job.
     on(jobsEvents.createJobSuccess, ({ payload }, state) =>
@@ -123,6 +147,31 @@ export const CompanyDetailsStore = signalStore(
         .pipe(
           map(({ payload }) => companyDetailsEvents.loadCompanyJobs({ companyId: payload.id })),
         ),
+      // ...and its referred applicants, for the Applicants tab.
+      loadApplicantsOnCompany$: events
+        .on(companyDetailsEvents.loadCompanyDetailsSuccess)
+        .pipe(
+          map(({ payload }) =>
+            companyDetailsEvents.loadCompanyApplicants({ companyId: payload.id }),
+          ),
+        ),
+      loadCompanyApplicants$: events.on(companyDetailsEvents.loadCompanyApplicants).pipe(
+        switchMap(({ payload }) =>
+          from(
+            companiesService.listApplicants(payload.companyId, {
+              limit: COMPANY_APPLICANTS_LIMIT,
+            }),
+          ).pipe(
+            mapResponse({
+              next: (list) => companyDetailsEvents.loadCompanyApplicantsSuccess(list.items),
+              error: (error: unknown) =>
+                companyDetailsEvents.loadCompanyApplicantsFailed(
+                  errorMessage(error, 'Failed to load applicants.'),
+                ),
+            }),
+          ),
+        ),
+      ),
       loadCompanyJobs$: events.on(companyDetailsEvents.loadCompanyJobs).pipe(
         switchMap(({ payload }) =>
           from(jobsService.list({ company_id: payload.companyId, limit: COMPANY_JOBS_LIMIT })).pipe(
@@ -157,6 +206,7 @@ export const CompanyDetailsStore = signalStore(
           companyDetailsEvents.loadCompanyDetailsFailed,
           companyDetailsEvents.loadCompanyJobsFailed,
           companyDetailsEvents.deleteCompanyJobFailed,
+          companyDetailsEvents.loadCompanyApplicantsFailed,
         )
         .pipe(tap(({ payload }) => snackBar.open(payload, 'Close', { duration: 3000 }))),
     }),

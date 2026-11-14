@@ -99,29 +99,21 @@ export class ReferredJobsComponent {
   private toRow(match: JobMatch, isLatest: boolean): ReferralRow {
     const status = match.status ?? 'referred';
     const referredOn = this.datePipe.transform(match.referredAt, 'MMM d, y') ?? '—';
-    const referredShort = this.datePipe.transform(match.referredAt, 'MMM d') ?? '—';
-    const salaryText = match.salary === null ? null : `₱${match.salary.toLocaleString('en-US')}/mo`;
-    const companyName = match.company?.name ?? '—';
-
-    const headerSegments = [companyName, salaryText, `Referred ${referredOn}`].filter(
-      (segment): segment is string => Boolean(segment),
-    );
 
     return {
       id: match.recommendationId,
       match,
       isLatest,
       title: match.title,
-      companyName,
+      companyName: match.company?.name ?? '—',
       referredBy: match.referredBy?.name ?? null,
-      headerSegments,
+      salaryLabel: match.salary === null ? null : `₱${match.salary.toLocaleString('en-US')} / mo`,
       score: match.score,
       statusLabel: RECOMMENDED_JOB_STATUS_LABEL[status],
       statusTone: STATUS_TONE[status],
-      referredOnLabel: referredOn,
-      steps: buildSteps(status, referredShort),
+      steps: buildSteps(status, referredOn),
       // Terminal referrals (withdrawn / not hired / resigned) are final — the
-      // template disables "Update status" for them.
+      // template disables the status menu for them.
       terminal: isTerminalStatus(match.status),
     };
   }

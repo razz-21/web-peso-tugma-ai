@@ -10,6 +10,8 @@
 @import './styles/theme/dark.css';
 @import './styles/theme/dark-hc.css';
 @import './styles/theme/dark-mc.css';
+// App semantic colours (success / info / warning / avatar palette) for every theme.
+@import './styles/theme/extended.css';
 
 // Generate Angular Material's structural system tokens (typography, density,
 // shape, state-layer, motion). The color palette passed here is a placeholder —
@@ -21,6 +23,51 @@ html {
       color: mat.$azure-palette,
       typography: Lato,
       density: 0,
+    )
+  );
+
+  // App shape: every Material corner token resolves to a 6px radius, so cards,
+  // buttons, chips, fields, menus and dialogs share one corner. `corner-full`
+  // is included so buttons drop their pill shape.
+  @include mat.theme-overrides(
+    (
+      corner-extra-small: 6px,
+      corner-extra-small-top: 6px 6px 0 0,
+      corner-small: 6px,
+      corner-medium: 6px,
+      corner-large: 6px,
+      corner-large-top: 6px 6px 0 0,
+      corner-large-start: 6px 0 0 6px,
+      corner-large-end: 0 6px 6px 0,
+      corner-extra-large: 6px,
+      corner-extra-large-top: 6px 6px 0 0,
+      corner-full: 6px,
+    )
+  );
+
+  // Controls whose geometry is inherently round stay round.
+  @include mat.icon-button-overrides(
+    (
+      container-shape: 50%,
+    )
+  );
+  @include mat.badge-overrides(
+    (
+      container-shape: 9999px,
+    )
+  );
+  @include mat.slide-toggle-overrides(
+    (
+      track-shape: 9999px,
+      handle-shape: 9999px,
+    )
+  );
+  @include mat.slider-overrides(
+    (
+      active-track-shape: 9999px,
+      inactive-track-shape: 9999px,
+      handle-shape: 50%,
+      with-tick-marks-container-shape: 50%,
     )
   );
 }
@@ -79,15 +126,40 @@ html {
   --mat-sys-outline-variant: var(--md-sys-color-outline-variant);
   --mat-sys-shadow: var(--md-sys-color-shadow);
   --mat-sys-scrim: var(--md-sys-color-scrim);
+
+  --mat-sys-primary-fixed: var(--md-sys-color-primary-fixed);
+  --mat-sys-primary-fixed-dim: var(--md-sys-color-primary-fixed-dim);
+  --mat-sys-on-primary-fixed: var(--md-sys-color-on-primary-fixed);
+  --mat-sys-on-primary-fixed-variant: var(--md-sys-color-on-primary-fixed-variant);
+  --mat-sys-secondary-fixed: var(--md-sys-color-secondary-fixed);
+  --mat-sys-secondary-fixed-dim: var(--md-sys-color-secondary-fixed-dim);
+  --mat-sys-on-secondary-fixed: var(--md-sys-color-on-secondary-fixed);
+  --mat-sys-on-secondary-fixed-variant: var(--md-sys-color-on-secondary-fixed-variant);
+  --mat-sys-tertiary-fixed: var(--md-sys-color-tertiary-fixed);
+  --mat-sys-tertiary-fixed-dim: var(--md-sys-color-tertiary-fixed-dim);
+  --mat-sys-on-tertiary-fixed: var(--md-sys-color-on-tertiary-fixed);
+  --mat-sys-on-tertiary-fixed-variant: var(--md-sys-color-on-tertiary-fixed-variant);
+
+  // App-level roles (not part of the M3 spec). Raised surfaces such as dialogs
+  // are white in light mode and a lifted tone in dark mode, where white is not
+  // available and the lowest container would read as a hole.
+  --app-raised-surface: var(--mat-sys-surface-container-lowest);
 }
 
 // Tell the browser to use the right color-scheme for native UI (scrollbars,
 // form controls). Add or remove `.dark` from <body> to switch — see
 // app.html for a simple toggle demo.
+.light,
+.light-hc,
+.light-mc {
+  color-scheme: light;
+}
+
 .dark,
 .dark-hc,
 .dark-mc {
   color-scheme: dark;
+  --app-raised-surface: var(--mat-sys-surface-container-high);
 }
 
 html,
@@ -100,6 +172,15 @@ body {
   font-family: Lato, 'Helvetica Neue', sans-serif;
   background: var(--mat-sys-background);
   color: var(--mat-sys-on-background);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
 }
 
 // Variable-axis defaults for Material Symbols. Override on any icon via
@@ -116,11 +197,11 @@ body {
   font-variation-settings: 'FILL' 1;
 }
 
-// Default dialog surface: the lightest surface (white in the light theme) rather
-// than the themed cream. Individual dialogs can still override via their own
+// Default dialog surface: white in the light theme, a lifted tone in dark (see
+// `--app-raised-surface`). Individual dialogs can still override via their own
 // panelClass with a more specific selector.
 .mat-mdc-dialog-surface {
-  background: var(--mat-sys-surface-container-lowest) !important;
+  background: var(--app-raised-surface) !important;
 }
 
 // Job form dialog: full-page surface. The panel fills the viewport, drops its
@@ -248,7 +329,7 @@ body {
     flex-direction: column;
     border-radius: 0;
     overflow: hidden;
-    background: #fff;
+    background: var(--mat-sys-surface-container-lowest);
   }
 
   .mat-mdc-dialog-container {

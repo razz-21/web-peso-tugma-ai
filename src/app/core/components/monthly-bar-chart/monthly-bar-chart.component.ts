@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { Chart, ChartConfiguration, ChartData, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { useSystemChartFont } from '../../../features/dashboard/chart-font';
+import { injectCssColorResolver, resolveCssColor } from '../../utils/css-color.util';
 
 /** One bar: a short label and its value. */
 export interface MonthlyBarPoint {
@@ -9,7 +10,7 @@ export interface MonthlyBarPoint {
   count: number;
 }
 
-const DEFAULT_BAR_COLOR = '#43681f';
+const DEFAULT_BAR_COLOR = 'var(--mat-sys-primary)';
 
 /** Draws each bar's value just above its top edge. */
 const valueLabelsPlugin: Plugin<'bar'> = {
@@ -20,7 +21,7 @@ const valueLabelsPlugin: Plugin<'bar'> = {
     const values = chart.data.datasets[0]?.data ?? [];
     ctx.save();
     ctx.font = `600 13px ${Chart.defaults.font.family}`;
-    ctx.fillStyle = '#1f2723';
+    ctx.fillStyle = resolveCssColor(chart.canvas, 'var(--mat-sys-on-surface)');
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     meta.data.forEach((bar, index) => {
@@ -63,6 +64,12 @@ const axisMax = (values: number[], step: number): number => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MonthlyBarChartComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   readonly points = input.required<MonthlyBarPoint[]>();
   /** Bar fill colour, applied to every bar. */
   readonly barColor = input(DEFAULT_BAR_COLOR);
@@ -90,7 +97,7 @@ export class MonthlyBarChartComponent {
     datasets: [
       {
         data: this.values(),
-        backgroundColor: this.barColors() ?? this.barColor(),
+        backgroundColor: this.barColors()?.map((color) => this.c(color)) ?? this.c(this.barColor()),
         borderRadius: 6,
         borderSkipped: false,
         maxBarThickness: 56,
@@ -108,9 +115,9 @@ export class MonthlyBarChartComponent {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: '#1f2723',
-        titleColor: '#ffffff',
-        bodyColor: '#e6ebe2',
+        backgroundColor: this.c('var(--mat-sys-inverse-surface)'),
+        titleColor: this.c('var(--mat-sys-inverse-on-surface)'),
+        bodyColor: this.c('var(--mat-sys-inverse-on-surface)'),
         padding: 10,
         cornerRadius: 8,
         displayColors: false,
@@ -125,14 +132,18 @@ export class MonthlyBarChartComponent {
       y: {
         beginAtZero: true,
         max: axisMax(this.values(), this.axisStep()),
-        ticks: { stepSize: this.axisStep(), color: '#7c857a', font: { size: 13 } },
-        grid: { color: '#eef1ea' },
+        ticks: {
+          stepSize: this.axisStep(),
+          color: this.c('var(--mat-sys-on-surface-variant)'),
+          font: { size: 13 },
+        },
+        grid: { color: this.c('var(--mat-sys-surface-container-high)') },
         border: { display: false },
       },
       x: {
         grid: { display: false },
         border: { display: false },
-        ticks: { color: '#7c857a', font: { size: 14 } },
+        ticks: { color: this.c('var(--mat-sys-on-surface-variant)'), font: { size: 14 } },
       },
     },
   }));

@@ -1,6 +1,7 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
 import { CompanyGet } from '../../core/models/company.model';
+import { CompanyApplicant } from '../../core/models/company-applicant.model';
 import { JobGet } from '../../core/models/job.model';
 
 export const companyDetailsEvents = eventGroup({
@@ -17,5 +18,9 @@ export const companyDetailsEvents = eventGroup({
     deleteCompanyJob: type<{ id: string }>(),
     deleteCompanyJobSuccess: type<{ id: string }>(),
     deleteCompanyJobFailed: type<string>(),
+
+    loadCompanyApplicants: type<{ companyId: string }>(),
+    loadCompanyApplicantsSuccess: type<CompanyApplicant[]>(),
+    loadCompanyApplicantsFailed: type<string>(),
   },
 });

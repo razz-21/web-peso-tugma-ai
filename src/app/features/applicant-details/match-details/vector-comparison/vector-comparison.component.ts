@@ -4,6 +4,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { MatIconModule } from '@angular/material/icon';
 import { VectorBin } from '../../types/vector-comparison.type';
 import { cosineSimilarity, poolMagnitudes } from '../../utils/vector.util';
+import { injectCssColorResolver, withAlpha } from '../../../../core/utils/css-color.util';
 
 /** Number of embedding dimensions plotted; the dense vectors are pooled down to this. */
 const BIN_COUNT = 10;
@@ -11,11 +12,10 @@ const BIN_COUNT = 10;
 const DISPLAY_MIN = 0.15;
 const DISPLAY_MAX = 0.75;
 
-const RESUME_COLOR = '#4d6a24';
-const JOB_COLOR = '#9a7b1e';
-const DIVERGE_FILL = 'rgba(120, 116, 96, 0.16)';
-const AXIS_COLOR = '#7c857a';
-const GRID_COLOR = '#eef1ea';
+const RESUME_COLOR = 'var(--app-success)';
+const JOB_COLOR = 'var(--app-warning)';
+const AXIS_COLOR = 'var(--mat-sys-on-surface-variant)';
+const GRID_COLOR = 'var(--mat-sys-surface-container-high)';
 
 /**
  * Side-by-side line chart of the applicant's résumé embedding against the job's
@@ -30,6 +30,12 @@ const GRID_COLOR = '#eef1ea';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VectorComparisonComponent {
+  /** Resolves theme tokens for the canvas; re-evaluates on a light/dark switch. */
+  private readonly colors = injectCssColorResolver();
+  private c(color: string): string {
+    return this.colors()(color);
+  }
+
   readonly resume = input.required<readonly number[]>();
   readonly job = input.required<readonly number[]>();
 
@@ -79,10 +85,10 @@ export class VectorComparisonComponent {
         {
           label: 'Job',
           data: bins.map((bin) => bin.job),
-          borderColor: JOB_COLOR,
-          backgroundColor: JOB_COLOR,
-          pointBackgroundColor: JOB_COLOR,
-          pointBorderColor: JOB_COLOR,
+          borderColor: this.c(JOB_COLOR),
+          backgroundColor: this.c(JOB_COLOR),
+          pointBackgroundColor: this.c(JOB_COLOR),
+          pointBorderColor: this.c(JOB_COLOR),
           pointStyle: 'rect',
           pointRadius: 4,
           pointHoverRadius: 5,
@@ -93,10 +99,10 @@ export class VectorComparisonComponent {
         {
           label: 'Applicant',
           data: bins.map((bin) => bin.resume),
-          borderColor: RESUME_COLOR,
-          backgroundColor: DIVERGE_FILL,
-          pointBackgroundColor: RESUME_COLOR,
-          pointBorderColor: RESUME_COLOR,
+          borderColor: this.c(RESUME_COLOR),
+          backgroundColor: withAlpha(this.c('var(--mat-sys-outline)'), 0.16),
+          pointBackgroundColor: this.c(RESUME_COLOR),
+          pointBorderColor: this.c(RESUME_COLOR),
           pointStyle: 'circle',
           pointRadius: 4,
           pointHoverRadius: 5,
@@ -126,20 +132,20 @@ export class VectorComparisonComponent {
       y: {
         min: 0.1,
         max: 0.8,
-        title: { display: true, text: 'Value', color: AXIS_COLOR, font: { size: 13 } },
-        ticks: { stepSize: 0.1, color: AXIS_COLOR, font: { size: 12 } },
-        grid: { color: GRID_COLOR },
+        title: { display: true, text: 'Value', color: this.c(AXIS_COLOR), font: { size: 13 } },
+        ticks: { stepSize: 0.1, color: this.c(AXIS_COLOR), font: { size: 12 } },
+        grid: { color: this.c(GRID_COLOR) },
         border: { display: false },
       },
       x: {
         title: {
           display: true,
           text: 'Embedding dimension',
-          color: AXIS_COLOR,
+          color: this.c(AXIS_COLOR),
           font: { size: 13 },
         },
-        ticks: { color: AXIS_COLOR, font: { size: 13 } },
-        grid: { color: GRID_COLOR },
+        ticks: { color: this.c(AXIS_COLOR), font: { size: 13 } },
+        grid: { color: this.c(GRID_COLOR) },
         border: { display: false },
       },
     },

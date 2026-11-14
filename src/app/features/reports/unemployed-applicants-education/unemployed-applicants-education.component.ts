@@ -46,8 +46,8 @@ const EM_DASH = '—';
 
 // The top three courses read darker to anchor the ranking; the rest sit in a
 // lighter tint (mirrors the report design).
-const TOP_BAR_COLOR = '#43681f';
-const REST_BAR_COLOR = '#8fbc6b';
+const TOP_BAR_COLOR = 'var(--mat-sys-primary)';
+const REST_BAR_COLOR = 'var(--mat-sys-primary-container)';
 
 @Component({
   selector: 'app-unemployed-applicants-education',

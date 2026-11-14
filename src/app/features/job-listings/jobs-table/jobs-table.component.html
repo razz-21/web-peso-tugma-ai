@@ -1,85 +1,86 @@
-<div class="app-table">
+<div class="app-table app-table--flat jobs-table">
   <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef scope="col">Title</th>
+    <ng-container matColumnDef="job">
+      <th mat-header-cell *matHeaderCellDef scope="col">Job</th>
       <td mat-cell *matCellDef="let row">
-        <span class="jobs-table__title-text">{{ row.job.title }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="company">
-      <th mat-header-cell *matHeaderCellDef scope="col">Company</th>
-      <td mat-cell *matCellDef="let row">
-        <div class="jobs-table__company">
+        <div class="jobs-table__job">
           <app-avatar
             [name]="row.companyName"
             [seed]="row.job.company?.id ?? row.companyName"
             [image]="row.job.company?.avatar ?? null"
+            [size]="34"
           />
-          <span class="jobs-table__company-name">{{ row.companyName }}</span>
+          <span class="jobs-table__job-text">
+            <span class="jobs-table__title">{{ row.job.title }}</span>
+            <span class="jobs-table__company">{{ row.companyName }}</span>
+          </span>
         </div>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="vacancies">
-      <th mat-header-cell *matHeaderCellDef scope="col">Vacancies</th>
-      <td mat-cell *matCellDef="let row">
-        <span class="jobs-table__vacancies">{{ row.job.no_of_vacancies }}</span>
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table__num">Vacancies</th>
+      <td mat-cell *matCellDef="let row" class="app-table__num">
+        @if (row.job.no_of_vacancies > 0) {
+          {{ row.job.no_of_vacancies }}
+        } @else {
+          <span class="app-table__muted">Filled</span>
+        }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="salary">
-      <th mat-header-cell *matHeaderCellDef scope="col">Salary / mo</th>
-      <td mat-cell *matCellDef="let row">
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table__num">Salary / mo</th>
+      <td mat-cell *matCellDef="let row" class="app-table__num">
         @if (row.job.salary_per_month != null) {
           ₱{{ row.job.salary_per_month | number }}
         } @else {
-          —
+          <span class="app-table__muted">—</span>
         }
       </td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef scope="col">Status</th>
-      <td mat-cell *matCellDef="let row">
-        <span class="jobs-table__status" [class]="row.statusClass">{{ row.statusLabel }}</span>
+      <th mat-header-cell *matHeaderCellDef scope="col" class="jobs-table__status-col">Status</th>
+      <td mat-cell *matCellDef="let row" class="jobs-table__status-col">
+        <span class="jobs-table__status" [class]="row.statusClass">
+          <span class="jobs-table__status-dot" aria-hidden="true"></span>
+          {{ row.statusLabel }}
+        </span>
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="created_at">
-      <th mat-header-cell *matHeaderCellDef scope="col">Created at</th>
+    <!-- The API returns jobs newest-first, hence the static descending indicator. -->
+    <ng-container matColumnDef="posted">
+      <th mat-header-cell *matHeaderCellDef scope="col" aria-sort="descending">
+        <span class="app-table__sorted">
+          Posted
+          <mat-icon aria-hidden="true">arrow_downward</mat-icon>
+        </span>
+      </th>
       <td mat-cell *matCellDef="let row">
-        {{ row.job.created_at | date: 'MMM d, y h:mm a' }}
+        <time class="jobs-table__posted" [attr.datetime]="row.job.created_at">
+          <span>{{ row.job.created_at | date: 'MMM d, y' }}</span>
+          <span class="jobs-table__time">{{ row.job.created_at | date: 'h:mm a' }}</span>
+        </time>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
-      <td mat-cell *matCellDef="let row">
-        <div
-          class="app-table__actions"
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        >
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table__menu-col">
+        <span class="app-table__sr-only">Actions</span>
+      </th>
+      <td mat-cell *matCellDef="let row" class="app-table__menu-col">
+        <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <button
             mat-icon-button
             type="button"
-            [attr.aria-label]="'Edit ' + row.job.title"
-            (click)="edit.emit(row.job)"
+            [attr.aria-label]="'More actions for ' + row.job.title"
+            [matMenuTriggerFor]="rowMenu"
+            [matMenuTriggerData]="{ job: row.job }"
           >
-            <mat-icon>edit</mat-icon>
+            <mat-icon>more_vert</mat-icon>
           </button>
-          @if (canDelete()) {
-            <button
-              mat-icon-button
-              type="button"
-              class="jobs-table__delete"
-              [attr.aria-label]="'Delete ' + row.job.title"
-              (click)="delete.emit(row.job)"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
-          }
         </div>
       </td>
     </ng-container>
@@ -95,6 +96,30 @@
       (keydown.enter)="view.emit(row.job)"
     ></tr>
   </table>
+
+  <mat-menu #rowMenu="matMenu" xPosition="before">
+    <ng-template matMenuContent let-job="job">
+      <button mat-menu-item type="button" (click)="view.emit(job)">
+        <mat-icon>visibility</mat-icon>
+        <span>View job</span>
+      </button>
+      <button mat-menu-item type="button" (click)="edit.emit(job)">
+        <mat-icon>edit</mat-icon>
+        <span>Edit job</span>
+      </button>
+      @if (canDelete()) {
+        <button
+          mat-menu-item
+          type="button"
+          class="app-table__menu-delete"
+          (click)="delete.emit(job)"
+        >
+          <mat-icon>delete</mat-icon>
+          <span>Delete job</span>
+        </button>
+      }
+    </ng-template>
+  </mat-menu>
 
   @if (loading()) {
     <div class="app-table__status" role="status">

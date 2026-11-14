@@ -1,0 +1,76 @@
+/* App semantic colours (M3 custom colours): success, info, warning and the avatar
+ * palette. Same role names in every theme; values flip for dark.
+ * Generated with @material/material-color-utilities — re-run rather than hand-edit. */
+.light,
+.light-mc,
+.light-hc {
+  --app-success: rgb(64 105 24);
+  --app-on-success: rgb(255 255 255);
+  --app-success-container: rgb(192 241 144);
+  --app-on-success-container: rgb(42 80 0);
+  --app-info: rgb(0 106 102);
+  --app-on-info: rgb(255 255 255);
+  --app-info-container: rgb(156 241 235);
+  --app-on-info-container: rgb(0 80 77);
+  --app-warning: rgb(123 88 0);
+  --app-on-warning: rgb(255 255 255);
+  --app-warning-container: rgb(255 222 166);
+  --app-on-warning-container: rgb(93 66 0);
+  --app-avatar-violet: rgb(94 82 167);
+  --app-on-avatar-violet: rgb(255 255 255);
+  --app-avatar-violet-container: rgb(229 222 255);
+  --app-on-avatar-violet-container: rgb(70 58 141);
+  --app-avatar-mint: rgb(3 108 79);
+  --app-on-avatar-mint: rgb(255 255 255);
+  --app-avatar-mint-container: rgb(158 244 207);
+  --app-on-avatar-mint-container: rgb(0 81 58);
+  --app-avatar-rose: rgb(154 64 91);
+  --app-on-avatar-rose: rgb(255 255 255);
+  --app-avatar-rose-container: rgb(255 217 224);
+  --app-on-avatar-rose-container: rgb(124 41 68);
+  --app-avatar-blue: rgb(37 95 162);
+  --app-on-avatar-blue: rgb(255 255 255);
+  --app-avatar-blue-container: rgb(212 227 255);
+  --app-on-avatar-blue-container: rgb(0 71 134);
+  --app-avatar-amber: rgb(128 86 0);
+  --app-on-avatar-amber: rgb(255 255 255);
+  --app-avatar-amber-container: rgb(255 221 176);
+  --app-on-avatar-amber-container: rgb(97 64 0);
+}
+
+.dark,
+.dark-mc,
+.dark-hc {
+  --app-success: rgb(165 213 119);
+  --app-on-success: rgb(27 55 0);
+  --app-success-container: rgb(42 80 0);
+  --app-on-success-container: rgb(192 241 144);
+  --app-info: rgb(128 213 207);
+  --app-on-info: rgb(0 55 53);
+  --app-info-container: rgb(0 80 77);
+  --app-on-info-container: rgb(156 241 235);
+  --app-warning: rgb(247 189 72);
+  --app-on-warning: rgb(65 45 0);
+  --app-warning-container: rgb(93 66 0);
+  --app-on-warning-container: rgb(255 222 166);
+  --app-avatar-violet: rgb(200 191 255);
+  --app-on-avatar-violet: rgb(47 33 118);
+  --app-avatar-violet-container: rgb(70 58 141);
+  --app-on-avatar-violet-container: rgb(229 222 255);
+  --app-avatar-mint: rgb(130 215 179);
+  --app-on-avatar-mint: rgb(0 56 39);
+  --app-avatar-mint-container: rgb(0 81 58);
+  --app-on-avatar-mint-container: rgb(158 244 207);
+  --app-avatar-rose: rgb(255 177 195);
+  --app-on-avatar-rose: rgb(94 17 46);
+  --app-avatar-rose-container: rgb(124 41 68);
+  --app-on-avatar-rose-container: rgb(255 217 224);
+  --app-avatar-blue: rgb(165 200 255);
+  --app-on-avatar-blue: rgb(0 49 95);
+  --app-avatar-blue-container: rgb(0 71 134);
+  --app-on-avatar-blue-container: rgb(212 227 255);
+  --app-avatar-amber: rgb(248 188 96);
+  --app-on-avatar-amber: rgb(68 43 0);
+  --app-avatar-amber-container: rgb(97 64 0);
+  --app-on-avatar-amber-container: rgb(255 221 176);
+}

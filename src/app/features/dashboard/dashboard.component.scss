@@ -60,7 +60,7 @@
   gap: 1.25rem;
   padding: 1.5rem;
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 1rem;
+  border-radius: var(--mat-sys-corner-small);
   // Lightest surface (white in the light theme) so the cards stand out from the
   // tinted dashboard background.
   background: var(--mat-sys-surface-container-lowest);
@@ -129,7 +129,7 @@
   &__footer-value {
     font-size: clamp(1.5rem, 2.5vw, 1.875rem);
     font-weight: 700;
-    color: #43681f;
+    color: var(--app-success);
   }
 }
 
@@ -159,7 +159,7 @@
   gap: 0.75rem;
   padding: 1.5rem;
   border: 1px solid var(--mat-sys-outline-variant);
-  border-radius: 1rem;
+  border-radius: var(--mat-sys-corner-small);
   background: var(--mat-sys-surface);
 
   &__icon {
@@ -168,7 +168,7 @@
     justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: 0.875rem;
+    border-radius: var(--mat-sys-corner-small);
 
     mat-icon {
       width: 1.5rem;
@@ -177,20 +177,20 @@
     }
 
     &--green {
-      background: #d7f0c0;
-      color: #4d7c1f;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
     &--teal {
-      background: #c5e8e6;
-      color: #146c68;
+      background: var(--app-info-container);
+      color: var(--app-on-info-container);
     }
     &--grey {
-      background: #e4e7de;
-      color: #5b6152;
+      background: var(--mat-sys-surface-container-high);
+      color: var(--mat-sys-on-surface-variant);
     }
     &--amber {
-      background: #ffdf9e;
-      color: #b45309;
+      background: var(--app-warning-container);
+      color: var(--app-on-warning-container);
     }
   }
 
@@ -214,15 +214,15 @@
     gap: 0.25rem;
     margin-top: 0.25rem;
     padding: 0.25rem 0.625rem;
-    border-radius: 999px;
+    border-radius: var(--mat-sys-corner-extra-small);
     font-size: 0.8125rem;
     font-weight: 600;
     background: var(--mat-sys-surface-container-highest);
     color: var(--mat-sys-on-surface-variant);
 
     &--up {
-      background: #d7f0c0;
-      color: #3f6212;
+      background: var(--app-success-container);
+      color: var(--app-on-success-container);
     }
   }
 

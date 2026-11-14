@@ -4,15 +4,18 @@ import {
   ElementRef,
   computed,
   effect,
+  inject,
   input,
   output,
   signal,
   viewChildren,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { APPLICANT_STATUS_LABELS, ApplicantGet } from '../../../core/models/applicant.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ApplicantGet } from '../../../core/models/applicant.model';
 import { DetailFieldComponent } from '../detail-field/detail-field.component';
 import { SectionLink } from '../types/applicant-details.type';
 import { EditSectionId } from '../types/applicant-edit-dialog.type';
@@ -23,8 +26,8 @@ const SECTIONS: readonly SectionLink[] = [
   { id: 'contact', label: 'Contact', icon: 'call' },
   { id: 'address', label: 'Address', icon: 'location_on' },
   { id: 'education', label: 'Educational background', icon: 'school' },
-  { id: 'skills', label: 'Skills & training', icon: 'edit' },
-  { id: 'work', label: 'Work experience', icon: 'work' },
+  { id: 'skills', label: 'Skills & training', icon: 'construction' },
+  { id: 'work', label: 'Work experience', icon: 'work_history' },
   { id: 'preferences', label: 'Job preferences', icon: 'star' },
 ];
 
@@ -36,8 +39,9 @@ export interface EditSectionRequest {
 
 /**
  * Information tab: the applicant's detail sections (personal, contact, address,
- * education, skills, work, preferences) plus the sticky Sections rail and
- * Overview. Owns its scroll-spy; edit actions bubble up to the parent.
+ * education, skills, work, preferences) as cards, plus a sticky "On this page"
+ * rail with the applicant ID. Owns its scroll-spy; edit actions bubble up to the
+ * parent.
  */
 @Component({
   selector: 'app-applicant-info',
@@ -52,8 +56,9 @@ export class ApplicantInfoComponent {
   readonly editSection = output<EditSectionRequest>();
 
   protected readonly sections = SECTIONS;
-  protected readonly statusLabels = APPLICANT_STATUS_LABELS;
   private readonly datePipe = new DatePipe('en-US');
+  private readonly clipboard = inject(Clipboard);
+  private readonly snackBar = inject(MatSnackBar);
 
   /** Section currently in view, highlighted in the Sections rail. */
   protected readonly activeSection = signal<string>(SECTIONS[0].id);
@@ -95,7 +100,7 @@ export class ApplicantInfoComponent {
     }
     const formatted = this.datePipe.transform(dob, 'MMM d, y');
     const age = this.age();
-    return age === null ? formatted : `${formatted} (${age})`;
+    return age === null ? formatted : `${formatted} (${age} years old)`;
   });
 
   protected readonly heightLabel = computed(() => {
@@ -123,6 +128,10 @@ export class ApplicantInfoComponent {
       ? addressLines(a.present_address)
       : addressLines(a.permanent_address);
   });
+
+  /** Address parts joined on one line, e.g. "501 Airport Rd, Brgy. Upper Balulang, CDO". */
+  protected readonly presentAddress = computed(() => this.presentAddressLines().join(', '));
+  protected readonly permanentAddress = computed(() => this.permanentAddressLines().join(', '));
 
   protected readonly applicantId = computed(() => this.applicant().id.slice(0, 8));
 
@@ -154,6 +163,18 @@ export class ApplicantInfoComponent {
   protected scrollToSection(id: string): void {
     this.activeSection.set(id);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /** Copies the full applicant id (the rail shows a short form). */
+  protected onCopyId(id: string): void {
+    const copied = this.clipboard.copy(id);
+    this.snackBar.open(
+      copied ? 'Applicant ID copied' : 'Could not copy the applicant ID',
+      'Close',
+      {
+        duration: 3000,
+      },
+    );
   }
 
   protected onEditSection(section: EditSectionId, label: string): void {

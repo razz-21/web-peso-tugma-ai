@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WORKSPACE_STATUS_LABELS, WorkspaceGet } from '../../../core/models/workspace.model';
 import { AvatarComponent } from '../../../core/components/avatar/avatar.component';
@@ -21,6 +22,7 @@ interface WorkspaceRow {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     AvatarComponent,
     EmptyStateComponent,
@@ -43,8 +45,7 @@ export class WorkspacesTableComponent {
     'name',
     'description',
     'status',
-    'created_at',
-    'updated_at',
+    'added',
     'actions',
   ] as const;
 

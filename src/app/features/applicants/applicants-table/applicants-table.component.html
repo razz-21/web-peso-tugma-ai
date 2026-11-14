@@ -1,10 +1,10 @@
-<div class="app-table">
+<div class="app-table app-table--flat applicants-table">
   <table mat-table [dataSource]="loading() ? [] : rows()" class="app-table__table">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef scope="col">Name</th>
       <td mat-cell *matCellDef="let row">
         <div class="applicants-table__person">
-          <app-avatar [name]="row.fullName || '?'" [seed]="row.applicant.id" />
+          <app-avatar [name]="row.fullName || '?'" [seed]="row.applicant.id" [size]="34" />
           <span class="applicants-table__name">{{ row.fullName || '—' }}</span>
         </div>
       </td>
@@ -12,7 +12,13 @@
 
     <ng-container matColumnDef="email">
       <th mat-header-cell *matHeaderCellDef scope="col">Email</th>
-      <td mat-cell *matCellDef="let row">{{ row.applicant.email_address || '—' }}</td>
+      <td mat-cell *matCellDef="let row">
+        @if (row.applicant.email_address) {
+          {{ row.applicant.email_address }}
+        } @else {
+          <span class="app-table__muted">—</span>
+        }
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="occupation">
@@ -39,21 +45,30 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="updated_at">
-      <th mat-header-cell *matHeaderCellDef scope="col">Updated at</th>
+    <!-- The API returns applicants newest-first, hence the static descending indicator. -->
+    <ng-container matColumnDef="added">
+      <th mat-header-cell *matHeaderCellDef scope="col" aria-sort="descending">
+        <span class="app-table__sorted">
+          Added
+          <mat-icon aria-hidden="true">arrow_downward</mat-icon>
+        </span>
+      </th>
       <td mat-cell *matCellDef="let row">
-        {{ row.applicant.updated_at | date: 'MMM d, y h:mm a' }}
+        <time class="applicants-table__added" [attr.datetime]="row.applicant.created_at">
+          <span>{{ row.applicant.created_at | date: 'MMM d, y' }}</span>
+          <span class="applicants-table__time">{{
+            row.applicant.created_at | date: 'h:mm a'
+          }}</span>
+        </time>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef scope="col">Actions</th>
-      <td mat-cell *matCellDef="let row">
-        <div
-          class="app-table__actions"
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-        >
+      <th mat-header-cell *matHeaderCellDef scope="col" class="app-table__menu-col">
+        <span class="app-table__sr-only">Actions</span>
+      </th>
+      <td mat-cell *matCellDef="let row" class="app-table__menu-col">
+        <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <button
             mat-icon-button
             type="button"

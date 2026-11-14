@@ -1,55 +1,102 @@
-<mat-drawer-container class="company-details" autosize [hasBackdrop]="false">
-  <mat-drawer #jobDrawer class="company-details__drawer" position="end" mode="over">
-    <div class="company-details__drawer-head">
-      <h2 class="company-details__drawer-title">Job details</h2>
-      <button
-        mat-icon-button
-        type="button"
-        aria-label="Close job details"
-        (click)="jobDrawer.close()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <div class="company-details__drawer-body">
-      @if (selectedJob(); as job) {
-        <app-company-job-details [job]="job" />
-      }
-    </div>
+<mat-drawer-container class="company-details" autosize [hasBackdrop]="true">
+  <mat-drawer
+    class="company-details__drawer"
+    position="end"
+    mode="over"
+    [opened]="selectedJob() !== null"
+    (closedStart)="onCloseJob()"
+  >
+    @if (selectedJob(); as job) {
+      <app-company-job-details
+        [job]="job"
+        [canDelete]="canDelete()"
+        [updating]="jobUpdating()"
+        (closed)="onCloseJob()"
+        (edit)="onEditJob($event)"
+        (toggleStatus)="onToggleJobStatus($event)"
+        (delete)="onDeleteJob($event)"
+      />
+    }
   </mat-drawer>
 
   <mat-drawer-content class="company-details__content">
-    <div class="company-details__back">
-      <a
-        matIconButton
-        class="company-details__back-btn"
-        [routerLink]="routes.companies"
-        aria-label="Back to companies"
-      >
-        <mat-icon>arrow_back</mat-icon>
-      </a>
-      <span class="company-details__back-title">Back to companies</span>
-    </div>
+    <section class="company-details__page">
+      <nav class="company-details__breadcrumb" aria-label="Breadcrumb">
+        <a matIconButton [routerLink]="routes.companies" aria-label="Back to companies">
+          <mat-icon>arrow_back</mat-icon>
+        </a>
+        <ol class="company-details__crumbs">
+          <li>
+            <a class="company-details__crumb-link" [routerLink]="routes.companies">Companies</a>
+          </li>
+          <li class="company-details__crumb-sep" aria-hidden="true">
+            <mat-icon>chevron_right</mat-icon>
+          </li>
+          <li>
+            <span class="company-details__crumb-current" aria-current="page">{{
+              store.company()?.company_name ?? 'Company details'
+            }}</span>
+          </li>
+        </ol>
+      </nav>
 
-    @if (store.loading() && !store.company()) {
-      <div class="company-details__status" role="status">
-        <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
-        <p>Loading company...</p>
-      </div>
-    } @else if (store.company(); as company) {
-      <div class="company-details__layout">
-        <app-company-profile
+      @if (store.loading() && !store.company()) {
+        <div class="company-details__status" role="status">
+          <mat-progress-spinner mode="indeterminate" diameter="40" aria-hidden="true" />
+          <p>Loading company...</p>
+        </div>
+      } @else if (store.company(); as company) {
+        <app-company-header
           [company]="company"
+          [jobCount]="store.jobs().length"
           [canDelete]="canDelete()"
           (edit)="onEdit($event)"
           (delete)="onDelete($event)"
         />
-        <app-company-jobs
-          [company]="company"
-          [canDelete]="canDelete()"
-          (viewJob)="onViewJob($event); jobDrawer.open()"
-        />
-      </div>
-    }
+
+        <div class="company-details__layout">
+          <app-company-profile [company]="company" />
+
+          <div class="company-details__panel">
+            <mat-tab-group
+              class="company-details__tabs"
+              mat-stretch-tabs="false"
+              animationDuration="0ms"
+              [selectedIndex]="activeTab()"
+              (selectedIndexChange)="activeTab.set($event)"
+            >
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  Job listings
+                  <span
+                    class="company-details__tab-count"
+                    [class.company-details__tab-count--active]="activeTab() === 0"
+                    >{{ store.jobs().length }}</span
+                  >
+                </ng-template>
+                <app-company-jobs
+                  [company]="company"
+                  [canDelete]="canDelete()"
+                  (viewJob)="onViewJob($event)"
+                  (editJob)="onEditJob($event)"
+                  (deleteJob)="onDeleteJob($event)"
+                />
+              </mat-tab>
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  Applicants
+                  <span
+                    class="company-details__tab-count"
+                    [class.company-details__tab-count--active]="activeTab() === 1"
+                    >{{ store.applicants().length }}</span
+                  >
+                </ng-template>
+                <app-company-applicants [company]="company" />
+              </mat-tab>
+            </mat-tab-group>
+          </div>
+        </div>
+      }
+    </section>
   </mat-drawer-content>
 </mat-drawer-container>
